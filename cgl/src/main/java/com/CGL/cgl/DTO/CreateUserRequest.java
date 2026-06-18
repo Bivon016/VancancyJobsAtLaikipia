@@ -19,5 +19,4 @@ import lombok.Setter;
         private String email;
         private String phoneNumber;
         private Role role;
-
     }
