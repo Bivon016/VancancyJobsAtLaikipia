@@ -48,6 +48,11 @@ public class JobVacancyController {
     public ResponseEntity<JobVacancy> closeVacancy(@PathVariable Long id) {
         return ResponseEntity.ok(jobVacancyService.closeVacancy(id));
     }
+    @PutMapping("/{id}/open")
+    @PreAuthorize("hasRole('CPSB_ADMIN')")
+    public ResponseEntity<JobVacancy> openVacancy(@PathVariable Long id) {
+        return ResponseEntity.ok(jobVacancyService.openVacancy(id));
+    }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
@@ -55,5 +60,6 @@ public class JobVacancyController {
         jobVacancyService.deleteVacancyById(id);
         return ResponseEntity.ok("Vacancy deleted successfully");
     }
+
 
 }

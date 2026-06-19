@@ -18,7 +18,7 @@ public class Applicant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private Users user;
 
     private LocalDate birthDate;
@@ -37,4 +37,5 @@ public class Applicant {
     private String cvPath;
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDateTime createdAt;}
+    private LocalDateTime createdAt;
+}

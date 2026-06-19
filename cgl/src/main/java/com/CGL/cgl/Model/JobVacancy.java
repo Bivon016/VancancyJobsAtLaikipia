@@ -16,10 +16,15 @@ public class JobVacancy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
+
     private String jobDescription;
+
     private String requirements;
+
     private String salaryScale;
+
     private Integer positionsAvailable;
 
     @ManyToOne

@@ -72,6 +72,13 @@ public class JobVacancyService {
         jobVacancyRepo.deleteById(id);
     }
 
+    public JobVacancy openVacancy(Long id) {
+        JobVacancy vacancy =jobVacancyRepo.findById(id)
+                .orElseThrow(()->new RuntimeException("Vacancy not found"));
+        vacancy.setStatus(ApplicationStatus.OPEN);
+        return jobVacancyRepo.save(vacancy);
+    }
+
 
 }
 
