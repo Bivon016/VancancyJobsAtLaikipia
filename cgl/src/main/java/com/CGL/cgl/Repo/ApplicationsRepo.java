@@ -15,5 +15,6 @@ public interface ApplicationsRepo extends JpaRepository<Applications, Long> {
     Optional<Applications> findByApplicantAndVacancy(Applicant applicant, JobVacancy vacancy);
     List<Applications> findByVacancy(JobVacancy vacancy);
     List<Applications> findByApplicant(Applicant applicant);
+    Long countByVacancyAndApplicationStatus(JobVacancy vacancy, ApplicationState applicationStatus);
 
 }

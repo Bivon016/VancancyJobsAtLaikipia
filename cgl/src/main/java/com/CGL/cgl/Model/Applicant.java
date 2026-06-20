@@ -34,7 +34,7 @@ public class Applicant {
     private String educationalLevel;
 
     private Integer yearsOfExperience;
-    private String cvPath;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

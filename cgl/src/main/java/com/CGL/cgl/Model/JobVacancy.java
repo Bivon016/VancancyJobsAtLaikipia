@@ -45,7 +45,5 @@ public class JobVacancy {
 
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
-
-
-
+    
 }
