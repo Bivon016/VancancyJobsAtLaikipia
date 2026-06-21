@@ -15,16 +15,19 @@ public class ShortlistServiceImpl implements ShortlistService {
     private final ShortlistRepo shortlistRepo;
     private final ApplicationsRepo applicationsRepo;
     private final UserRepo usersRepo;
+    private final NotificationService notificationService;
+
 
 
     public ShortlistServiceImpl(
             ShortlistRepo shortlistRepo,
             ApplicationsRepo applicationsRepo,
-            UserRepo usersRepo
+            UserRepo usersRepo,NotificationService notificationService
     ) {
         this.shortlistRepo = shortlistRepo;
         this.applicationsRepo = applicationsRepo;
         this.usersRepo = usersRepo;
+        this.notificationService = notificationService;
     }
 
 
@@ -33,14 +36,11 @@ public class ShortlistServiceImpl implements ShortlistService {
             ShortlistRequest request,
             String email
     ) {
-
-        // 1. Get user from token
         Users user = usersRepo.findByEmail(email)
                 .orElseThrow(() ->
                         new RuntimeException("User not found")
                 );
 
-        // 2. Check role
         if (user.getRole() != Role.HR_OFFICER &&
                 user.getRole() != Role.CPSB_ADMIN) {
 
@@ -49,23 +49,17 @@ public class ShortlistServiceImpl implements ShortlistService {
             );
         }
 
-        // 3. Fetch application
         Applications application =
                 applicationsRepo.findById(request.getApplicationId())
                         .orElseThrow(() ->
                                 new RuntimeException("Application not found")
                         );
-
-        // 4. Check application status
         if (application.getApplicationStatus() != ApplicationState.SUBMITTED &&
                 application.getApplicationStatus() != ApplicationState.UNDER_REVIEW) {
-
             throw new RuntimeException(
                     "Only SUBMITTED or UNDER_REVIEW applications can be shortlisted"
             );
         }
-
-        // 5. Check not already shortlisted
         Optional<Shortlist> existingShortlist =
                 shortlistRepo.findByApplication(application);
 
@@ -74,8 +68,6 @@ public class ShortlistServiceImpl implements ShortlistService {
                     "Application has already been shortlisted"
             );
         }
-
-        // 6. Update application status
         application.setApplicationStatus(
                 ApplicationState.SHORTLISTED
         );
@@ -90,8 +82,18 @@ public class ShortlistServiceImpl implements ShortlistService {
                         .remarks(request.getRemarks())
                         .build();
 
-        return shortlistRepo.save(shortlist);
-    }
+        Shortlist saved = shortlistRepo.save(shortlist);
+
+        // Notify applicant
+        Users applicantUser = application.getApplicant().getUser();
+        notificationService.createNotification(
+                applicantUser,
+                "Application Shortlisted",
+                "Congratulations! You have been shortlisted for " + application.getVacancy().getTitle() + "."
+        );
+
+        return saved;
+        }
     @Override
     public List<Shortlist> getShortlistByVacancy(Long vacancyId) {
         return shortlistRepo.findByApplication_Vacancy_Id(vacancyId);

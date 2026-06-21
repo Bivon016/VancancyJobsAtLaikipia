@@ -16,11 +16,14 @@ public class RecruuitmentRequestService {
     private final RecruitmentRequestRepo recruitmentRequestRepo;
     private final DepartmentRepo departmentRepo;
     private final UserRepo userRepo;
+    private final NotificationService notificationService;
 
-    public RecruuitmentRequestService (RecruitmentRequestRepo recruitmentRequestRepo, DepartmentRepo departmentRepo, UserRepo userRepo) {
+
+    public RecruuitmentRequestService (RecruitmentRequestRepo recruitmentRequestRepo, DepartmentRepo departmentRepo, UserRepo userRepo, NotificationService notificationService) {
         this.recruitmentRequestRepo = recruitmentRequestRepo;
         this.departmentRepo = departmentRepo;
         this.userRepo = userRepo;
+        this.notificationService = notificationService;
     }
 
     public RecruitmentRequest submitRequest(RecruitmentRequestDTO request, String email) {
@@ -66,7 +69,15 @@ public class RecruuitmentRequestService {
         request.setStatus(Status.APPROVED);
         request.setApprovedDate(LocalDateTime.now());
 
-        return recruitmentRequestRepo.save(request);
+        RecruitmentRequest saved = recruitmentRequestRepo.save(request);
+
+        notificationService.createNotification(
+                request.getRequestedBy(),
+                "Recruitment Request Approved",
+                "Your request for " + request.getJobTitle() + " has been approved."
+        );
+
+        return saved;
     }
     public RecruitmentRequest rejectRequest(Long requestId, String email) {
 
@@ -86,7 +97,16 @@ public class RecruuitmentRequestService {
 
         request.setStatus(Status.REJECTED);
 
-        return recruitmentRequestRepo.save(request);
+        RecruitmentRequest saved = recruitmentRequestRepo.save(request);
+
+        notificationService.createNotification(
+                request.getRequestedBy(),
+                "Recruitment Request Rejected",
+                "Your request for " + request.getJobTitle() + " has been rejected."
+        );
+
+        return saved;
+    
     }
     public List<RecruitmentRequest> getRequestsByDepartment(Long departmentId) {
         return recruitmentRequestRepo.findByDepartment_Id(departmentId);

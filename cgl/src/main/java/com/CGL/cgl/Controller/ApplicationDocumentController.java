@@ -69,4 +69,16 @@ public class ApplicationDocumentController {
         return ResponseEntity.ok(documents);
     }
 
+    @GetMapping("/my/{applicationId}")
+    @PreAuthorize("hasRole('APPLICANT')")
+    public ResponseEntity<List<ApplicationDocument>> getMyDocuments(
+            @PathVariable Long applicationId
+    ) {
+        String email = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication().getName();
+        return ResponseEntity.ok(
+                applicationDocumentService.getMyApplicationDocuments(applicationId, email)
+        );
+    }
+
 }

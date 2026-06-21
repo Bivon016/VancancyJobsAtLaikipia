@@ -19,12 +19,15 @@ public class ApplicationService {
     private final UserRepo userRepo;
     private final ApplicantRepo applicantRepo;
     private final JobVacancyRepo jobVacancyRepo;
+    private final NotificationService notificationService;
 
-    public ApplicationService(ApplicationsRepo applicationsRepo, UserRepo userRepo, ApplicantRepo applicantRepo, JobVacancyRepo jobVacancyRepo) {
+
+    public ApplicationService(ApplicationsRepo applicationsRepo, UserRepo userRepo, ApplicantRepo applicantRepo, JobVacancyRepo jobVacancyRepo, NotificationService notificationService) {
         this.applicationsRepo = applicationsRepo;
         this.userRepo = userRepo;
         this.applicantRepo = applicantRepo;
         this.jobVacancyRepo = jobVacancyRepo;
+        this.notificationService = notificationService;
     }
 
     public Applications applyForJob(ApplicationsDTO request, String email) {
@@ -51,7 +54,16 @@ public class ApplicationService {
                 .applicationDate(LocalDateTime.now())
                 .applicationStatus(ApplicationState.SUBMITTED)
                 .build();
-        return applicationsRepo.save(application);
+
+        Applications saved = applicationsRepo.save(application);
+
+        notificationService.createNotification(
+                user,
+                "Application Received",
+                "Your application for " + vacancy.getTitle() + " has been received and is under review."
+        );
+
+        return saved;
     }
 
     public List<Applications> getMyApplications(String email) {

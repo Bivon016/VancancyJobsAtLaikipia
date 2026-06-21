@@ -17,4 +17,6 @@ public interface ApplicationDocumentService {
 
     List<ApplicationDocument> getApplicationDocuments(Long applicationId);
 
+    List<ApplicationDocument> getMyApplicationDocuments(Long applicationId, String email);
+
 }

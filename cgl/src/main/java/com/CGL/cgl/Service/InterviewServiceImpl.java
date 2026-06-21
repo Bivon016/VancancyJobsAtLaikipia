@@ -17,18 +17,22 @@ public class InterviewServiceImpl implements InterviewService {
     private final InterviewPanelRepo interviewPanelRepo;
     private final ApplicationsRepo applicationsRepo;
     private final UserRepo usersRepo;
+    private final NotificationService notificationService;
+
 
 
     public InterviewServiceImpl(
             InterviewRepo interviewRepo,
             InterviewPanelRepo interviewPanelRepo,
             ApplicationsRepo applicationsRepo,
-            UserRepo usersRepo
+            UserRepo usersRepo,
+            NotificationService notificationService
     ) {
         this.interviewRepo = interviewRepo;
         this.interviewPanelRepo = interviewPanelRepo;
         this.applicationsRepo = applicationsRepo;
         this.usersRepo = usersRepo;
+        this.notificationService = notificationService;
     }
 
 
@@ -86,7 +90,6 @@ public class InterviewServiceImpl implements InterviewService {
                         .build();
 
 
-        // 6. Update application status
         application.setApplicationStatus(
                 ApplicationState.INTERVIEW
         );
@@ -94,8 +97,18 @@ public class InterviewServiceImpl implements InterviewService {
         applicationsRepo.save(application);
 
 
-        return interviewRepo.save(interview);
-    }
+        Interview saved = interviewRepo.save(interview);
+
+        Users applicantUser = application.getApplicant().getUser();
+        notificationService.createNotification(
+                applicantUser,
+                "Interview Invitation",
+                "You have an interview scheduled on " + request.getInterviewDate() +
+                        " at " + request.getInterviewTime() + ", venue: " + request.getVenue() + "."
+        );
+
+        return saved;
+        }
 
 
 

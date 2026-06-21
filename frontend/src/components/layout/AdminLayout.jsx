@@ -1,0 +1,95 @@
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import {
+  Building2,
+  Calendar,
+  ClipboardList,
+  LayoutDashboard,
+  LogOut,
+  Star,
+  UserCog,
+  Users,
+} from 'lucide-react';
+import { useAuth } from '../../auth/AuthContext';
+import { normalizeRole, ROLES, ROLE_LABELS } from '../../utils/roles';
+import Button from '../ui/Button';
+
+const ALL_LINKS = [
+  { to: '/admin', label: 'Overview', icon: LayoutDashboard, roles: Object.values(ROLES).filter((r) => r !== ROLES.APPLICANT) },
+  { to: '/admin/users', label: 'User Management', icon: UserCog, roles: [ROLES.SUPER_ADMIN] },
+  { to: '/admin/departments', label: 'Departments', icon: Building2, roles: [ROLES.SUPER_ADMIN] },
+  { to: '/admin/recruitment', label: 'Recruitment', icon: ClipboardList, roles: [ROLES.CPSB_ADMIN, ROLES.DEPT_HEAD] },
+  { to: '/admin/vacancies', label: 'Vacancies', icon: ClipboardList, roles: [ROLES.CPSB_ADMIN] },
+  { to: '/admin/applications', label: 'Applications', icon: Users, roles: [ROLES.HR_OFFICER, ROLES.CPSB_ADMIN] },
+  { to: '/admin/shortlists', label: 'Shortlists', icon: Users, roles: [ROLES.HR_OFFICER, ROLES.CPSB_ADMIN] },
+  { to: '/admin/interviews', label: 'Interviews', icon: Calendar, roles: [ROLES.HR_OFFICER, ROLES.CPSB_ADMIN, ROLES.PANEL_MEMBER] },
+  { to: '/admin/selections', label: 'Final Selection', icon: Star, roles: [ROLES.CPSB_ADMIN, ROLES.HR_OFFICER] },
+];
+
+export default function AdminLayout() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const role = normalizeRole(user?.role);
+
+  const links = ALL_LINKS.filter((l) => l.roles.includes(role));
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  return (
+    <div className="flex min-h-screen bg-gray-100">
+      <aside className="relative flex hidden w-64 flex-shrink-0 flex-col bg-secondary text-white lg:flex">
+        <div className="border-b border-white/10 p-6">
+          <p className="font-heading text-sm font-bold text-accent">Staff Portal</p>
+          <p className="mt-1 text-xs text-white/60">{ROLE_LABELS[role]}</p>
+          <p className="truncate text-xs text-white/40">{user?.email}</p>
+        </div>
+        <nav className="space-y-1 p-3">
+          {links.map(({ to, label, icon: Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/admin'}
+              className={({ isActive }) =>
+                `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors ${
+                  isActive ? 'bg-white/15 text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'
+                }`
+              }
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+        <div className="mt-auto p-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start text-white/70 hover:bg-white/5 hover:text-white"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </Button>
+        </div>
+      </aside>
+
+      <div className="flex flex-1 flex-col">
+        <header className="border-b bg-white px-4 py-3 lg:hidden">
+          <p className="font-heading text-sm font-bold text-secondary">Staff Portal — {ROLE_LABELS[role]}</p>
+          <nav className="mt-2 flex gap-3 overflow-x-auto text-xs">
+            {links.map(({ to, label }) => (
+              <NavLink key={to} to={to} className="whitespace-nowrap text-secondary">
+                {label}
+              </NavLink>
+            ))}
+          </nav>
+        </header>
+        <main className="flex-1 p-4 lg:p-8">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}

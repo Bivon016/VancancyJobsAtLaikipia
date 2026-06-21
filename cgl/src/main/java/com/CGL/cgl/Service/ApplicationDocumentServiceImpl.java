@@ -2,8 +2,12 @@ package com.CGL.cgl.Service;
 
 import com.CGL.cgl.Model.ApplicationDocument;
 import com.CGL.cgl.Model.Applications;
+import com.CGL.cgl.Model.Applicant;
+import com.CGL.cgl.Model.Users;
 import com.CGL.cgl.Repo.ApplicationDocumentRepo;
 import com.CGL.cgl.Repo.ApplicationsRepo;
+import com.CGL.cgl.Repo.ApplicantRepo;
+import com.CGL.cgl.Repo.UserRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,14 +27,20 @@ public class ApplicationDocumentServiceImpl implements ApplicationDocumentServic
     private final String uploadDir;
     private final ApplicationDocumentRepo applicationDocumentRepo;
     private final ApplicationsRepo applicationsRepo;
+    private final UserRepo userRepo;
+    private final ApplicantRepo applicantRepo;
 
     public ApplicationDocumentServiceImpl(
             ApplicationDocumentRepo applicationDocumentRepo,
             ApplicationsRepo applicationsRepo,
+            UserRepo userRepo,
+            ApplicantRepo applicantRepo,
             @Value("${file.upload-dir}") String uploadDir
     ) {
         this.applicationDocumentRepo = applicationDocumentRepo;
         this.applicationsRepo = applicationsRepo;
+        this.userRepo = userRepo;
+        this.applicantRepo = applicantRepo;
         this.uploadDir = uploadDir;
     }
 
@@ -113,6 +123,22 @@ public class ApplicationDocumentServiceImpl implements ApplicationDocumentServic
                                 new RuntimeException("Application not found")
                         );
 
+
+        return applicationDocumentRepo.findByApplication(application);
+    }
+
+    @Override
+    public List<ApplicationDocument> getMyApplicationDocuments(Long applicationId, String email) {
+        Users user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Applicant applicant = applicantRepo.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
+        Applications application = applicationsRepo.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found"));
+
+        if (!application.getApplicant().getId().equals(applicant.getId())) {
+            throw new RuntimeException("Access denied");
+        }
 
         return applicationDocumentRepo.findByApplication(application);
     }

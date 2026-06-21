@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #1B4332;
+  --color-primary-dark: #081C15;
+  --color-primary-light: #2D6A4F;
+  --color-secondary: #1D3557;
+  --color-accent: #D4A017;
+  --color-surface: #F8F9FA;
+  --color-muted: #6C757D;
+  --font-heading: "Libre Baskerville", Georgia, serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+  @apply bg-surface text-gray-900 antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+}
+
+.kenya-stripe {
+  height: 4px;
+  background: linear-gradient(to right, #000 33%, #BB0000 33%, #BB0000 66%, #006600 66%);
+}

@@ -18,19 +18,21 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
     private final ApplicationsRepo applicationsRepo;
     private final UserRepo userRepo;
     private final JobVacancyRepo jobVacancyRepo;
-
+    private final NotificationService notificationService;
 
     public FinalSelectionServiceImpl(
             FinalSelectionRepo finalSelectionRepo,
             ApplicationsRepo applicationsRepo,
             UserRepo userRepo,
-            JobVacancyRepo jobVacancyRepo
+            JobVacancyRepo jobVacancyRepo,
+            NotificationService notificationService
     ) {
 
         this.finalSelectionRepo = finalSelectionRepo;
         this.applicationsRepo = applicationsRepo;
         this.userRepo = userRepo;
         this.jobVacancyRepo = jobVacancyRepo;
+        this.notificationService = notificationService;
 
     }
 
@@ -55,13 +57,12 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
 
 
         // 2. Check role
-        if(user.getRole() != Role.CPSB_ADMIN){
+        if (user.getRole() != Role.CPSB_ADMIN) {
 
             throw new RuntimeException(
                     "Only CPSB Admin can select candidates"
             );
         }
-
 
 
         // 3. Get application
@@ -76,16 +77,14 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
                         );
 
 
-
         // 4. Check application status
-        if(application.getApplicationStatus()
-                != ApplicationState.INTERVIEW){
+        if (application.getApplicationStatus()
+                != ApplicationState.INTERVIEW) {
 
             throw new RuntimeException(
                     "Only interviewed applicants can be selected"
             );
         }
-
 
 
         // 5. Check already selected
@@ -95,14 +94,13 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
                 );
 
 
-        if(existing.isPresent()){
+        if (existing.isPresent()) {
 
             throw new RuntimeException(
                     "Applicant already selected"
             );
 
         }
-
 
 
         // 6. Update application status
@@ -114,66 +112,43 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
         applicationsRepo.save(application);
 
 
-
         // 7. Create selection
         FinalSelection selection =
                 FinalSelection.builder()
                         .application(application)
                         .approvedBy(user)
                         .appointmentStatus(
-                                AppointmentStatus
-                                        .PENDING_APPOINTMENT
+                                AppointmentStatus.PENDING_APPOINTMENT
                         )
-                        .remarks(
-                                request.getRemarks()
-                        )
+                        .remarks(request.getRemarks())
                         .build();
 
+        FinalSelection saved = finalSelectionRepo.save(selection);
 
+// 7b. Notify applicant — ADD THIS
+        Users applicantUser = application.getApplicant().getUser();
+        notificationService.createNotification(
+                applicantUser,
+                "Selection Outcome",
+                "Congratulations! You have been selected for " + application.getVacancy().getTitle() + "."
+        );
 
-        FinalSelection saved =
-                finalSelectionRepo.save(selection);
-
-
-
-        // 8. Check vacancy capacity
-
-        JobVacancy vacancy =
-                application.getVacancy();
-
-
+// 8. Check vacancy capacity
+        JobVacancy vacancy = application.getVacancy();
 
         Long selectedCount =
-                applicationsRepo
-                        .countByVacancyAndApplicationStatus(
-                                vacancy,
-                                ApplicationState.SELECTED
-                        );
+                applicationsRepo.countByVacancyAndApplicationStatus(
+                        vacancy,
+                        ApplicationState.SELECTED
+                );
 
-
-
-        if(selectedCount >= vacancy.getPositionsAvailable()){
-
-
-            vacancy.setStatus(
-                    ApplicationStatus.FILLED
-            );
-
-
+        if (selectedCount >= vacancy.getPositionsAvailable()) {
+            vacancy.setStatus(ApplicationStatus.FILLED);
             jobVacancyRepo.save(vacancy);
-
         }
 
-
-
         return saved;
-
     }
-
-
-
-
-
     @Override
     @Transactional
     public FinalSelection updateAppointmentStatus(
