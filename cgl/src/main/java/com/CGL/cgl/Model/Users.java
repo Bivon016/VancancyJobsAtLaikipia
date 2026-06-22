@@ -17,6 +17,7 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
+
     @Column(name = "first_name", nullable = false)
     private String fName;
 
@@ -36,6 +37,7 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-
-
+    @Column(name = "email_verified", nullable = false)
+    @Builder.Default
+    private boolean emailVerified = false;
 }

@@ -11,18 +11,33 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepo userRepo;
+
     public CustomUserDetailsService(UserRepo userRepo) {
         this.userRepo = userRepo;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Email not found: " + email));
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getEmail())
-                .password(user.getPassword())
-                .authorities("ROLE_" + user.getRole().name())
-                .build();
+    public UserDetails loadUserByUsername(String email)
+        throws UsernameNotFoundException {
+        Users user = userRepo
+            .findByEmail(email)
+            .orElseThrow(() ->
+                new UsernameNotFoundException("Email not found: " + email)
+            );
+        if (
+            !user.isEmailVerified() &&
+            user.getRole() != com.CGL.cgl.Model.Role.SUPER_ADMIN
+        ) {
+            throw new UsernameNotFoundException(
+                "Please verify your email before logging in"
+            );
+        }
+
+        return org.springframework.security.core.userdetails.User.withUsername(
+            user.getEmail()
+        )
+            .password(user.getPassword())
+            .authorities("ROLE_" + user.getRole().name())
+            .build();
     }
 }

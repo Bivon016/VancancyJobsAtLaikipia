@@ -1,7 +1,14 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { authApi } from '../api';
-import { setAuthToken, setUnauthorizedHandler } from '../api/axios';
-import { normalizeRole } from '../utils/roles';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { authApi } from "../api";
+import { setAuthToken, setUnauthorizedHandler } from "../api/axios";
+import { normalizeRole } from "../utils/roles";
 
 const AuthContext = createContext(null);
 
@@ -30,6 +37,7 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await authApi.login(email, password);
       const role = normalizeRole(data.role);
+      setAuthToken(data.token);
       setToken(data.token);
       setUser({ email: data.email, role });
       return { email: data.email, role };
@@ -42,6 +50,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       await authApi.register(formData);
+      return { email: formData.email };
     } finally {
       setLoading(false);
     }
@@ -57,7 +66,7 @@ export function AuthProvider({ children }) {
       logout,
       register,
     }),
-    [user, token, loading]
+    [user, token, loading],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -65,6 +74,6 @@ export function AuthProvider({ children }) {
 
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 };

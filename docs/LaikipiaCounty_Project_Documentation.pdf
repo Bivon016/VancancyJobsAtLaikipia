@@ -1,0 +1,3929 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 8623
+>>
+stream
+0.200025 w
+0 G
+BT
+/F2 20 Tf
+23. TL
+0 g
+48. 785.8899999999999864 Td
+(Laikipia County Job Recruitment System) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+48. 753.8899999999999864 Td
+(Full Project Documentation) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+48. 730.8899999999999864 Td
+(Generated from the current frontend and backend codebase.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0 g
+48. 707.8899999999999864 Td
+(1. Project Overview) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 689.8899999999999864 Td
+(The Laikipia County Job Recruitment System is a web-based recruitment management platform built with a) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 675.8899999999999864 Td
+(Spring Boot backend and a React/Vite frontend. It supports the full hiring lifecycle from department staffing) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 661.8899999999999864 Td
+(requests through vacancy publication, applicant onboarding, application processing, shortlisting, interviews,) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 647.8899999999999864 Td
+(final selection, notifications, and email communication.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 627.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+62. 627.8899999999999864 Td
+(Active backend: cgl \(Spring Boot, JPA, Security, Mail, JWT\)) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 611.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+62. 611.8899999999999864 Td
+(Active frontend: frontend \(React, Vite, Router, Axios, jsPDF\)) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 595.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+62. 595.8899999999999864 Td
+(Persistence: MySQL database) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 579.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+62. 579.8899999999999864 Td
+(Supporting storage: local uploads directory for applicant documents) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 563.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+62. 563.8899999999999864 Td
+(Communication: in-app notifications and SMTP email delivery) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0 g
+48. 543.8899999999999864 Td
+(2. Objectives) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 525.8899999999999864 Td
+(1.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+66. 525.8899999999999864 Td
+(Digitize and centralize county recruitment workflows.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 509.8899999999999864 Td
+(2.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+66. 509.8899999999999864 Td
+(Provide controlled role-based access for internal staff.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 493.8899999999999864 Td
+(3.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+66. 493.8899999999999864 Td
+(Allow applicants to discover vacancies, apply online, and track progress.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 477.8899999999999864 Td
+(4.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+66. 477.8899999999999864 Td
+(Maintain official records and printable reports for recruitment processes.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 461.8899999999999864 Td
+(5.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+66. 461.8899999999999864 Td
+(Improve applicant communication using notifications and email.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+48. 445.8899999999999864 Td
+(6.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0 g
+66. 445.8899999999999864 Td
+(Secure system access through JWT-based authentication and email verification.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0 g
+48. 425.8899999999999864 Td
+(3. Technology Stack) Tj
+ET
+0. G
+0.200025 w
+0. G
+0.200025 w
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+48. 407.8899999999999864 100. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+53. 395.2400000000000091 Td
+(Layer) Tj
+ET
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+148. 407.8899999999999864 399.2799999999999727 -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+153. 395.2400000000000091 Td
+(Technologies) Tj
+ET
+0. G
+0.200025 w
+1. g
+0.82 G
+0.5 w
+1. g
+48. 387.5399999999999636 100. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 374.8899999999999864 Td
+(Backend) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+148. 387.5399999999999636 399.2799999999999727 -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+153. 374.8899999999999864 Td
+(Java 21, Spring Boot 4.1, Spring Web MVC, Spring Security, Spring Data JPA, Lombok, Spring) Tj
+T* (Mail, JWT, OpenAPI/Swagger) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 356.839999999999975 100. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 344.1899999999999977 Td
+(Frontend) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+148. 356.839999999999975 399.2799999999999727 -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+153. 344.1899999999999977 Td
+(React 19, Vite 8, React Router 7, Axios, Tailwind CSS, Lucide React, jsPDF, jsPDF-AutoTable) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 336.4899999999999523 100. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 323.8399999999999181 Td
+(Database) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+148. 336.4899999999999523 399.2799999999999727 -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+153. 323.8399999999999181 Td
+(MySQL) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 316.1399999999999864 100. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 303.4900000000000091 Td
+(Storage) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+148. 316.1399999999999864 399.2799999999999727 -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+153. 303.4900000000000091 Td
+(Local file storage under uploads/documents) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 295.7899999999999636 100. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 283.1399999999999864 Td
+(Authentication) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+148. 295.7899999999999636 399.2799999999999727 -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+153. 283.1399999999999864 Td
+(JWT bearer tokens with role-based authorization) Tj
+ET
+0. G
+0.200025 w
+0.78 G
+0. w
+0. G
+0.200025 w
+0. G
+0.200025 w
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 261.4399999999999409 Td
+(4. Active Project Structure) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 243.4399999999999409 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 243.4399999999999409 Td
+(cgl/: active Spring Boot backend with controllers, services, models, repositories, security, and email) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 229.4399999999999409 Td
+(verification logic.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 213.4399999999999409 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 213.4399999999999409 Td
+(frontend/: active React frontend with public, applicant, and admin/staff pages.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 197.4399999999999409 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 197.4399999999999409 Td
+(uploads/: storage for uploaded application documents.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 181.4399999999999409 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 181.4399999999999409 Td
+(laikipiaJobs/: appears to be an extra frontend scaffold and is not the active integrated frontend in current) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 167.4399999999999409 Td
+(use.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 147.4399999999999409 Td
+(5. Architecture Overview) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 129.4399999999999409 Td
+(The frontend issues REST requests to the backend through Axios. The backend validates authentication) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 115.4399999999999409 Td
+(and role access, executes business logic in service classes, persists data via JPA repositories, and returns) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 101.4399999999999409 Td
+(JSON responses. Uploaded files are stored on disk, while relational business data is stored in MySQL.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 81.4399999999999409 Td
+(1.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 81.4399999999999409 Td
+(User interacts with frontend page or form.) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+48. 24. Td
+(Laikipia County Job Recruitment System Documentation) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+487.2799999999999727 24. Td
+(Page 1 of 6) Tj
+ET
+endstream
+endobj
+5 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 6 0 R
+>>
+endobj
+6 0 obj
+<<
+/Length 11121
+>>
+stream
+0.200025 w
+0. G
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 785.8899999999999864 Td
+(2.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 785.8899999999999864 Td
+(Frontend sends an HTTP request to a backend endpoint.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 769.8899999999999864 Td
+(3.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 769.8899999999999864 Td
+(Security layer validates token and role where required.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 753.8899999999999864 Td
+(4.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 753.8899999999999864 Td
+(Controller delegates work to a service.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 737.8899999999999864 Td
+(5.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 737.8899999999999864 Td
+(Service performs validation, workflow logic, persistence, and side effects such as notifications or email.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 721.8899999999999864 Td
+(6.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 721.8899999999999864 Td
+(Backend returns response payload for rendering or redirect decisions.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 701.8899999999999864 Td
+(6. User Roles and Responsibilities) Tj
+ET
+0. G
+0.200025 w
+0. G
+0.200025 w
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+48. 683.8899999999999864 80. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+53. 671.2400000000000091 Td
+(Role) Tj
+ET
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+128. 683.8899999999999864 205. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+133. 671.2400000000000091 Td
+(Main Responsibilities) Tj
+ET
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+333. 683.8899999999999864 170. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+338. 671.2400000000000091 Td
+(Cannot Do) Tj
+ET
+0. G
+0.200025 w
+1. g
+0.82 G
+0.5 w
+1. g
+48. 663.5399999999999636 80. -51.3999999999999986 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 650.8899999999999864 Td
+(SUPER_ADMIN) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+128. 663.5399999999999636 205. -51.3999999999999986 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+133. 650.8899999999999864 Td
+(Create staff users, manage departments, access) Tj
+T* (most admin modules and reports, oversee) Tj
+T* (system configuration areas through the UI.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+333. 663.5399999999999636 170. -51.3999999999999986 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+338. 650.8899999999999864 Td
+(Core hiring decisions such as approving) Tj
+T* (recruitment requests, shortlisting,) Tj
+T* (interview scheduling, or final candidate) Tj
+T* (selection.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 612.1399999999999864 80. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 599.4900000000000091 Td
+(CPSB_ADMIN) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+128. 612.1399999999999864 205. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+133. 599.4900000000000091 Td
+(Approve or reject recruitment requests, create) Tj
+T* (vacancies, oversee recruitment workflow,) Tj
+T* (participate in shortlist/final selection functions.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+333. 612.1399999999999864 170. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+338. 599.4900000000000091 Td
+(General system administration reserved) Tj
+T* (for superadmin.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 571.0899999999999181 80. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 558.4400000000000546 Td
+(DEPT_HEAD) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+128. 571.0899999999999181 205. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+133. 558.4400000000000546 Td
+(Submit departmental recruitment requests and) Tj
+T* (monitor request records.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+333. 571.0899999999999181 170. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+338. 558.4400000000000546 Td
+(Approve requests or perform) Tj
+T* (downstream hiring actions.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 540.3899999999999864 80. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 527.7400000000000091 Td
+(HR_OFFICER) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+128. 540.3899999999999864 205. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+133. 527.7400000000000091 Td
+(Review applications, update application states,) Tj
+T* (shortlist candidates, schedule interviews, assign) Tj
+T* (panel members, complete interviews.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+333. 540.3899999999999864 170. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+338. 527.7400000000000091 Td
+(Approve recruitment requests or finalize) Tj
+T* (final appointment decisions.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 499.339999999999975 80. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 486.6899999999999977 Td
+(PANEL_MEMBE) Tj
+T* (R) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+128. 499.339999999999975 205. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+133. 486.6899999999999977 Td
+(View assigned interviews and submit interview) Tj
+T* (scores.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+333. 499.339999999999975 170. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+338. 486.6899999999999977 Td
+(Vacancy management, shortlisting, or) Tj
+T* (final hiring decisions.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 468.6399999999999864 80. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 455.9900000000000091 Td
+(APPLICANT) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+128. 468.6399999999999864 205. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+133. 455.9900000000000091 Td
+(Register, verify email, build profile, apply for jobs,) Tj
+T* (upload documents, view notifications and) Tj
+T* (statuses.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+333. 468.6399999999999864 170. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+338. 455.9900000000000091 Td
+(Any staff or admin operation.) Tj
+ET
+0. G
+0.200025 w
+0.78 G
+0. w
+0. G
+0.200025 w
+0. G
+0.200025 w
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 413.589999999999975 Td
+(7. Authentication and Verification Flow) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 395.589999999999975 Td
+(Authentication is handled through JWTs, while email verification uses one-time 6-digit codes sent through) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 381.589999999999975 Td
+(SMTP. Verification is required for new applicants and newly created non-superadmin staff users before first) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 367.589999999999975 Td
+(login.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 347.589999999999975 Td
+(1.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 347.589999999999975 Td
+(Applicant registration creates a Users record with role APPLICANT and emailVerified = false.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 331.589999999999975 Td
+(2.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 331.589999999999975 Td
+(Superadmin-created staff accounts are also created with emailVerified = false.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 315.5900000000000318 Td
+(3.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 315.5900000000000318 Td
+(A verification code is generated, stored in EmailVerificationToken, and sent by email.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 299.5900000000000318 Td
+(4.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 299.5900000000000318 Td
+(The user enters email and code on /verify-email.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 283.5900000000000318 Td
+(5.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 283.5900000000000318 Td
+(On successful verification, emailVerified becomes true and the code is marked used.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 267.5900000000000318 Td
+(6.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 267.5900000000000318 Td
+(User then logs in and receives a JWT token.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 247.5900000000000318 Td
+(Current continuity rule: the codebase presently allows SUPER_ADMIN login even if emailVerified is false, so) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 233.5900000000000318 Td
+(legacy superadmin access is not lost.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 213.5900000000000318 Td
+(8. Security Model) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 195.5900000000000318 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 195.5900000000000318 Td
+(Spring Security is configured as stateless using JWTs.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 179.5900000000000318 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 179.5900000000000318 Td
+(Method-level security is enabled with @PreAuthorize.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 163.5900000000000318 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 163.5900000000000318 Td
+(Public endpoints include /auth/**, GET /jobs/**, GET /departments/allDepartments, and Swagger docs.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 147.5900000000000318 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 147.5900000000000318 Td
+(All other endpoints require authentication and role authorization.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 131.5900000000000318 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 131.5900000000000318 Td
+(Frontend route guards separate public, applicant, and admin areas.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 111.5900000000000318 Td
+(9. Core Functional Modules) Tj
+ET
+0. G
+0.200025 w
+0. G
+0.200025 w
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+48. 93.5900000000000318 95. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+53. 80.9400000000000546 Td
+(Module) Tj
+ET
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+143. 93.5900000000000318 220. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+148. 80.9400000000000546 Td
+(Purpose) Tj
+ET
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+363. 93.5900000000000318 150. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+368. 80.9400000000000546 Td
+(Primary Actors) Tj
+ET
+0. G
+0.200025 w
+1. g
+0.82 G
+0.5 w
+1. g
+48. 73.2400000000000091 95. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 60.5900000000000318 Td
+(Authentication) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 73.2400000000000091 220. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 60.5900000000000318 Td
+(Registration, login, JWT issuance, email verification,) Tj
+T* (resend verification code.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 73.2400000000000091 150. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 60.5900000000000318 Td
+(All users) Tj
+ET
+0. G
+0.200025 w
+0. G
+0.200025 w
+0.78 G
+0. w
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+48. 24. Td
+(Laikipia County Job Recruitment System Documentation) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+487.2799999999999727 24. Td
+(Page 2 of 6) Tj
+ET
+endstream
+endobj
+7 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 8 0 R
+>>
+endobj
+8 0 obj
+<<
+/Length 12151
+>>
+stream
+0. w
+0.78 G
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+48. 801.8899999999999864 95. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+53. 789.2400000000000091 Td
+(Module) Tj
+ET
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+143. 801.8899999999999864 220. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+148. 789.2400000000000091 Td
+(Purpose) Tj
+ET
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+363. 801.8899999999999864 150. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+368. 789.2400000000000091 Td
+(Primary Actors) Tj
+ET
+0. G
+0.200025 w
+1. g
+0.82 G
+0.5 w
+1. g
+48. 781.5399999999999636 95. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 768.8899999999999864 Td
+(Applicant Profile) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 781.5399999999999636 220. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 768.8899999999999864 Td
+(Capture personal and qualification details required) Tj
+T* (for applications.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 781.5399999999999636 150. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 768.8899999999999864 Td
+(Applicant) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 750.8400000000000318 95. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 738.1899999999999409 Td
+(Vacancy) Tj
+T* (Management) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 750.8400000000000318 220. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 738.1899999999999409 Td
+(Create, open, close, and delete vacancies.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 750.8400000000000318 150. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 738.1899999999999409 Td
+(CPSB Admin, Super Admin) Tj
+T* (\(view/manage access\)) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 720.1399999999999864 95. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 707.4900000000000091 Td
+(Applications) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 720.1399999999999864 220. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 707.4900000000000091 Td
+(Submit, list, and update job applications.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 720.1399999999999864 150. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 707.4900000000000091 Td
+(Applicant, HR Officer, CPSB) Tj
+T* (Admin, Super Admin \(view\)) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 689.4400000000000546 95. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 676.7899999999999636 Td
+(Documents) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 689.4400000000000546 220. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 676.7899999999999636 Td
+(Upload and review supporting files attached to) Tj
+T* (applications.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 689.4400000000000546 150. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 676.7899999999999636 Td
+(Applicant, HR Officer, CPSB) Tj
+T* (Admin, Super Admin \(view\)) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 658.7400000000000091 95. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 646.0900000000000318 Td
+(Recruitment) Tj
+T* (Requests) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 658.7400000000000091 220. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 646.0900000000000318 Td
+(Initiate and approve staffing demand.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 658.7400000000000091 150. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 646.0900000000000318 Td
+(Dept Head, CPSB Admin, Super) Tj
+T* (Admin \(view\)) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 628.0399999999999636 95. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 615.3899999999999864 Td
+(Shortlisting) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 628.0399999999999636 220. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 615.3899999999999864 Td
+(Move candidates into shortlist stage and produce) Tj
+T* (shortlist records.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 628.0399999999999636 150. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 615.3899999999999864 Td
+(HR Officer, CPSB Admin) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 597.3400000000000318 95. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 584.6900000000000546 Td
+(Interviews) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 597.3400000000000318 220. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 584.6900000000000546 Td
+(Schedule interviews, assign panels, track interview) Tj
+T* (status.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 597.3400000000000318 150. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 584.6900000000000546 Td
+(HR Officer, Panel Member, CPSB) Tj
+T* (Admin, Super Admin \(view\)) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 566.6400000000001 95. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 553.9900000000000091 Td
+(Interview Scoring) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 566.6400000000001 220. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 553.9900000000000091 Td
+(Submit and review interview score records.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 566.6400000000001 150. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 553.9900000000000091 Td
+(Panel Member and relevant staff) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 546.2899999999999636 95. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 533.6400000000001 Td
+(Final Selection) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 546.2899999999999636 220. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 533.6400000000001 Td
+(Record selected candidates and appointment) Tj
+T* (progression.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 546.2899999999999636 150. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 533.6400000000001 Td
+(CPSB Admin, HR Officer \(view\),) Tj
+T* (Super Admin \(view\)) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 515.5900000000000318 95. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 502.9400000000000546 Td
+(Notifications) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 515.5900000000000318 220. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 502.9400000000000546 Td
+(In-app communication of workflow events.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 515.5900000000000318 150. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 502.9400000000000546 Td
+(All users) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 495.2400000000000091 95. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 482.5900000000000318 Td
+(Email Messaging) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+143. 495.2400000000000091 220. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+148. 482.5900000000000318 Td
+(Verification and applicant outcome messages.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+363. 495.2400000000000091 150. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+368. 482.5900000000000318 Td
+(Applicants and staff users) Tj
+ET
+0. G
+0.200025 w
+0.78 G
+0. w
+0. G
+0.200025 w
+0. G
+0.200025 w
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 460.8899999999999864 Td
+(10. End-to-End Recruitment Workflow) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 442.8899999999999864 Td
+(1.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 442.8899999999999864 Td
+(Department Head submits a recruitment request.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 426.8899999999999864 Td
+(2.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 426.8899999999999864 Td
+(CPSB Admin reviews and approves or rejects the request.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 410.8899999999999864 Td
+(3.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 410.8899999999999864 Td
+(CPSB Admin creates a vacancy from approved staffing demand.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 394.8899999999999864 Td
+(4.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 394.8899999999999864 Td
+(Applicant registers, verifies email, and logs in.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 378.8899999999999864 Td
+(5.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 378.8899999999999864 Td
+(Applicant completes profile and applies for an open vacancy.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 362.8899999999999864 Td
+(6.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 362.8899999999999864 Td
+(Applicant uploads supporting documents if required.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 346.8899999999999864 Td
+(7.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 346.8899999999999864 Td
+(HR Officer or CPSB Admin reviews applications.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 330.8899999999999864 Td
+(8.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 330.8899999999999864 Td
+(Rejected applications trigger unsuccessful notification and email.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 314.8899999999999864 Td
+(9.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 314.8899999999999864 Td
+(Eligible candidates are shortlisted and receive shortlist communication.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 298.8899999999999864 Td
+(10.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 298.8899999999999864 Td
+(HR Officer schedules interviews and assigns panel members.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 282.8899999999999864 Td
+(11.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 282.8899999999999864 Td
+(Panel members score candidates.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 266.8899999999999864 Td
+(12.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 266.8899999999999864 Td
+(CPSB Admin records final selection and appointment progression.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 250.8899999999999864 Td
+(13.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 250.8899999999999864 Td
+(Selected applicants receive acceptance notification and email.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 230.8899999999999864 Td
+(11. Applicant-Side Features) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 212.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 212.8899999999999864 Td
+(Public vacancy browsing on / and /vacancies.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 196.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 196.8899999999999864 Td
+(Account creation on /register and verification on /verify-email.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 180.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 180.8899999999999864 Td
+(Applicant dashboard at /dashboard.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 164.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 164.8899999999999864 Td
+(Profile management via /profile.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 148.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 148.8899999999999864 Td
+(Document upload and management via /documents.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 132.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 132.8899999999999864 Td
+(Application history via /applications.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 116.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 116.8899999999999864 Td
+(Personal notifications via /notifications.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 96.8899999999999864 Td
+(12. Staff/Admin-Side Features) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 78.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 78.8899999999999864 Td
+(Admin dashboard at /admin with role-filtered navigation.) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+48. 24. Td
+(Laikipia County Job Recruitment System Documentation) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+487.2799999999999727 24. Td
+(Page 3 of 6) Tj
+ET
+endstream
+endobj
+9 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 10 0 R
+>>
+endobj
+10 0 obj
+<<
+/Length 12539
+>>
+stream
+0.200025 w
+0. G
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 785.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 785.8899999999999864 Td
+(User management for superadmin via /admin/users.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 769.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 769.8899999999999864 Td
+(Department management via /admin/departments.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 753.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 753.8899999999999864 Td
+(Recruitment request handling via /admin/recruitment.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 737.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 737.8899999999999864 Td
+(Vacancy management via /admin/vacancies.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 721.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 721.8899999999999864 Td
+(Application reporting via /admin/applications.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 705.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 705.8899999999999864 Td
+(Shortlist reporting and operations via /admin/shortlists.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 689.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 689.8899999999999864 Td
+(Interview scheduling and reporting via /admin/interviews.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 673.8899999999999864 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 673.8899999999999864 Td
+(Final selection reporting and operations via /admin/selections.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 653.8899999999999864 Td
+(13. Data Model Overview) Tj
+ET
+0. G
+0.200025 w
+0. G
+0.200025 w
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+48. 635.8899999999999864 98. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+53. 623.2400000000000091 Td
+(Entity) Tj
+ET
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+146. 635.8899999999999864 180. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+151. 623.2400000000000091 Td
+(Purpose) Tj
+ET
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+326. 635.8899999999999864 190. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+331. 623.2400000000000091 Td
+(Key Relationships) Tj
+ET
+0. G
+0.200025 w
+1. g
+0.82 G
+0.5 w
+1. g
+48. 615.5399999999999636 98. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 602.8899999999999864 Td
+(Users) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 615.5399999999999636 180. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 602.8899999999999864 Td
+(Authentication identity, role, email) Tj
+T* (verification state.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 615.5399999999999636 190. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 602.8899999999999864 Td
+(Referenced by applicant profiles, creators,) Tj
+T* (approvers, notifications, and verification) Tj
+T* (tokens.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 574.4900000000000091 98. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 561.8400000000000318 Td
+(Applicant) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 574.4900000000000091 180. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 561.8400000000000318 Td
+(Extended applicant profile including) Tj
+T* (national ID, education, county, and) Tj
+T* (experience.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 574.4900000000000091 190. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 561.8400000000000318 Td
+(One-to-one with Users.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 533.4400000000000546 98. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 520.7899999999999636 Td
+(Departments) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 533.4400000000000546 180. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 520.7899999999999636 Td
+(Organizational department master record.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 533.4400000000000546 190. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 520.7899999999999636 Td
+(Linked to recruitment requests and) Tj
+T* (vacancies.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 502.7400000000000091 98. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 490.0900000000000318 Td
+(RecruitmentRequest) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 502.7400000000000091 180. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 490.0900000000000318 Td
+(Formal staffing demand request.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 502.7400000000000091 190. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 490.0900000000000318 Td
+(Belongs to a department and requesting) Tj
+T* (user.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 472.0400000000000205 98. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 459.3900000000000432 Td
+(JobVacancy) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 472.0400000000000205 180. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 459.3900000000000432 Td
+(Published job opening.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 472.0400000000000205 190. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 459.3900000000000432 Td
+(Linked to department, creator, and optionally) Tj
+T* (a recruitment request.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 441.3400000000000318 98. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 428.6900000000000546 Td
+(Applications) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 441.3400000000000318 180. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 428.6900000000000546 Td
+(Applicant submission for a vacancy.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 441.3400000000000318 190. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 428.6900000000000546 Td
+(Belongs to one applicant and one vacancy.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 420.9900000000000091 98. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 408.3400000000000318 Td
+(ApplicationDocument) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 420.9900000000000091 180. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 408.3400000000000318 Td
+(Uploaded file attached to an application.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 420.9900000000000091 190. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 408.3400000000000318 Td
+(Belongs to an application.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 400.6399999999999864 98. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 387.9900000000000091 Td
+(Shortlist) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 400.6399999999999864 180. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 387.9900000000000091 Td
+(Shortlisting decision record.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 400.6399999999999864 190. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 387.9900000000000091 Td
+(One application per shortlist record.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 380.2899999999999636 98. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 367.6399999999999864 Td
+(Interview) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 380.2899999999999636 180. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 367.6399999999999864 Td
+(Scheduled interview.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 380.2899999999999636 190. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 367.6399999999999864 Td
+(One-to-one with application.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 359.9399999999999409 98. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 347.2899999999999636 Td
+(InterviewPanel) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 359.9399999999999409 180. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 347.2899999999999636 Td
+(Assignment of panel members to) Tj
+T* (interviews.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 359.9399999999999409 190. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 347.2899999999999636 Td
+(Links interview and staff users.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 329.2399999999998954 98. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 316.5899999999999181 Td
+(InterviewScore) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 329.2399999999998954 180. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 316.5899999999999181 Td
+(Panel evaluation record.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 329.2399999999998954 190. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 316.5899999999999181 Td
+(Linked to interview and scoring member.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 308.8899999999998727 98. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 296.2399999999998954 Td
+(FinalSelection) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 308.8899999999998727 180. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 296.2399999999998954 Td
+(Final candidate selection record.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 308.8899999999998727 190. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 296.2399999999998954 Td
+(One-to-one with application.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 288.5399999999998499 98. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 275.8899999999998727 Td
+(Notification) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 288.5399999999998499 180. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 275.8899999999998727 Td
+(In-app user notification.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 288.5399999999998499 190. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 275.8899999999998727 Td
+(Belongs to one user.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 268.1899999999998272 98. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 255.5399999999998499 Td
+(EmailVerificationToke) Tj
+T* (n) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+146. 268.1899999999998272 180. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+151. 255.5399999999998499 Td
+(One-time email verification code, expiry,) Tj
+T* (and usage record.) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+326. 268.1899999999998272 190. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+331. 255.5399999999998499 Td
+(One-to-one with user.) Tj
+ET
+0. G
+0.200025 w
+0.78 G
+0. w
+0. G
+0.200025 w
+0. G
+0.200025 w
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 223.4899999999997817 Td
+(14. Important Domain States) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 205.4899999999997817 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 205.4899999999997817 Td
+(Roles: SUPER_ADMIN, CPSB_ADMIN, DEPT_HEAD, HR_OFFICER, PANEL_MEMBER, APPLICANT.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 189.4899999999997817 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 189.4899999999997817 Td
+(Recruitment request status: PENDING, APPROVED, REJECTED.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 173.4899999999997817 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 173.4899999999997817 Td
+(Vacancy status: OPEN, CLOSED, FILLED.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 157.4899999999997817 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 157.4899999999997817 Td
+(Application state: SUBMITTED, UNDER_REVIEW, REJECTED, SHORTLISTED, INTERVIEW,) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 143.4899999999997817 Td
+(SELECTED.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 127.4899999999997817 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 127.4899999999997817 Td
+(Interview status: SCHEDULED, COMPLETED, CANCELLED.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 111.4899999999997817 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 111.4899999999997817 Td
+(Appointment status: PENDING_APPOINTMENT, APPOINTED, DECLINED.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 95.4899999999997817 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 95.4899999999997817 Td
+(Supported document types: CV, DEGREE, KCSE, ID_COPY, CERTIFICATE, DRIVING_LICENSE.) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+48. 24. Td
+(Laikipia County Job Recruitment System Documentation) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+487.2799999999999727 24. Td
+(Page 4 of 6) Tj
+ET
+endstream
+endobj
+11 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 12 0 R
+>>
+endobj
+12 0 obj
+<<
+/Length 10220
+>>
+stream
+0.200025 w
+0. G
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 785.8899999999999864 Td
+(15. Backend API Summary) Tj
+ET
+0. G
+0.200025 w
+0. G
+0.200025 w
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+48. 767.8899999999999864 90. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+53. 755.2400000000000091 Td
+(Area) Tj
+ET
+0.17 0.29 0.46 rg
+0.82 G
+0.5 w
+0.17 0.29 0.46 rg
+138. 767.8899999999999864 370. -20.3500000000000014 re
+B
+BT
+/F2 9 Tf
+10.3499999999999996 TL
+1. g
+143. 755.2400000000000091 Td
+(Representative Endpoints) Tj
+ET
+0. G
+0.200025 w
+1. g
+0.82 G
+0.5 w
+1. g
+48. 747.5399999999999636 90. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 734.8899999999999864 Td
+(Authentication) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 747.5399999999999636 370. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 734.8899999999999864 Td
+(POST /auth/register, POST /auth/login, POST /auth/verify-email, POST) Tj
+T* (/auth/resend-verification-code) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 716.8400000000000318 90. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 704.1899999999999409 Td
+(Applicant) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 716.8400000000000318 370. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 704.1899999999999409 Td
+(POST/PUT/GET /applicant/profile) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 696.4900000000000091 90. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 683.8399999999999181 Td
+(Jobs) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 696.4900000000000091 370. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 683.8399999999999181 Td
+(GET /jobs/allVacancies, GET /jobs/{id}, POST /jobs, PUT /jobs/{id}/open, PUT) Tj
+T* (/jobs/{id}/close, DELETE /jobs/{id}) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 665.7899999999999636 90. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 653.1399999999999864 Td
+(Departments) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 665.7899999999999636 370. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 653.1399999999999864 Td
+(GET /departments/allDepartments, POST /departments/create, PATCH /departments/{id},) Tj
+T* (DELETE /departments/{id}) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 635.0900000000000318 90. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 622.4400000000000546 Td
+(Applications) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 635.0900000000000318 370. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 622.4400000000000546 Td
+(POST /applications/apply, GET /applications/my, GET /applications/vacancy/{vacancyId},) Tj
+T* (GET /applications/all, PUT /applications/{id}/status) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 604.3899999999999864 90. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 591.7400000000000091 Td
+(Documents) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 604.3899999999999864 370. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 591.7400000000000091 Td
+(POST /documents/upload, GET /documents/application/{applicationId}, GET) Tj
+T* (/documents/my/{applicationId}) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 573.6900000000000546 90. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 561.0399999999999636 Td
+(Notifications) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 573.6900000000000546 370. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 561.0399999999999636 Td
+(GET /notifications/my, GET /notifications/unread, PUT /notifications/{id}/read) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 553.3399999999999181 90. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 540.6900000000000546 Td
+(Recruitment) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 553.3399999999999181 370. -41.0499999999999972 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 540.6900000000000546 Td
+(POST /recruitment/submit, PUT /recruitment/{id}/approve, PUT /recruitment/{id}/reject,) Tj
+T* (GET /recruitment/pending, GET /recruitment/all, GET) Tj
+T* (/recruitment/department/{departmentId}) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 512.2899999999999636 90. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 499.6399999999999864 Td
+(Shortlist) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 512.2899999999999636 370. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 499.6399999999999864 Td
+(POST /shortlist, GET /shortlist/vacancy/{vacancyId}) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 491.9399999999999409 90. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 479.2899999999999636 Td
+(Interviews) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 491.9399999999999409 370. -30.6999999999999993 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 479.2899999999999636 Td
+(POST /interviews/schedule, POST /interviews/panel, GET /interviews/my, GET) Tj
+T* (/interviews/status/{status}, PUT /interviews/{id}/complete) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 461.2399999999999523 90. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 448.589999999999975 Td
+(Interview Scores) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 461.2399999999999523 370. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 448.589999999999975 Td
+(POST /scores, GET /scores/interview/{id}, GET /scores/interview/{id}/average) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 440.8899999999999295 90. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 428.2399999999999523 Td
+(Selections) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 440.8899999999999295 370. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 428.2399999999999523 Td
+(POST /selections, PUT /selections/{id}/appoint, GET /selections/vacancy/{vacancyId}) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+48. 420.5399999999999068 90. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+53. 407.8899999999999295 Td
+(Admin) Tj
+ET
+1. g
+0.82 G
+0.5 w
+1. g
+138. 420.5399999999999068 370. -20.3500000000000014 re
+B
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.314 g
+143. 407.8899999999999295 Td
+(POST /admin/users/create) Tj
+ET
+0. G
+0.200025 w
+0.78 G
+0. w
+0. G
+0.200025 w
+0. G
+0.200025 w
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 386.189999999999884 Td
+(16. Notifications and Email Behavior) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 368.189999999999884 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 368.189999999999884 Td
+(In-app notifications are used for application receipt, recruitment request decisions, shortlist events,) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 354.189999999999884 Td
+(interview invitations, and final selection outcomes.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 338.189999999999884 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 338.189999999999884 Td
+(Email is used for verification codes, shortlist communication, acceptance communication, and) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 324.1899999999999409 Td
+(unsuccessful application communication.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 308.1899999999999409 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 308.1899999999999409 Td
+(Verification codes are single-use and time-bound.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 288.1899999999999409 Td
+(17. Configuration Overview) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 270.1899999999999409 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 270.1899999999999409 Td
+(Datasource configured for MySQL with Hibernate schema update enabled.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 254.1899999999999409 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 254.1899999999999409 Td
+(JWT secret and expiration configured in application.properties.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 238.1899999999999409 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 238.1899999999999409 Td
+(Upload directory configured as ./uploads/documents.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 222.1899999999999409 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 222.1899999999999409 Td
+(SMTP mail settings configured for email sending.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 206.1899999999999409 Td
+(•) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+62. 206.1899999999999409 Td
+(Frontend base URL configured for auth-related flows.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 186.1899999999999409 Td
+(Security recommendation: secrets and passwords currently appear in source configuration and should be) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 172.1899999999999409 Td
+(externalized to environment variables or a secure secrets store.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 152.1899999999999409 Td
+(18. Operational Recommendations) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 134.1899999999999409 Td
+(1.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 134.1899999999999409 Td
+(Externalize secrets from application.properties.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 118.1899999999999409 Td
+(2.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 118.1899999999999409 Td
+(Introduce formal DB migrations such as Flyway or Liquibase.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 102.1899999999999409 Td
+(3.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 102.1899999999999409 Td
+(Add support tooling for resending verification codes from admin user management.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 86.1899999999999409 Td
+(4.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 86.1899999999999409 Td
+(Consider persistent auth strategy if login state should survive page refresh.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 70.1899999999999409 Td
+(5.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 70.1899999999999409 Td
+(Reduce frontend bundle size using route-level code splitting.) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+48. 24. Td
+(Laikipia County Job Recruitment System Documentation) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+487.2799999999999727 24. Td
+(Page 5 of 6) Tj
+ET
+endstream
+endobj
+13 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 14 0 R
+>>
+endobj
+14 0 obj
+<<
+/Length 1253
+>>
+stream
+0.200025 w
+0. G
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 785.8899999999999864 Td
+(6.) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+66. 785.8899999999999864 Td
+(Add automated tests around verification, login, and recruitment state transitions.) Tj
+ET
+BT
+/F2 14 Tf
+16.0999999999999979 TL
+0. g
+48. 765.8899999999999864 Td
+(19. Conclusion) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 747.8899999999999864 Td
+(The project implements a complete county recruitment workflow with clear separation between applicant) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 733.8899999999999864 Td
+(operations, internal recruitment operations, and system administration. The current architecture is suitable) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 719.8899999999999864 Td
+(for structured public-sector recruitment processes and can be strengthened further through improved secret) Tj
+ET
+BT
+/F1 10.5 Tf
+12.0749999999999993 TL
+0. g
+48. 705.8899999999999864 Td
+(management, formal migrations, and broader automated testing.) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+48. 24. Td
+(Laikipia County Job Recruitment System Documentation) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.471 g
+487.2799999999999727 24. Td
+(Page 6 of 6) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R 5 0 R 7 0 R 9 0 R 11 0 R 13 0 R ]
+/Count 6
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+19 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+20 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+21 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+22 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+23 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+24 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+25 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+26 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+27 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+28 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 15 0 R
+/F2 16 0 R
+/F3 17 0 R
+/F4 18 0 R
+/F5 19 0 R
+/F6 20 0 R
+/F7 21 0 R
+/F8 22 0 R
+/F9 23 0 R
+/F10 24 0 R
+/F11 25 0 R
+/F12 26 0 R
+/F13 27 0 R
+/F14 28 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+29 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/CreationDate (D:20260622134310+03'00')
+>>
+endobj
+30 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 31
+0000000000 65535 f 
+0000057068 00000 n 
+0000058922 00000 n 
+0000000015 00000 n 
+0000000152 00000 n 
+0000008827 00000 n 
+0000008964 00000 n 
+0000020138 00000 n 
+0000020275 00000 n 
+0000032479 00000 n 
+0000032617 00000 n 
+0000045210 00000 n 
+0000045349 00000 n 
+0000055623 00000 n 
+0000055762 00000 n 
+0000057157 00000 n 
+0000057283 00000 n 
+0000057414 00000 n 
+0000057548 00000 n 
+0000057686 00000 n 
+0000057810 00000 n 
+0000057939 00000 n 
+0000058071 00000 n 
+0000058207 00000 n 
+0000058335 00000 n 
+0000058462 00000 n 
+0000058591 00000 n 
+0000058724 00000 n 
+0000058826 00000 n 
+0000059175 00000 n 
+0000059261 00000 n 
+trailer
+<<
+/Size 31
+/Root 30 0 R
+/Info 29 0 R
+/ID [ <CE45EEF08B751DB278BC1E85384D99B6> <CE45EEF08B751DB278BC1E85384D99B6> ]
+>>
+startxref
+59365
+%%EOF
