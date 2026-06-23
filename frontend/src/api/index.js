@@ -100,4 +100,11 @@ export const selectionsApi = {
 
 export const adminApi = {
   createUser: (data) => api.post("/admin/users/create", data),
+  getUsers: (roles = []) =>
+    api.get("/admin/users", {
+      params: roles.length ? { roles } : {},
+      paramsSerializer: {
+        indexes: null,
+      },
+    }),
 };

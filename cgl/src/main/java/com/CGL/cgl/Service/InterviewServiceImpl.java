@@ -4,228 +4,169 @@ import com.CGL.cgl.DTO.InterviewRequest;
 import com.CGL.cgl.DTO.PanelMemberRequest;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 public class InterviewServiceImpl implements InterviewService {
-
 
     private final InterviewRepo interviewRepo;
     private final InterviewPanelRepo interviewPanelRepo;
     private final ApplicationsRepo applicationsRepo;
     private final UserRepo usersRepo;
     private final NotificationService notificationService;
-
-
+    private final EmailService emailService;
 
     public InterviewServiceImpl(
-            InterviewRepo interviewRepo,
-            InterviewPanelRepo interviewPanelRepo,
-            ApplicationsRepo applicationsRepo,
-            UserRepo usersRepo,
-            NotificationService notificationService
+        InterviewRepo interviewRepo,
+        InterviewPanelRepo interviewPanelRepo,
+        ApplicationsRepo applicationsRepo,
+        UserRepo usersRepo,
+        NotificationService notificationService,
+        EmailService emailService
     ) {
         this.interviewRepo = interviewRepo;
         this.interviewPanelRepo = interviewPanelRepo;
         this.applicationsRepo = applicationsRepo;
         this.usersRepo = usersRepo;
         this.notificationService = notificationService;
+        this.emailService = emailService;
     }
-
 
     @Override
     @Transactional
-    public Interview scheduleInterview(
-            InterviewRequest request,
-            String email
-    ) {
-
-
+    public Interview scheduleInterview(InterviewRequest request, String email) {
         // 1. Get user from token
-        Users user = usersRepo.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found")
-                );
-
+        Users user = usersRepo
+            .findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
         // 2. Fetch application
-        Applications application =
-                applicationsRepo.findById(request.getApplicationId())
-                        .orElseThrow(() ->
-                                new RuntimeException("Application not found")
-                        );
-
+        Applications application = applicationsRepo
+            .findById(request.getApplicationId())
+            .orElseThrow(() -> new RuntimeException("Application not found"));
 
         // 3. Application must be SHORTLISTED
-        if (application.getApplicationStatus()
-                != ApplicationState.SHORTLISTED) {
-
+        if (
+            application.getApplicationStatus() != ApplicationState.SHORTLISTED
+        ) {
             throw new RuntimeException(
-                    "Only shortlisted applications can get interviews"
+                "Only shortlisted applications can get interviews"
             );
         }
-
 
         // 4. Check interview already exists
         if (interviewRepo.findByApplication(application).isPresent()) {
-
-            throw new RuntimeException(
-                    "Interview already scheduled"
-            );
+            throw new RuntimeException("Interview already scheduled");
         }
 
-
         // 5. Build interview
-        Interview interview =
-                Interview.builder()
-                        .application(application)
-                        .interviewDate(request.getInterviewDate())
-                        .interviewTime(request.getInterviewTime())
-                        .venue(request.getVenue())
-                        .status(InterviewStatus.SCHEDULED)
-                        .createdBy(user)
-                        .build();
+        Interview interview = Interview.builder()
+            .application(application)
+            .interviewDate(request.getInterviewDate())
+            .interviewTime(request.getInterviewTime())
+            .venue(request.getVenue())
+            .status(InterviewStatus.SCHEDULED)
+            .createdBy(user)
+            .build();
 
-
-        application.setApplicationStatus(
-                ApplicationState.INTERVIEW
-        );
+        application.setApplicationStatus(ApplicationState.INTERVIEW);
 
         applicationsRepo.save(application);
-
 
         Interview saved = interviewRepo.save(interview);
 
         Users applicantUser = application.getApplicant().getUser();
+        String interviewMessage =
+            "You have an interview scheduled on " +
+            request.getInterviewDate() +
+            " at " +
+            request.getInterviewTime() +
+            ", venue: " +
+            request.getVenue() +
+            ".";
+
         notificationService.createNotification(
-                applicantUser,
-                "Interview Invitation",
-                "You have an interview scheduled on " + request.getInterviewDate() +
-                        " at " + request.getInterviewTime() + ", venue: " + request.getVenue() + "."
+            applicantUser,
+            "Interview Invitation",
+            interviewMessage
+        );
+
+        emailService.sendEmail(
+            applicantUser.getEmail(),
+            "Interview invitation",
+            "Hello " +
+                applicantUser.getFName() +
+                ",\n\n" +
+                interviewMessage +
+                "\n\nPlease log in to your portal for more details."
         );
 
         return saved;
-        }
-
-
+    }
 
     @Override
     @Transactional
-    public void addPanelMember(
-            PanelMemberRequest request,
-            String email
-    ) {
+    public void addPanelMember(PanelMemberRequest request, String email) {
+        Interview interview = interviewRepo
+            .findById(request.getInterviewId())
+            .orElseThrow(() -> new RuntimeException("Interview not found"));
 
-
-        Interview interview =
-                interviewRepo.findById(request.getInterviewId())
-                        .orElseThrow(() ->
-                                new RuntimeException("Interview not found")
-                        );
-
-
-        Users panelMember =
-                usersRepo.findById(request.getPanelMemberId())
-                        .orElseThrow(() ->
-                                new RuntimeException("Panel member not found")
-                        );
-
+        Users panelMember = usersRepo
+            .findById(request.getPanelMemberId())
+            .orElseThrow(() -> new RuntimeException("Panel member not found"));
 
         // check role
-        if(panelMember.getRole()
-                != Role.PANEL_MEMBER){
-
-            throw new RuntimeException(
-                    "User is not a panel member"
-            );
+        if (panelMember.getRole() != Role.PANEL_MEMBER) {
+            throw new RuntimeException("User is not a panel member");
         }
-
 
         // prevent duplicate
-        if(interviewPanelRepo
-                .existsByInterviewAndPanelMember(
-                        interview,
-                        panelMember
-                )){
-
-            throw new RuntimeException(
-                    "Panel member already assigned"
-            );
+        if (
+            interviewPanelRepo.existsByInterviewAndPanelMember(
+                interview,
+                panelMember
+            )
+        ) {
+            throw new RuntimeException("Panel member already assigned");
         }
 
-
-
-        InterviewPanel panel =
-                InterviewPanel.builder()
-                        .interview(interview)
-                        .panelMember(panelMember)
-                        .build();
-
+        InterviewPanel panel = InterviewPanel.builder()
+            .interview(interview)
+            .panelMember(panelMember)
+            .build();
 
         interviewPanelRepo.save(panel);
-
     }
 
-
-
     @Override
-    public List<Interview> getInterviewsByStatus(
-            InterviewStatus status
-    ) {
-
+    public List<Interview> getInterviewsByStatus(InterviewStatus status) {
         return interviewRepo.findByStatus(status);
-
     }
-
 
     @Override
-    public List<Interview> getMyInterviews(
-            String email
-    ) {
+    public List<Interview> getMyInterviews(String email) {
+        Users user = usersRepo
+            .findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Users user =
-                usersRepo.findByEmail(email)
-                        .orElseThrow(() ->
-                                new RuntimeException("User not found")
-                        );
+        List<InterviewPanel> panels = interviewPanelRepo.findByPanelMember(
+            user
+        );
 
-
-        List<InterviewPanel> panels =
-                interviewPanelRepo.findByPanelMember(user);
-
-
-        return panels.stream()
-                .map(InterviewPanel::getInterview)
-                .toList();
-
+        return panels.stream().map(InterviewPanel::getInterview).toList();
     }
-
 
     @Override
     @Transactional
-    public Interview completeInterview(
-            Long interviewId,
-            String email
-    ) {
+    public Interview completeInterview(Long interviewId, String email) {
+        Interview interview = interviewRepo
+            .findById(interviewId)
+            .orElseThrow(() -> new RuntimeException("Interview not found"));
 
-
-        Interview interview =
-                interviewRepo.findById(interviewId)
-                        .orElseThrow(() ->
-                                new RuntimeException("Interview not found")
-                        );
-
-
-        interview.setStatus(
-                InterviewStatus.COMPLETED
-        );
-
+        interview.setStatus(InterviewStatus.COMPLETED);
 
         return interviewRepo.save(interview);
-
     }
-
 }

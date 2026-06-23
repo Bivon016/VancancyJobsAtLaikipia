@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Building2, Calendar, MapPin } from "lucide-react";
 import Button from "../ui/Button";
 import Card from "../ui/Card";
-import { formatDate } from "../../utils/constants";
+import { formatDate, getVacancyTypeLabel } from "../../utils/constants";
 
 export default function VacancyCard({ vacancy }) {
   return (
@@ -34,6 +34,9 @@ export default function VacancyCard({ vacancy }) {
         {vacancy.salaryScale && (
           <p className="text-gray-600">Salary Scale: {vacancy.salaryScale}</p>
         )}
+        <p className="text-gray-600">
+          Vacancy Type: {getVacancyTypeLabel(vacancy.vacancyType)}
+        </p>
         {vacancy.createdAt && (
           <p className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-primary" />

@@ -1,8 +1,8 @@
 package com.CGL.cgl.Controller;
 
 import com.CGL.cgl.DTO.FinalSelectionRequest;
+import com.CGL.cgl.DTO.FinalSelectionResponseDTO;
 import com.CGL.cgl.Model.AppointmentStatus;
-import com.CGL.cgl.Model.FinalSelection;
 import com.CGL.cgl.Service.FinalSelectionService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -24,24 +24,22 @@ public class FinalSelectionController {
 
     @PostMapping
     @PreAuthorize("hasRole('CPSB_ADMIN')")
-    public ResponseEntity<FinalSelection> selectCandidate(
+    public ResponseEntity<FinalSelectionResponseDTO> selectCandidate(
         @RequestBody FinalSelectionRequest request
     ) {
         String email = SecurityContextHolder.getContext()
             .getAuthentication()
             .getName();
 
-        FinalSelection selection = finalSelectionService.selectCandidate(
-            request,
-            email
-        );
+        FinalSelectionResponseDTO selection =
+            finalSelectionService.selectCandidate(request, email);
 
         return ResponseEntity.ok(selection);
     }
 
     @PutMapping("/{id}/appoint")
     @PreAuthorize("hasRole('CPSB_ADMIN')")
-    public ResponseEntity<FinalSelection> updateAppointmentStatus(
+    public ResponseEntity<FinalSelectionResponseDTO> updateAppointmentStatus(
         @PathVariable Long id,
         @RequestParam AppointmentStatus status
     ) {
@@ -49,7 +47,7 @@ public class FinalSelectionController {
             .getAuthentication()
             .getName();
 
-        FinalSelection selection =
+        FinalSelectionResponseDTO selection =
             finalSelectionService.updateAppointmentStatus(id, status, email);
 
         return ResponseEntity.ok(selection);
@@ -57,9 +55,9 @@ public class FinalSelectionController {
 
     @GetMapping("/vacancy/{vacancyId}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN','CPSB_ADMIN','HR_OFFICER')")
-    public ResponseEntity<List<FinalSelection>> getSelectionsByVacancy(
-        @PathVariable Long vacancyId
-    ) {
+    public ResponseEntity<
+        List<FinalSelectionResponseDTO>
+    > getSelectionsByVacancy(@PathVariable Long vacancyId) {
         return ResponseEntity.ok(
             finalSelectionService.getSelectionsByVacancy(vacancyId)
         );

@@ -5,7 +5,11 @@ import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import { useAuth } from "../../auth/AuthContext";
 import { applicationsApi, jobsApi, profileApi } from "../../api";
-import { formatDate, isProfileComplete } from "../../utils/constants";
+import {
+  formatDate,
+  getVacancyTypeLabel,
+  isProfileComplete,
+} from "../../utils/constants";
 import { normalizeRole } from "../../utils/roles";
 
 export default function VacancyDetailPage() {
@@ -163,6 +167,12 @@ export default function VacancyDetailPage() {
                 <dt className="text-muted">Salary Scale</dt>
                 <dd className="font-semibold">
                   {vacancy.salaryScale || "As per county scales"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted">Vacancy Type</dt>
+                <dd className="font-semibold">
+                  {getVacancyTypeLabel(vacancy.vacancyType)}
                 </dd>
               </div>
               <div>

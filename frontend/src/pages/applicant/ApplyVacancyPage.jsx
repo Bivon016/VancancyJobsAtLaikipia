@@ -15,7 +15,11 @@ import Button from "../../components/ui/Button";
 import Card, { CardHeader } from "../../components/ui/Card";
 import Input, { Textarea } from "../../components/ui/Input";
 import { applicationsApi, jobsApi, profileApi } from "../../api";
-import { formatDate, isProfileComplete } from "../../utils/constants";
+import {
+  formatDate,
+  getVacancyTypeLabel,
+  isProfileComplete,
+} from "../../utils/constants";
 
 const REQUIRED_DOCUMENTS = [
   "Curriculum Vitae (CV)",
@@ -27,7 +31,8 @@ const REQUIRED_DOCUMENTS = [
 const DECLARATIONS = [
   {
     key: "declareInformationTrue",
-    label: "I confirm that the information I have provided is true and accurate.",
+    label:
+      "I confirm that the information I have provided is true and accurate.",
   },
   {
     key: "declareAvailabilityForVerification",
@@ -36,7 +41,8 @@ const DECLARATIONS = [
   },
   {
     key: "declareNoConflictOfInterest",
-    label: "I confirm that I have no conflict of interest relating to this application.",
+    label:
+      "I confirm that I have no conflict of interest relating to this application.",
   },
   {
     key: "declareNoCriminalConviction",
@@ -295,10 +301,12 @@ export default function ApplyVacancyPage() {
         <div className="mt-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
           <AlertTriangle className="mt-0.5 h-5 w-5 flex-none text-amber-600" />
           <div>
-            <p className="font-semibold text-amber-900">Complete your profile first</p>
+            <p className="font-semibold text-amber-900">
+              Complete your profile first
+            </p>
             <p className="mt-1 text-sm text-amber-800">
-              Your applicant profile must be complete before this application can
-              be submitted.
+              Your applicant profile must be complete before this application
+              can be submitted.
             </p>
             <Link to="/profile" className="mt-2 inline-block">
               <Button variant="accent" size="sm">
@@ -403,7 +411,11 @@ export default function ApplyVacancyPage() {
                 </div>
                 {form.referees.length < 3 && (
                   <div className="mt-4">
-                    <Button type="button" variant="outline" onClick={addReferee}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={addReferee}
+                    >
                       Add Third Referee
                     </Button>
                   </div>
@@ -476,6 +488,10 @@ export default function ApplyVacancyPage() {
                 label="Salary Scale"
                 value={vacancy?.salaryScale || "As per county scales"}
               />
+              <SummaryRow
+                label="Vacancy Type"
+                value={getVacancyTypeLabel(vacancy?.vacancyType)}
+              />
             </div>
           </Card>
 
@@ -544,7 +560,10 @@ export default function ApplyVacancyPage() {
                 "Referee details should be current and reachable.",
                 "Upload supporting documents immediately after submission.",
               ].map((step) => (
-                <li key={step} className="flex gap-3 rounded-xl bg-slate-50/80 px-4 py-3">
+                <li
+                  key={step}
+                  className="flex gap-3 rounded-xl bg-slate-50/80 px-4 py-3"
+                >
                   <BadgeCheck className="mt-0.5 h-4 w-4 flex-none text-emerald-600" />
                   <span>{step}</span>
                 </li>

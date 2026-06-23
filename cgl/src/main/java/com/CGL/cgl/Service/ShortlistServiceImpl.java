@@ -1,11 +1,13 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.ShortlistRequest;
+import com.CGL.cgl.DTO.ShortlistResponseDTO;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ShortlistServiceImpl implements ShortlistService {
@@ -31,7 +33,8 @@ public class ShortlistServiceImpl implements ShortlistService {
     }
 
     @Override
-    public Shortlist shortlistApplicant(
+    @Transactional
+    public ShortlistResponseDTO shortlistApplicant(
         ShortlistRequest request,
         String email
     ) {
@@ -106,11 +109,42 @@ public class ShortlistServiceImpl implements ShortlistService {
                 "\n\nPlease keep checking your portal for the next steps."
         );
 
-        return saved;
+        return toResponse(saved);
     }
 
     @Override
-    public List<Shortlist> getShortlistByVacancy(Long vacancyId) {
-        return shortlistRepo.findByApplication_Vacancy_Id(vacancyId);
+    @Transactional(readOnly = true)
+    public List<ShortlistResponseDTO> getShortlistByVacancy(Long vacancyId) {
+        return shortlistRepo
+            .findByApplication_Vacancy_Id(vacancyId)
+            .stream()
+            .map(this::toResponse)
+            .toList();
+    }
+
+    private ShortlistResponseDTO toResponse(Shortlist shortlist) {
+        Applications application = shortlist.getApplication();
+        Applicant applicant = application.getApplicant();
+        Users user = applicant.getUser();
+        JobVacancy vacancy = application.getVacancy();
+
+        return ShortlistResponseDTO.builder()
+            .id(shortlist.getId())
+            .applicationId(application.getId())
+            .applicantName((user.getFName() + " " + user.getLName()).trim())
+            .applicantEmail(user.getEmail())
+            .applicantNationalId(applicant.getNationalId())
+            .educationalLevel(applicant.getEducationalLevel())
+            .yearsOfExperience(applicant.getYearsOfExperience())
+            .vacancyTitle(vacancy.getTitle())
+            .vacancyType(vacancy.getVacancyType())
+            .departmentName(
+                vacancy.getDepartment() != null
+                    ? vacancy.getDepartment().getDepartmentName()
+                    : null
+            )
+            .shortlistedDate(shortlist.getShortlistedDate())
+            .remarks(shortlist.getRemarks())
+            .build();
     }
 }

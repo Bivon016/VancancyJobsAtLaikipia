@@ -2,19 +2,19 @@ package com.CGL.cgl.DTO;
 
 import com.CGL.cgl.Model.ApplicationStatus;
 import com.CGL.cgl.Model.RecruitmentRequest;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class JobVacancyRequest {
+
     private Long id;
     private RecruitmentRequest recruitmentRequest;
     private ApplicationStatus status;
@@ -25,7 +25,7 @@ public class JobVacancyRequest {
     private String jobDescription;
     private String requirements;
     private String salaryScale;
+    private String vacancyType;
     private Integer positionsAvailable;
     private LocalDate applicationDeadline;
-
 }

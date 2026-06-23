@@ -1,6 +1,7 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.FinalSelectionRequest;
+import com.CGL.cgl.DTO.FinalSelectionResponseDTO;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
 import java.util.List;
@@ -36,7 +37,7 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
 
     @Override
     @Transactional
-    public FinalSelection selectCandidate(
+    public FinalSelectionResponseDTO selectCandidate(
         FinalSelectionRequest request,
         String email
     ) {
@@ -124,12 +125,12 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
             jobVacancyRepo.save(vacancy);
         }
 
-        return saved;
+        return toResponse(saved);
     }
 
     @Override
     @Transactional
-    public FinalSelection updateAppointmentStatus(
+    public FinalSelectionResponseDTO updateAppointmentStatus(
         Long selectionId,
         AppointmentStatus status,
         String email
@@ -150,11 +151,43 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
 
         selection.setAppointmentStatus(status);
 
-        return finalSelectionRepo.save(selection);
+        return toResponse(finalSelectionRepo.save(selection));
     }
 
     @Override
-    public List<FinalSelection> getSelectionsByVacancy(Long vacancyId) {
-        return finalSelectionRepo.findByApplication_Vacancy_Id(vacancyId);
+    @Transactional(readOnly = true)
+    public List<FinalSelectionResponseDTO> getSelectionsByVacancy(
+        Long vacancyId
+    ) {
+        return finalSelectionRepo
+            .findByApplication_Vacancy_Id(vacancyId)
+            .stream()
+            .map(this::toResponse)
+            .toList();
+    }
+
+    private FinalSelectionResponseDTO toResponse(FinalSelection selection) {
+        Applications application = selection.getApplication();
+        Applicant applicant = application.getApplicant();
+        Users user = applicant.getUser();
+        JobVacancy vacancy = application.getVacancy();
+
+        return FinalSelectionResponseDTO.builder()
+            .id(selection.getId())
+            .applicationId(application.getId())
+            .applicantName((user.getFName() + " " + user.getLName()).trim())
+            .applicantEmail(user.getEmail())
+            .applicantNationalId(applicant.getNationalId())
+            .vacancyTitle(vacancy.getTitle())
+            .vacancyType(vacancy.getVacancyType())
+            .departmentName(
+                vacancy.getDepartment() != null
+                    ? vacancy.getDepartment().getDepartmentName()
+                    : null
+            )
+            .approvalDate(selection.getApprovalDate())
+            .remarks(selection.getRemarks())
+            .appointmentStatus(selection.getAppointmentStatus())
+            .build();
     }
 }

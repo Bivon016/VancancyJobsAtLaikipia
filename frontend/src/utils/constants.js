@@ -25,6 +25,20 @@ export const STATUS_LABELS = {
   REJECTED: "Rejected",
 };
 
+export const VACANCY_TYPES = [
+  { value: "PERMANENT_AND_PENSIONABLE", label: "Permanent and Pensionable" },
+  { value: "CONTRACT", label: "Contract" },
+  { value: "TEMPORARY", label: "Temporary" },
+  { value: "PART_TIME", label: "Part-time" },
+  { value: "INTERNSHIP", label: "Internship" },
+  { value: "CASUAL", label: "Casual" },
+  { value: "CONSULTANCY", label: "Consultancy" },
+  { value: "ATTACHMENT", label: "Attachment" },
+];
+
+export const getVacancyTypeLabel = (value) =>
+  VACANCY_TYPES.find((item) => item.value === value)?.label || value || "—";
+
 export const DOCUMENT_TYPES = [
   { value: "CV", label: "Curriculum Vitae (CV)" },
   { value: "DEGREE", label: "Degree Certificate" },

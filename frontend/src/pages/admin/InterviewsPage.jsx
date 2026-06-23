@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Button from "../../components/ui/Button";
 import Card, { CardHeader } from "../../components/ui/Card";
 import Input, { Select } from "../../components/ui/Input";
 import PdfReportView from "../../components/pdf/PdfReportView";
-import { interviewsApi, scoresApi } from "../../api";
-import { formatDate, getApplicantName } from "../../utils/constants";
+import { applicationsApi, interviewsApi, scoresApi } from "../../api";
+import {
+  APPLICATION_STATES,
+  formatDate,
+  getApplicantName,
+} from "../../utils/constants";
 import { useAuth } from "../../auth/AuthContext";
 import { normalizeRole, ROLES } from "../../utils/roles";
 
@@ -18,6 +22,29 @@ const COLUMNS = [
   { key: "status", header: "Status" },
 ];
 
+const getApplicantReference = (application) => {
+  if (!application) return "—";
+  const name = getApplicantName(application);
+  const nationalId = application.applicant?.nationalId
+    ? `ID ${application.applicant.nationalId}`
+    : null;
+  const email = application.applicant?.user?.email || null;
+
+  return [name, nationalId, email].filter(Boolean).join(" • ");
+};
+
+const getInterviewLabel = (interview) => {
+  if (!interview) return "—";
+  return [
+    getApplicantName(interview.application),
+    interview.application?.vacancy?.title || null,
+    formatDate(interview.interviewDate),
+    interview.interviewTime || null,
+  ]
+    .filter(Boolean)
+    .join(" — ");
+};
+
 export default function InterviewsPage() {
   const { user } = useAuth();
   const role = normalizeRole(user?.role);
@@ -25,8 +52,10 @@ export default function InterviewsPage() {
   const canManageInterviews = role === ROLES.HR_OFFICER;
 
   const [interviews, setInterviews] = useState([]);
+  const [shortlistedApplications, setShortlistedApplications] = useState([]);
+  const [selectedVacancyId, setSelectedVacancyId] = useState("");
+  const [selectedApplicationIds, setSelectedApplicationIds] = useState([]);
   const [scheduleForm, setScheduleForm] = useState({
-    applicationId: "",
     interviewDate: "",
     interviewTime: "",
     venue: "",
@@ -41,34 +70,193 @@ export default function InterviewsPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const load = () => {
-    const fetcher = isPanel
+  const shortlistedGroups = useMemo(() => {
+    const groups = shortlistedApplications.reduce((acc, application) => {
+      if (application.applicationStatus !== APPLICATION_STATES.SHORTLISTED) {
+        return acc;
+      }
+
+      const vacancyId = application?.vacancy?.id;
+      if (!vacancyId) {
+        return acc;
+      }
+
+      const existing = acc.get(vacancyId) || {
+        vacancyId,
+        title: application?.vacancy?.title || "Untitled vacancy",
+        department:
+          application?.vacancy?.department?.departmentName ||
+          "Unknown department",
+        applications: [],
+      };
+
+      existing.applications.push(application);
+      acc.set(vacancyId, existing);
+      return acc;
+    }, new Map());
+
+    return Array.from(groups.values()).sort((a, b) =>
+      a.title.localeCompare(b.title),
+    );
+  }, [shortlistedApplications]);
+
+  const effectiveVacancyId = shortlistedGroups.some(
+    (group) => String(group.vacancyId) === String(selectedVacancyId),
+  )
+    ? String(selectedVacancyId)
+    : shortlistedGroups[0]
+      ? String(shortlistedGroups[0].vacancyId)
+      : "";
+
+  const selectedGroup = useMemo(() => {
+    if (!effectiveVacancyId) {
+      return null;
+    }
+
+    return (
+      shortlistedGroups.find(
+        (group) => String(group.vacancyId) === String(effectiveVacancyId),
+      ) || null
+    );
+  }, [effectiveVacancyId, shortlistedGroups]);
+
+  const activeSelectedApplicationIds = selectedApplicationIds.filter((id) =>
+    selectedGroup?.applications?.some((application) => application.id === id),
+  );
+
+  const load = useCallback(async () => {
+    const interviewFetcher = isPanel
       ? interviewsApi.getMy()
       : interviewsApi.getByStatus("SCHEDULED");
-    fetcher
-      .then(({ data }) => setInterviews(data))
-      .catch(() => setInterviews([]));
-  };
+
+    if (canManageInterviews) {
+      const [interviewResult, applicationResult] = await Promise.allSettled([
+        interviewFetcher,
+        applicationsApi.getAll(),
+      ]);
+
+      if (interviewResult.status === "fulfilled") {
+        setInterviews(interviewResult.value.data);
+      } else {
+        setInterviews([]);
+      }
+
+      if (applicationResult.status === "fulfilled") {
+        setShortlistedApplications(
+          Array.isArray(applicationResult.value.data)
+            ? applicationResult.value.data
+            : [],
+        );
+      } else {
+        setShortlistedApplications([]);
+      }
+
+      if (
+        interviewResult.status === "rejected" &&
+        applicationResult.status === "fulfilled"
+      ) {
+        setMessage(
+          "Shortlisted applicants loaded, but the scheduled interview list could not be loaded.",
+        );
+      }
+
+      return;
+    }
+
+    try {
+      const { data } = await interviewFetcher;
+      setInterviews(data);
+    } catch {
+      setInterviews([]);
+    }
+  }, [canManageInterviews, isPanel]);
 
   useEffect(() => {
-    load();
-  }, []);
+    const timer = setTimeout(() => {
+      void load();
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [load]);
+
+  const handleToggleApplication = (applicationId) => {
+    setSelectedApplicationIds((current) =>
+      current.includes(applicationId)
+        ? current.filter((id) => id !== applicationId)
+        : [...current, applicationId],
+    );
+  };
 
   const handleSchedule = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await interviewsApi.schedule({
-        ...scheduleForm,
-        applicationId: Number(scheduleForm.applicationId),
-      });
-      setMessage("Interview scheduled.");
-      load();
-    } catch (err) {
-      setMessage(err.response?.data?.message || "Failed");
-    } finally {
-      setLoading(false);
+
+    if (!activeSelectedApplicationIds.length) {
+      setMessage("Select at least one shortlisted applicant.");
+      return;
     }
+
+    setLoading(true);
+    setMessage("");
+
+    const failures = [];
+    let scheduledCount = 0;
+
+    for (const applicationId of activeSelectedApplicationIds) {
+      const application = selectedGroup?.applications?.find(
+        (item) => item.id === applicationId,
+      );
+      const applicantLabel = getApplicantReference(application);
+
+      try {
+        await interviewsApi.schedule({
+          applicationId,
+          interviewDate: scheduleForm.interviewDate,
+          interviewTime: scheduleForm.interviewTime,
+          venue: scheduleForm.venue,
+        });
+        scheduledCount += 1;
+      } catch (err) {
+        failures.push(
+          `${applicantLabel}: ${err.response?.data?.message || "Failed to schedule"}`,
+        );
+      }
+    }
+
+    await load();
+
+    if (scheduledCount > 0) {
+      setSelectedApplicationIds([]);
+      setScheduleForm({
+        interviewDate: scheduleForm.interviewDate,
+        interviewTime: scheduleForm.interviewTime,
+        venue: scheduleForm.venue,
+      });
+    }
+
+    const scheduledLabels = activeSelectedApplicationIds
+      .map((applicationId) =>
+        getApplicantReference(
+          selectedGroup?.applications?.find(
+            (item) => item.id === applicationId,
+          ),
+        ),
+      )
+      .filter(Boolean)
+      .join(" | ");
+
+    if (scheduledCount > 0 && failures.length === 0) {
+      setMessage(
+        `Scheduled ${scheduledCount} interview(s) successfully for ${scheduledLabels}`,
+      );
+    } else if (scheduledCount > 0) {
+      setMessage(
+        `Scheduled ${scheduledCount} interview(s) for ${scheduledLabels}. Some could not be scheduled: ${failures.join(" | ")}`,
+      );
+    } else {
+      setMessage(failures.join(" | ") || "Failed to schedule interviews.");
+    }
+
+    setLoading(false);
   };
 
   const handleScore = async (e) => {
@@ -99,26 +287,133 @@ export default function InterviewsPage() {
         {isPanel
           ? "View assigned interviews and submit scores"
           : canManageInterviews
-            ? "Schedule interviews and view PDF schedules"
+            ? "Schedule interviews by job category and shortlisted applicant names"
             : "View interview schedules and reports"}
       </p>
 
       {canManageInterviews && (
         <Card className="mt-6">
-          <CardHeader title="Schedule Interview" />
+          <CardHeader
+            title="Schedule Interviews"
+            subtitle="Choose a job category, then select one or more shortlisted applicants under it."
+          />
           <form onSubmit={handleSchedule} className="grid gap-4 sm:grid-cols-2">
-            <Input
-              label="Application ID"
-              type="number"
-              required
-              value={scheduleForm.applicationId}
-              onChange={(e) =>
-                setScheduleForm({
-                  ...scheduleForm,
-                  applicationId: e.target.value,
-                })
-              }
-            />
+            <Select
+              label="Job Category / Vacancy"
+              value={effectiveVacancyId}
+              onChange={(e) => {
+                setSelectedVacancyId(e.target.value);
+                setSelectedApplicationIds([]);
+              }}
+              disabled={!shortlistedGroups.length}
+            >
+              {!shortlistedGroups.length ? (
+                <option value="">No shortlisted applicants available</option>
+              ) : (
+                shortlistedGroups.map((group) => (
+                  <option key={group.vacancyId} value={group.vacancyId}>
+                    {group.title} — {group.department} (
+                    {group.applications.length})
+                  </option>
+                ))
+              )}
+            </Select>
+
+            <div className="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+              <p className="font-medium text-slate-800">Selected applicants</p>
+              <p className="mt-1">
+                {activeSelectedApplicationIds.length
+                  ? `${activeSelectedApplicationIds.length} applicant(s) selected for scheduling.`
+                  : "No applicant selected yet."}
+              </p>
+            </div>
+
+            <div className="sm:col-span-2 rounded-lg border border-slate-200 bg-white p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium text-slate-800">
+                    Shortlisted applicants
+                  </p>
+                  <p className="text-xs text-muted">
+                    Applicants are grouped under the selected job category.
+                  </p>
+                </div>
+                {selectedGroup?.applications?.length ? (
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setSelectedApplicationIds(
+                          selectedGroup.applications.map((app) => app.id),
+                        )
+                      }
+                    >
+                      Select all
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedApplicationIds([])}
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+
+              {!selectedGroup?.applications?.length ? (
+                <p className="mt-4 text-sm text-muted">
+                  No shortlisted applicants found for interview scheduling.
+                </p>
+              ) : (
+                <div className="mt-4 grid gap-3">
+                  {selectedGroup.applications.map((application) => {
+                    const applicantName = getApplicantName(application);
+                    const checked = activeSelectedApplicationIds.includes(
+                      application.id,
+                    );
+
+                    return (
+                      <label
+                        key={application.id}
+                        className={`flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3 transition ${
+                          checked
+                            ? "border-primary bg-primary/5"
+                            : "border-slate-200 hover:border-slate-300"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="mt-1 h-4 w-4"
+                          checked={checked}
+                          onChange={() =>
+                            handleToggleApplication(application.id)
+                          }
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold text-slate-900">
+                            {applicantName}
+                          </p>
+                          <p className="mt-1 text-xs text-slate-600">
+                            {application.applicant?.user?.email || "No email"}
+                            {application.applicant?.nationalId
+                              ? ` • ID ${application.applicant.nationalId}`
+                              : ""}
+                          </p>
+                          <p className="mt-1 text-xs text-muted">
+                            {application.vacancy?.title || "Vacancy"}
+                          </p>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             <Input
               label="Date"
               type="date"
@@ -146,13 +441,21 @@ export default function InterviewsPage() {
             <Input
               label="Venue"
               required
+              className="sm:col-span-2"
               value={scheduleForm.venue}
               onChange={(e) =>
                 setScheduleForm({ ...scheduleForm, venue: e.target.value })
               }
             />
-            <Button type="submit" loading={loading}>
-              Schedule
+            <Button
+              type="submit"
+              loading={loading}
+              disabled={
+                !activeSelectedApplicationIds.length ||
+                !shortlistedGroups.length
+              }
+            >
+              Schedule Selected Applicants
             </Button>
           </form>
         </Card>
@@ -162,15 +465,21 @@ export default function InterviewsPage() {
         <Card className="mt-6">
           <CardHeader title="Submit Interview Score" />
           <form onSubmit={handleScore} className="grid gap-4 sm:grid-cols-2">
-            <Input
-              label="Interview ID"
-              type="number"
+            <Select
+              label="Interview"
               required
               value={scoreForm.interviewId}
               onChange={(e) =>
                 setScoreForm({ ...scoreForm, interviewId: e.target.value })
               }
-            />
+            >
+              <option value="">Select interview</option>
+              {interviews.map((interview) => (
+                <option key={interview.id} value={interview.id}>
+                  {getInterviewLabel(interview)}
+                </option>
+              ))}
+            </Select>
             <Input
               label="Technical Score"
               type="number"
@@ -212,7 +521,24 @@ export default function InterviewsPage() {
                 setScoreForm({ ...scoreForm, remarks: e.target.value })
               }
             />
-            <Button type="submit" loading={loading}>
+            {scoreForm.interviewId && (
+              <div className="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 sm:col-span-2">
+                Confirming interview:{" "}
+                <span className="font-semibold">
+                  {getInterviewLabel(
+                    interviews.find(
+                      (interview) =>
+                        String(interview.id) === String(scoreForm.interviewId),
+                    ),
+                  )}
+                </span>
+              </div>
+            )}
+            <Button
+              type="submit"
+              loading={loading}
+              disabled={!scoreForm.interviewId}
+            >
               Submit Score
             </Button>
           </form>

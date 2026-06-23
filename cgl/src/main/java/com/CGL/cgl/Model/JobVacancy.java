@@ -1,10 +1,9 @@
 package com.CGL.cgl.Model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -13,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class JobVacancy {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,6 +24,8 @@ public class JobVacancy {
     private String requirements;
 
     private String salaryScale;
+
+    private String vacancyType;
 
     private Integer positionsAvailable;
 
@@ -45,5 +47,4 @@ public class JobVacancy {
 
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status;
-    
 }

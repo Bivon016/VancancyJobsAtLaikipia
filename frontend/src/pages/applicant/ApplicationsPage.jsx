@@ -6,7 +6,11 @@ import EmptyState from "../../components/ui/EmptyState";
 import StatusBadge from "../../components/vacancies/StatusBadge";
 import Button from "../../components/ui/Button";
 import { applicationsApi } from "../../api";
-import { APPLICATION_STATES, formatDateTime } from "../../utils/constants";
+import {
+  APPLICATION_STATES,
+  formatDateTime,
+  getVacancyTypeLabel,
+} from "../../utils/constants";
 
 export default function ApplicationsPage() {
   const [applications, setApplications] = useState([]);
@@ -130,6 +134,9 @@ export default function ApplicationsPage() {
                           {app.vacancy?.department?.departmentName ||
                             "Department not specified"}
                         </p>
+                        <p className="mt-1 text-xs text-muted">
+                          {getVacancyTypeLabel(app.vacancy?.vacancyType)}
+                        </p>
                         <p className="mt-2 text-xs text-muted">
                           Submitted {formatDateTime(app.applicationDate)}
                         </p>
@@ -156,6 +163,10 @@ export default function ApplicationsPage() {
                 <DetailRow
                   label="Department"
                   value={selected.vacancy?.department?.departmentName || "—"}
+                />
+                <DetailRow
+                  label="Vacancy Type"
+                  value={getVacancyTypeLabel(selected.vacancy?.vacancyType)}
                 />
                 <DetailRow
                   label="Submitted"
