@@ -167,6 +167,67 @@ export default function ApplicationsPage() {
                     <StatusBadge status={selected.applicationStatus} />
                   </div>
                 </div>
+                {selected.suitabilityStatement && (
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+                    <p className="text-sm text-muted">Suitability Statement</p>
+                    <p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-slate-700">
+                      {selected.suitabilityStatement}
+                    </p>
+                  </div>
+                )}
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+                  <p className="text-sm text-muted">Declarations</p>
+                  <ul className="mt-2 space-y-2 text-sm text-slate-700">
+                    <li>
+                      Information confirmed:{" "}
+                      {selected.declareInformationTrue ? "Yes" : "No"}
+                    </li>
+                    <li>
+                      Verification consent:{" "}
+                      {selected.declareAvailabilityForVerification
+                        ? "Yes"
+                        : "No"}
+                    </li>
+                    <li>
+                      Conflict of interest declared absent:{" "}
+                      {selected.declareNoConflictOfInterest ? "Yes" : "No"}
+                    </li>
+                    <li>
+                      Criminal disclosure confirmed:{" "}
+                      {selected.declareNoCriminalConviction ? "Yes" : "No"}
+                    </li>
+                    <li>
+                      Documents ready at submission:{" "}
+                      {selected.documentsReadyConfirmed ? "Yes" : "No"}
+                    </li>
+                  </ul>
+                </div>
+                {selected.referees?.length > 0 && (
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+                    <p className="text-sm text-muted">Referees</p>
+                    <div className="mt-3 space-y-3">
+                      {selected.referees.map((referee, index) => (
+                        <div
+                          key={`${referee.email}-${index}`}
+                          className="rounded-xl border border-slate-200 bg-white px-4 py-3"
+                        >
+                          <p className="font-medium text-slate-900">
+                            {referee.fullName}
+                          </p>
+                          <p className="mt-1 text-sm text-muted">
+                            {referee.designation} · {referee.organization}
+                          </p>
+                          <p className="mt-1 text-sm text-muted">
+                            {referee.phoneNumber} · {referee.email}
+                          </p>
+                          <p className="mt-1 text-sm text-muted">
+                            Relationship: {referee.relationship}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {selected.remarks && (
                   <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
                     <p className="text-sm text-muted">Remarks</p>

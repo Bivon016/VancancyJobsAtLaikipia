@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertTriangle,
@@ -6,6 +6,7 @@ import {
   Bell,
   Briefcase,
   FileText,
+  MapPinned,
   Sparkles,
   User,
 } from "lucide-react";
@@ -40,6 +41,23 @@ export default function ApplicantDashboard() {
   }, []);
 
   const complete = isProfileComplete(profile);
+
+  const profileSummary = useMemo(
+    () => ({
+      profession: profile?.currentProfession || "Not added yet",
+      residence: [profile?.countyOfResidence, profile?.subCounty]
+        .filter(Boolean)
+        .join(" • "),
+      nationality: profile?.nationality || "Not added yet",
+      disability:
+        profile?.disabilityStatus == null
+          ? "Not specified"
+          : profile.disabilityStatus
+            ? "Declared"
+            : "None declared",
+    }),
+    [profile],
+  );
 
   if (loading) {
     return (
@@ -85,7 +103,7 @@ export default function ApplicantDashboard() {
           to="/profile"
           icon={User}
           label="My Profile"
-          sub={complete ? "Complete" : "Incomplete"}
+          sub={complete ? "Ready for applications" : "Needs completion"}
           tone="from-blue-500/15 to-cyan-500/10"
         />
         <QuickLink
@@ -112,6 +130,50 @@ export default function ApplicantDashboard() {
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <Card className="bg-gradient-to-br from-white via-white to-slate-50">
+          <CardHeader
+            title="Profile Snapshot"
+            subtitle="A quick summary of the applicant information currently on file."
+            action={
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
+                <MapPinned className="h-4 w-4" />
+                {complete ? "Updated" : "Needs attention"}
+              </div>
+            }
+          />
+          {profile ? (
+            <div className="space-y-3">
+              <SnapshotRow
+                label="Current profession"
+                value={profileSummary.profession}
+              />
+              <SnapshotRow
+                label="Residence"
+                value={profileSummary.residence || "Not added yet"}
+              />
+              <SnapshotRow
+                label="Nationality"
+                value={profileSummary.nationality}
+              />
+              <SnapshotRow
+                label="Disability status"
+                value={profileSummary.disability}
+              />
+            </div>
+          ) : (
+            <p className="text-sm text-muted">
+              No applicant profile has been created yet.
+            </p>
+          )}
+          <Link
+            to="/profile"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-secondary hover:underline"
+          >
+            Review profile
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </Card>
+
         <Card className="bg-gradient-to-br from-white via-white to-slate-50">
           <CardHeader
             title="Recent Applications"
@@ -147,37 +209,37 @@ export default function ApplicantDashboard() {
             <ArrowRight className="h-4 w-4" />
           </Link>
         </Card>
-
-        <Card className="bg-gradient-to-br from-white via-white to-slate-50">
-          <CardHeader
-            title="Quick Actions"
-            subtitle="Common tasks to keep your application journey moving."
-            action={
-              <div className="inline-flex items-center gap-2 rounded-full bg-secondary/5 px-3 py-1 text-xs font-semibold text-secondary">
-                <Sparkles className="h-4 w-4" /> Stay ready
-              </div>
-            }
-          />
-          <div className="space-y-3">
-            <Link to="/documents">
-              <Button
-                variant="outline"
-                className="w-full justify-start rounded-xl"
-              >
-                <FileText className="h-4 w-4" /> Upload Documents
-              </Button>
-            </Link>
-            <Link to="/vacancies">
-              <Button
-                variant="primary"
-                className="w-full justify-start rounded-xl"
-              >
-                <Briefcase className="h-4 w-4" /> Browse Open Vacancies
-              </Button>
-            </Link>
-          </div>
-        </Card>
       </div>
+
+      <Card className="mt-8 bg-gradient-to-br from-white via-white to-slate-50">
+        <CardHeader
+          title="Quick Actions"
+          subtitle="Common tasks to keep your application journey moving."
+          action={
+            <div className="inline-flex items-center gap-2 rounded-full bg-secondary/5 px-3 py-1 text-xs font-semibold text-secondary">
+              <Sparkles className="h-4 w-4" /> Stay ready
+            </div>
+          }
+        />
+        <div className="grid gap-3 md:grid-cols-2">
+          <Link to="/documents">
+            <Button
+              variant="outline"
+              className="w-full justify-start rounded-xl"
+            >
+              <FileText className="h-4 w-4" /> Upload Documents
+            </Button>
+          </Link>
+          <Link to="/vacancies">
+            <Button
+              variant="primary"
+              className="w-full justify-start rounded-xl"
+            >
+              <Briefcase className="h-4 w-4" /> Browse Open Vacancies
+            </Button>
+          </Link>
+        </div>
+      </Card>
     </div>
   );
 }
@@ -208,5 +270,14 @@ function QuickLink({ to, icon: Icon, label, sub, tone }) {
         </div>
       </Card>
     </Link>
+  );
+}
+
+function SnapshotRow({ label, value }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+      <p className="text-sm text-muted">{label}</p>
+      <p className="mt-1 font-medium text-slate-900">{value}</p>
+    </div>
   );
 }

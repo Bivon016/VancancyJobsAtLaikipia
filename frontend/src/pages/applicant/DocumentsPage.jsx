@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { FolderOpen, Upload } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Card, { CardHeader } from "../../components/ui/Card";
@@ -8,6 +9,7 @@ import { applicationsApi, documentsApi } from "../../api";
 import { DOCUMENT_TYPES, formatDateTime } from "../../utils/constants";
 
 export default function DocumentsPage() {
+  const location = useLocation();
   const [applications, setApplications] = useState([]);
   const [selectedApp, setSelectedApp] = useState("");
   const [documents, setDocuments] = useState([]);
@@ -17,17 +19,25 @@ export default function DocumentsPage() {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(location.state?.message || "");
 
   useEffect(() => {
     applicationsApi
       .getMy()
       .then(({ data }) => {
         setApplications(data);
-        if (data.length) setSelectedApp(String(data[0].id));
+        const preferredApp = location.state?.applicationId;
+        if (
+          preferredApp &&
+          data.some((application) => String(application.id) === preferredApp)
+        ) {
+          setSelectedApp(preferredApp);
+        } else if (data.length) {
+          setSelectedApp(String(data[0].id));
+        }
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [location.state]);
 
   useEffect(() => {
     if (!selectedApp) return;

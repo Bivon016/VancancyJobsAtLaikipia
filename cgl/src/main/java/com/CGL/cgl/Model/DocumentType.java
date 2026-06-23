@@ -6,5 +6,6 @@ public enum DocumentType {
     KCSE,
     ID_COPY,
     CERTIFICATE,
-    DRIVING_LICENSE
+    DRIVING_LICENSE,
+    COVER_LETTER,
 }

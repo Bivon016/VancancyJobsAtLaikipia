@@ -21,6 +21,7 @@ import ProfilePage from "./pages/applicant/ProfilePage";
 import DocumentsPage from "./pages/applicant/DocumentsPage";
 import ApplicationsPage from "./pages/applicant/ApplicationsPage";
 import NotificationsPage from "./pages/applicant/NotificationsPage";
+import ApplyVacancyPage from "./pages/applicant/ApplyVacancyPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UsersPage from "./pages/admin/UsersPage";
 import DepartmentsPage from "./pages/admin/DepartmentsPage";
@@ -87,6 +88,7 @@ export default function App() {
             <Route path="documents" element={<DocumentsPage />} />
             <Route path="applications" element={<ApplicationsPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="vacancies/:id/apply" element={<ApplyVacancyPage />} />
           </Route>
 
           <Route

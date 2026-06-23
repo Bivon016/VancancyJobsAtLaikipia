@@ -1,13 +1,23 @@
 package com.CGL.cgl.Service;
 
+import com.CGL.cgl.DTO.ApplicationRefereeDTO;
 import com.CGL.cgl.DTO.ApplicationsDTO;
-import com.CGL.cgl.Model.*;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
+import com.CGL.cgl.Model.Applicant;
+import com.CGL.cgl.Model.ApplicationReferee;
+import com.CGL.cgl.Model.ApplicationState;
+import com.CGL.cgl.Model.ApplicationStatus;
+import com.CGL.cgl.Model.Applications;
+import com.CGL.cgl.Model.JobVacancy;
+import com.CGL.cgl.Model.Users;
 import com.CGL.cgl.Repo.ApplicantRepo;
 import com.CGL.cgl.Repo.ApplicationsRepo;
 import com.CGL.cgl.Repo.JobVacancyRepo;
 import com.CGL.cgl.Repo.UserRepo;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,25 +49,33 @@ public class ApplicationService {
     public Applications applyForJob(ApplicationsDTO request, String email) {
         Users user = userRepo
             .findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User does not exist"));
+            .orElseThrow(() ->
+                new ResourceNotFoundException("User does not exist")
+            );
 
         Applicant applicant = applicantRepo
             .findByUser(user)
-            .orElseThrow(() -> new RuntimeException("User profile not found"));
+            .orElseThrow(() ->
+                new ResourceNotFoundException("User profile not found")
+            );
+
+        validateApplicantProfile(applicant);
 
         JobVacancy vacancy = jobVacancyRepo
             .findById(request.getVacancyId())
-            .orElseThrow(() -> new RuntimeException("Job vacancy not found"));
+            .orElseThrow(() ->
+                new ResourceNotFoundException("Job vacancy not found")
+            );
 
         if (vacancy.getStatus() != ApplicationStatus.OPEN) {
-            throw new RuntimeException("Job vacancy is not open");
+            throw new ConflictException("Job vacancy is not open");
         }
         if (
             applicationsRepo
                 .findByApplicantAndVacancy(applicant, vacancy)
                 .isPresent()
         ) {
-            throw new RuntimeException("You have already applied");
+            throw new ConflictException("You have already applied");
         }
 
         Applications application = Applications.builder()
@@ -65,7 +83,27 @@ public class ApplicationService {
             .vacancy(vacancy)
             .applicationDate(LocalDateTime.now())
             .applicationStatus(ApplicationState.SUBMITTED)
+            .suitabilityStatement(request.getSuitabilityStatement().trim())
+            .declareInformationTrue(request.isDeclareInformationTrue())
+            .declareAvailabilityForVerification(
+                request.isDeclareAvailabilityForVerification()
+            )
+            .declareNoConflictOfInterest(
+                request.isDeclareNoConflictOfInterest()
+            )
+            .declareNoCriminalConviction(
+                request.isDeclareNoCriminalConviction()
+            )
+            .consentToDataProcessing(request.isConsentToDataProcessing())
+            .documentsReadyConfirmed(request.isDocumentsReadyConfirmed())
             .build();
+
+        List<ApplicationReferee> referees = request
+            .getReferees()
+            .stream()
+            .map(ref -> toReferee(ref, application))
+            .collect(Collectors.toList());
+        application.setReferees(referees);
 
         Applications saved = applicationsRepo.save(application);
 
@@ -83,10 +121,12 @@ public class ApplicationService {
     public List<Applications> getMyApplications(String email) {
         Users user = userRepo
             .findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Applicant applicant = applicantRepo
             .findByUser(user)
-            .orElseThrow(() -> new RuntimeException("Profile not found"));
+            .orElseThrow(() ->
+                new ResourceNotFoundException("Profile not found")
+            );
         return applicationsRepo.findByApplicant(applicant);
     }
 
@@ -97,7 +137,9 @@ public class ApplicationService {
     ) {
         Applications application = applicationsRepo
             .findById(applicationId)
-            .orElseThrow(() -> new RuntimeException("Application not found"));
+            .orElseThrow(() ->
+                new ResourceNotFoundException("Application not found")
+            );
 
         application.setApplicationStatus(status);
         application.setRemarks(remarks);
@@ -136,11 +178,50 @@ public class ApplicationService {
     public List<Applications> getAllApplicationsForVacancy(Long vacancyId) {
         JobVacancy vacancy = jobVacancyRepo
             .findById(vacancyId)
-            .orElseThrow(() -> new RuntimeException("Vacancy not found"));
+            .orElseThrow(() ->
+                new ResourceNotFoundException("Vacancy not found")
+            );
         return applicationsRepo.findByVacancy(vacancy);
     }
 
     public List<Applications> getAllApplications() {
         return applicationsRepo.findAll();
+    }
+
+    private ApplicationReferee toReferee(
+        ApplicationRefereeDTO referee,
+        Applications application
+    ) {
+        return ApplicationReferee.builder()
+            .application(application)
+            .fullName(referee.getFullName().trim())
+            .designation(referee.getDesignation().trim())
+            .organization(referee.getOrganization().trim())
+            .phoneNumber(referee.getPhoneNumber().trim())
+            .email(referee.getEmail().trim())
+            .relationship(referee.getRelationship().trim())
+            .build();
+    }
+
+    private void validateApplicantProfile(Applicant applicant) {
+        if (
+            applicant.getNationalId() == null ||
+            applicant.getBirthDate() == null ||
+            applicant.getGender() == null ||
+            isBlank(applicant.getNationality()) ||
+            isBlank(applicant.getPhysicalAddress()) ||
+            isBlank(applicant.getCountyOfBirth()) ||
+            isBlank(applicant.getCountyOfResidence()) ||
+            isBlank(applicant.getEducationalLevel()) ||
+            applicant.getYearsOfExperience() == null
+        ) {
+            throw new ConflictException(
+                "Complete your applicant profile before applying for a vacancy"
+            );
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

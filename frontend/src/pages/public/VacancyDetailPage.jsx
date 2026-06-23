@@ -39,7 +39,7 @@ export default function VacancyDetailPage() {
 
   const handleApply = async () => {
     if (!isAuthenticated) {
-      navigate("/login", { state: { from: `/vacancies/${id}` } });
+      navigate("/login", { state: { from: `/vacancies/${id}/apply` } });
       return;
     }
     if (normalizeRole(user?.role) !== "APPLICANT") {
@@ -53,18 +53,16 @@ export default function VacancyDetailPage() {
       const { data: profile } = await profileApi.get();
       if (!isProfileComplete(profile)) {
         navigate("/profile", {
-          state: { incomplete: true, from: `/vacancies/${id}` },
+          state: { incomplete: true, from: `/vacancies/${id}/apply` },
         });
         return;
       }
-      await applicationsApi.apply(Number(id));
-      setApplied(true);
-      navigate("/applications");
+      navigate(`/vacancies/${id}/apply`);
     } catch (err) {
       setError(
         err.response?.data?.message ||
           err.message ||
-          "Failed to submit application",
+          "Failed to prepare application form",
       );
     } finally {
       setApplying(false);
@@ -184,7 +182,7 @@ export default function VacancyDetailPage() {
               loading={applying}
               disabled={applied}
             >
-              {applied ? "Already Applied" : "Apply Now"}
+              {applied ? "Already Applied" : "Start Application"}
             </Button>
           </Card>
 

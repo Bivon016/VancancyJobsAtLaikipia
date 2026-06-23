@@ -31,7 +31,7 @@ export const profileApi = {
 };
 
 export const applicationsApi = {
-  apply: (vacancyId) => api.post("/applications/apply", { vacancyId }),
+  apply: (data) => api.post("/applications/apply", data),
   getMy: () => api.get("/applications/my"),
   getByVacancy: (vacancyId) => api.get(`/applications/vacancy/${vacancyId}`),
   getAll: () => api.get("/applications/all"),

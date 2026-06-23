@@ -4,11 +4,18 @@ import com.CGL.cgl.DTO.ApplicationsDTO;
 import com.CGL.cgl.DTO.StatusUpdateRequestDTO;
 import com.CGL.cgl.Model.Applications;
 import com.CGL.cgl.Service.ApplicationService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/applications")
@@ -27,7 +34,7 @@ public class ApplicationController {
     @PostMapping("/apply")
     @PreAuthorize("hasRole('APPLICANT')")
     public ResponseEntity<Applications> applForJob(
-        @RequestBody ApplicationsDTO request
+        @Valid @RequestBody ApplicationsDTO request
     ) {
         String email = getCurrentUserEmail();
         return ResponseEntity.status(201).body(
