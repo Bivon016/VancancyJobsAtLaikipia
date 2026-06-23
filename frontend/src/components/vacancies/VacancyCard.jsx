@@ -1,14 +1,19 @@
-import { Link } from 'react-router-dom';
-import { Building2, Calendar, MapPin } from 'lucide-react';
-import Button from '../ui/Button';
-import Card from '../ui/Card';
-import { formatDate } from '../../utils/constants';
+import { Link } from "react-router-dom";
+import { Building2, Calendar, MapPin } from "lucide-react";
+import Button from "../ui/Button";
+import Card from "../ui/Card";
+import { formatDate } from "../../utils/constants";
 
 export default function VacancyCard({ vacancy }) {
   return (
-    <Card className="flex flex-col transition-shadow hover:shadow-md">
+    <Card
+      variant="plain"
+      className="flex flex-col transition-shadow hover:shadow-md"
+    >
       <div className="mb-3 flex items-start justify-between gap-2">
-        <h3 className="font-heading text-lg font-bold text-primary">{vacancy.title}</h3>
+        <h3 className="font-heading text-lg font-bold text-primary">
+          {vacancy.title}
+        </h3>
         <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800">
           Open
         </span>
@@ -23,7 +28,8 @@ export default function VacancyCard({ vacancy }) {
         )}
         <p className="flex items-center gap-2">
           <MapPin className="h-4 w-4 text-primary" />
-          {vacancy.positionsAvailable} position{vacancy.positionsAvailable !== 1 ? 's' : ''}
+          {vacancy.positionsAvailable} position
+          {vacancy.positionsAvailable !== 1 ? "s" : ""}
         </p>
         {vacancy.salaryScale && (
           <p className="text-gray-600">Salary Scale: {vacancy.salaryScale}</p>

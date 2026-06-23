@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   Bell,
   Briefcase,
@@ -6,16 +6,16 @@ import {
   LayoutDashboard,
   LogOut,
   User,
-} from 'lucide-react';
-import { useAuth } from '../../auth/AuthContext';
-import Button from '../ui/Button';
+} from "lucide-react";
+import { useAuth } from "../../auth/AuthContext";
+import Button from "../ui/Button";
 
 const links = [
-  { to: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { to: '/profile', label: 'My Profile', icon: User },
-  { to: '/applications', label: 'My Applications', icon: Briefcase },
-  { to: '/documents', label: 'Documents', icon: FileText },
-  { to: '/notifications', label: 'Notifications', icon: Bell },
+  { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
+  { to: "/profile", label: "My Profile", icon: User },
+  { to: "/applications", label: "My Applications", icon: Briefcase },
+  { to: "/documents", label: "Documents", icon: FileText },
+  { to: "/notifications", label: "Notifications", icon: Bell },
 ];
 
 export default function ApplicantLayout() {
@@ -24,24 +24,33 @@ export default function ApplicantLayout() {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
   };
 
   return (
-    <div className="flex min-h-screen bg-surface">
-      <aside className="relative hidden w-64 flex-shrink-0 bg-primary-dark text-white md:block">
-        <div className="p-6">
-          <p className="font-heading text-sm font-bold text-accent">Applicant Portal</p>
-          <p className="mt-1 truncate text-xs text-white/60">{user?.email}</p>
+    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-blue-50/60">
+      <aside className="relative hidden w-72 flex-shrink-0 border-r border-white/10 bg-primary-dark text-white md:block">
+        <div className="border-b border-white/10 p-6">
+          <p className="font-heading text-sm font-bold uppercase tracking-[0.2em] text-accent">
+            Applicant Portal
+          </p>
+          <p className="mt-3 truncate text-sm font-semibold text-white">
+            {user?.email}
+          </p>
+          <p className="mt-1 text-xs text-white/60">
+            Track applications and manage your profile
+          </p>
         </div>
-        <nav className="space-y-1 px-3">
+        <nav className="space-y-2 p-3">
           {links.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) =>
-                `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors ${
-                  isActive ? 'bg-primary text-white' : 'text-white/70 hover:bg-white/5 hover:text-white'
+                `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
+                  isActive
+                    ? "bg-white text-primary shadow-sm"
+                    : "text-white/75 hover:bg-white/10 hover:text-white"
                 }`
               }
             >
@@ -50,11 +59,11 @@ export default function ApplicantLayout() {
             </NavLink>
           ))}
         </nav>
-        <div className="absolute bottom-0 w-64 p-4">
+        <div className="absolute bottom-0 w-72 p-4">
           <Button
             variant="ghost"
             size="sm"
-            className="w-full justify-start text-white/70 hover:bg-white/5 hover:text-white"
+            className="w-full justify-start rounded-xl text-white/75 hover:bg-white/10 hover:text-white"
             onClick={handleLogout}
           >
             <LogOut className="h-4 w-4" />
@@ -64,11 +73,17 @@ export default function ApplicantLayout() {
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="flex items-center justify-between border-b bg-white px-4 py-3 md:hidden">
-          <p className="font-heading text-sm font-bold text-primary">Applicant Portal</p>
-          <nav className="flex gap-2 overflow-x-auto">
+        <header className="border-b border-slate-200/80 bg-white/85 px-4 py-3 backdrop-blur md:hidden">
+          <p className="font-heading text-sm font-bold text-primary">
+            Applicant Portal
+          </p>
+          <nav className="mt-2 flex gap-3 overflow-x-auto text-xs">
             {links.map(({ to, label }) => (
-              <NavLink key={to} to={to} className="whitespace-nowrap text-xs text-primary">
+              <NavLink
+                key={to}
+                to={to}
+                className="whitespace-nowrap text-primary"
+              >
                 {label}
               </NavLink>
             ))}

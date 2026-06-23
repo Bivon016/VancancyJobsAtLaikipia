@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CglApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(CglApplication.class, args);
 	}
 

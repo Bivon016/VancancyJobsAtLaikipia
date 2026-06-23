@@ -11,42 +11,78 @@ import { setAuthToken, setUnauthorizedHandler } from "../api/axios";
 import { normalizeRole } from "../utils/roles";
 
 const AuthContext = createContext(null);
+const AUTH_STORAGE_KEY = "laikipia-auth-session";
+
+function getStoredSession() {
+  if (typeof window === "undefined") return { user: null, token: null };
+
+  try {
+    const raw = window.localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return { user: null, token: null };
+
+    const parsed = JSON.parse(raw);
+    return {
+      user: parsed?.user || null,
+      token: parsed?.token || null,
+    };
+  } catch {
+    return { user: null, token: null };
+  }
+}
+
+const initialSession = getStoredSession();
+if (initialSession.token) {
+  setAuthToken(initialSession.token);
+}
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(initialSession.user);
+  const [token, setToken] = useState(initialSession.token);
   const [loading, setLoading] = useState(false);
 
-  const logout = useCallback(() => {
-    setUser(null);
-    setToken(null);
-    setAuthToken(null);
+  const persistSession = useCallback((nextUser, nextToken) => {
+    setUser(nextUser);
+    setToken(nextToken);
+    setAuthToken(nextToken);
+
+    if (typeof window === "undefined") return;
+
+    if (nextUser && nextToken) {
+      window.localStorage.setItem(
+        AUTH_STORAGE_KEY,
+        JSON.stringify({ user: nextUser, token: nextToken }),
+      );
+    } else {
+      window.localStorage.removeItem(AUTH_STORAGE_KEY);
+    }
   }, []);
+
+  const logout = useCallback(() => {
+    persistSession(null, null);
+  }, [persistSession]);
 
   useEffect(() => {
     setUnauthorizedHandler(() => logout());
     return () => setUnauthorizedHandler(null);
   }, [logout]);
 
-  useEffect(() => {
-    setAuthToken(token);
-  }, [token]);
+  const login = useCallback(
+    async (email, password) => {
+      setLoading(true);
+      try {
+        const { data } = await authApi.login(email, password);
+        const role = normalizeRole(data.role);
+        const nextUser = { email: data.email, role };
+        persistSession(nextUser, data.token);
+        return nextUser;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [persistSession],
+  );
 
-  const login = async (email, password) => {
-    setLoading(true);
-    try {
-      const { data } = await authApi.login(email, password);
-      const role = normalizeRole(data.role);
-      setAuthToken(data.token);
-      setToken(data.token);
-      setUser({ email: data.email, role });
-      return { email: data.email, role };
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const register = async (formData) => {
+  const register = useCallback(async (formData) => {
     setLoading(true);
     try {
       await authApi.register(formData);
@@ -54,7 +90,7 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -66,7 +102,7 @@ export function AuthProvider({ children }) {
       logout,
       register,
     }),
-    [user, token, loading],
+    [user, token, loading, login, logout, register],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

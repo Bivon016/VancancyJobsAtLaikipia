@@ -88,26 +88,28 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <aside className="relative flex hidden w-64 flex-shrink-0 flex-col bg-secondary text-white lg:flex">
+    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-indigo-50/50">
+      <aside className="relative hidden w-72 flex-shrink-0 border-r border-white/10 bg-secondary text-white lg:block">
         <div className="border-b border-white/10 p-6">
-          <p className="font-heading text-sm font-bold text-accent">
+          <p className="font-heading text-sm font-bold uppercase tracking-[0.2em] text-accent">
             Staff Portal
           </p>
-          <p className="mt-1 text-xs text-white/60">{ROLE_LABELS[role]}</p>
-          <p className="truncate text-xs text-white/40">{user?.email}</p>
+          <p className="mt-3 text-sm font-semibold text-white">
+            {ROLE_LABELS[role]}
+          </p>
+          <p className="mt-1 truncate text-xs text-white/60">{user?.email}</p>
         </div>
-        <nav className="space-y-1 p-3">
+        <nav className="space-y-2 p-3">
           {links.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
               end={to === "/admin"}
               className={({ isActive }) =>
-                `flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors ${
+                `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
                   isActive
-                    ? "bg-white/15 text-white"
-                    : "text-white/70 hover:bg-white/5 hover:text-white"
+                    ? "bg-white text-secondary shadow-sm"
+                    : "text-white/75 hover:bg-white/10 hover:text-white"
                 }`
               }
             >
@@ -116,11 +118,11 @@ export default function AdminLayout() {
             </NavLink>
           ))}
         </nav>
-        <div className="mt-auto p-4">
+        <div className="absolute bottom-0 w-72 p-4">
           <Button
             variant="ghost"
             size="sm"
-            className="w-full justify-start text-white/70 hover:bg-white/5 hover:text-white"
+            className="w-full justify-start rounded-xl text-white/75 hover:bg-white/10 hover:text-white"
             onClick={handleLogout}
           >
             <LogOut className="h-4 w-4" />
@@ -130,7 +132,7 @@ export default function AdminLayout() {
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="border-b bg-white px-4 py-3 lg:hidden">
+        <header className="border-b border-slate-200/80 bg-white/85 px-4 py-3 backdrop-blur lg:hidden">
           <p className="font-heading text-sm font-bold text-secondary">
             Staff Portal — {ROLE_LABELS[role]}
           </p>

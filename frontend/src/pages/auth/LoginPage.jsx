@@ -46,7 +46,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md">
+      <Card variant="plain" className="w-full max-w-md">
         <div className="mb-6 text-center">
           <p className="text-xs font-semibold uppercase tracking-wider text-accent">
             Laikipia County Government
