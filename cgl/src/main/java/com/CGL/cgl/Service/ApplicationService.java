@@ -115,6 +115,24 @@ public class ApplicationService {
                 " has been received and is under review."
         );
 
+        String referenceNo = String.valueOf(saved.getId());
+        String departmentName = vacancy.getDepartment() != null
+            ? vacancy.getDepartment().getDepartmentName()
+            : "Laikipia County";
+
+        String htmlBody = EmailTemplates.applicationReceived(
+            user.getFName(),
+            vacancy.getTitle(),
+            departmentName,
+            referenceNo
+        );
+
+        emailService.sendHtmlEmail(
+            user.getEmail(),
+            "Application Received: " + vacancy.getTitle(),
+            htmlBody
+        );
+
         return saved;
     }
 
@@ -156,19 +174,22 @@ public class ApplicationService {
                 "Your application for " + jobTitle + " was unsuccessful."
             );
 
-            emailService.sendEmail(
+            String referenceNo = String.valueOf(application.getId());
+            String departmentName = application.getVacancy().getDepartment() != null
+                ? application.getVacancy().getDepartment().getDepartmentName()
+                : "Laikipia County";
+
+            String htmlBody = EmailTemplates.rejected(
+                applicantUser.getFName(),
+                jobTitle,
+                departmentName,
+                referenceNo
+            );
+
+            emailService.sendHtmlEmail(
                 applicantUser.getEmail(),
                 "Application update: unsuccessful",
-                "Hello " +
-                    applicantUser.getFName() +
-                    ",\n\n" +
-                    "We regret to inform you that your application for " +
-                    jobTitle +
-                    " was unsuccessful." +
-                    (remarks != null && !remarks.isBlank()
-                        ? "\n\nRemarks: " + remarks
-                        : "") +
-                    "\n\nThank you for your interest in Laikipia County Jobs."
+                htmlBody
             );
         }
 

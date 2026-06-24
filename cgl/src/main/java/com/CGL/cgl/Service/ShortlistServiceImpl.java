@@ -94,19 +94,23 @@ public class ShortlistServiceImpl implements ShortlistService {
                 "."
         );
 
-        emailService.sendEmail(
+        String referenceNo = String.valueOf(application.getId());
+        String departmentName = application.getVacancy().getDepartment() != null
+            ? application.getVacancy().getDepartment().getDepartmentName()
+            : "Laikipia County";
+
+        String htmlBody = EmailTemplates.shortlisted(
+            applicantUser.getFName(),
+            application.getVacancy().getTitle(),
+            departmentName,
+            referenceNo,
+            request.getRemarks()
+        );
+
+        emailService.sendHtmlEmail(
             applicantUser.getEmail(),
             "Application update: shortlisted",
-            "Hello " +
-                applicantUser.getFName() +
-                ",\n\n" +
-                "Congratulations! You have been shortlisted for " +
-                application.getVacancy().getTitle() +
-                "." +
-                (request.getRemarks() != null && !request.getRemarks().isBlank()
-                    ? "\n\nRemarks: " + request.getRemarks()
-                    : "") +
-                "\n\nPlease keep checking your portal for the next steps."
+            htmlBody
         );
 
         return toResponse(saved);

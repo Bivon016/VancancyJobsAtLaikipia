@@ -96,19 +96,22 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
                 "."
         );
 
-        emailService.sendEmail(
+        String referenceNo = String.valueOf(application.getId());
+        String departmentName = application.getVacancy().getDepartment() != null
+            ? application.getVacancy().getDepartment().getDepartmentName()
+            : "Laikipia County";
+
+        String htmlBody = EmailTemplates.selected(
+            applicantUser.getFName(),
+            application.getVacancy().getTitle(),
+            departmentName,
+            referenceNo
+        );
+
+        emailService.sendHtmlEmail(
             applicantUser.getEmail(),
             "Application update: accepted",
-            "Hello " +
-                applicantUser.getFName() +
-                ",\n\n" +
-                "Congratulations! You have been accepted for " +
-                application.getVacancy().getTitle() +
-                "." +
-                (request.getRemarks() != null && !request.getRemarks().isBlank()
-                    ? "\n\nRemarks: " + request.getRemarks()
-                    : "") +
-                "\n\nPlease log in to your portal for the next steps."
+            htmlBody
         );
 
         // 8. Check vacancy capacity

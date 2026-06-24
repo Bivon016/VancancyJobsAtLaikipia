@@ -46,20 +46,15 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     public void sendVerificationEmail(Users user) {
         EmailVerificationToken token = createVerificationToken(user);
 
-        String body =
-            "Hello " +
-            user.getFName() +
-            ",\n\n" +
-            "Use the verification code below to verify your Laikipia County Jobs account:\n\n" +
-            token.getCode() +
-            "\n\n" +
-            "This code expires in 15 minutes.\n\n" +
-            "If you did not create this account, please ignore this email.";
+        String htmlBody = EmailTemplates.emailVerification(
+            user.getFName(),
+            token.getCode()
+        );
 
-        emailService.sendEmail(
+        emailService.sendHtmlEmail(
             user.getEmail(),
-            "Your Laikipia Jobs verification code",
-            body
+            "Verify your Laikipia County Jobs account",
+            htmlBody
         );
     }
 

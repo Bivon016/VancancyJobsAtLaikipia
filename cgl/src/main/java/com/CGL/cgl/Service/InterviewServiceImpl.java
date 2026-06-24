@@ -93,14 +93,25 @@ public class InterviewServiceImpl implements InterviewService {
             interviewMessage
         );
 
-        emailService.sendEmail(
+        String referenceNo = String.valueOf(application.getId());
+        String departmentName = application.getVacancy().getDepartment() != null
+            ? application.getVacancy().getDepartment().getDepartmentName()
+            : "Laikipia County";
+
+        String htmlBody = EmailTemplates.interviewScheduled(
+            applicantUser.getFName(),
+            application.getVacancy().getTitle(),
+            departmentName,
+            referenceNo,
+            request.getInterviewDate().toString(),
+            request.getInterviewTime().toString(),
+            request.getVenue()
+        );
+
+        emailService.sendHtmlEmail(
             applicantUser.getEmail(),
             "Interview invitation",
-            "Hello " +
-                applicantUser.getFName() +
-                ",\n\n" +
-                interviewMessage +
-                "\n\nPlease log in to your portal for more details."
+            htmlBody
         );
 
         return saved;
