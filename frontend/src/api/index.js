@@ -31,7 +31,7 @@ export const profileApi = {
 };
 
 export const applicationsApi = {
-  apply: (data) => api.post("/applications/apply", data),
+  apply: (vacancyId) => api.post("/applications/apply", { vacancyId }),
   getMy: () => api.get("/applications/my"),
   getByVacancy: (vacancyId) => api.get(`/applications/vacancy/${vacancyId}`),
   getAll: () => api.get("/applications/all"),
@@ -85,6 +85,7 @@ export const interviewsApi = {
   complete: (id) => api.put(`/interviews/${id}/complete`),
 };
 
+
 export const scoresApi = {
   submit: (data) => api.post("/scores", data),
   getByInterview: (id) => api.get(`/scores/interview/${id}`),
@@ -100,11 +101,10 @@ export const selectionsApi = {
 
 export const adminApi = {
   createUser: (data) => api.post("/admin/users/create", data),
-  getUsers: (roles = []) =>
-    api.get("/admin/users", {
-      params: roles.length ? { roles } : {},
-      paramsSerializer: {
-        indexes: null,
-      },
-    }),
+  getUsers: (roles) =>
+    Promise.all(
+      roles.map((role) => api.get("/admin/users", { params: { roles: role } }))
+    ).then((responses) => ({
+      data: responses.flatMap((r) => r.data),
+    })),
 };
