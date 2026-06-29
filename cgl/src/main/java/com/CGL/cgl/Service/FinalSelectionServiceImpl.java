@@ -172,6 +172,9 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
     private FinalSelectionResponseDTO toResponse(FinalSelection selection) {
         Applications application = selection.getApplication();
         Applicant applicant = application.getApplicant();
+        if (applicant == null) {
+            throw new RuntimeException("Applicant not found for application");
+        }
         Users user = applicant.getUser();
         JobVacancy vacancy = application.getVacancy();
 

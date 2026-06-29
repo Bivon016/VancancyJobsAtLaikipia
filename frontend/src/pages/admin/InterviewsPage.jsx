@@ -3,7 +3,7 @@ import Button from "../../components/ui/Button";
 import Card, { CardHeader } from "../../components/ui/Card";
 import Input, { Select } from "../../components/ui/Input";
 import PdfReportView from "../../components/pdf/PdfReportView";
-import { applicationsApi, interviewsApi, scoresApi } from "../../api";
+import { adminApi, applicationsApi, interviewsApi, scoresApi } from "../../api";
 import {
   APPLICATION_STATES,
   formatDate,
@@ -49,10 +49,19 @@ export default function InterviewsPage() {
   const { user } = useAuth();
   const role = normalizeRole(user?.role);
   const isPanel = role === ROLES.PANEL_MEMBER;
-  const canManageInterviews = role === ROLES.HR_OFFICER;
+  const canManageInterviews =
+    role === ROLES.HR_OFFICER || role === ROLES.SUPER_ADMIN;
 
   const [interviews, setInterviews] = useState([]);
   const [shortlistedApplications, setShortlistedApplications] = useState([]);
+  const [panelMembers, setPanelMembers] = useState([]);
+  const [panelModalOpen, setPanelModalOpen] = useState(false);
+  const [panelForm, setPanelForm] = useState({
+    interviewId: "",
+    panelMemberId: "",
+  });
+  const [panelLoading, setPanelLoading] = useState(false);
+  const [panelError, setPanelError] = useState("");
   const [selectedVacancyId, setSelectedVacancyId] = useState("");
   const [selectedApplicationIds, setSelectedApplicationIds] = useState([]);
   const [scheduleForm, setScheduleForm] = useState({
@@ -130,10 +139,12 @@ export default function InterviewsPage() {
       : interviewsApi.getByStatus("SCHEDULED");
 
     if (canManageInterviews) {
-      const [interviewResult, applicationResult] = await Promise.allSettled([
-        interviewFetcher,
-        applicationsApi.getAll(),
-      ]);
+      const [interviewResult, applicationResult, panelResult] =
+        await Promise.allSettled([
+          interviewFetcher,
+          applicationsApi.getAll(),
+          adminApi.getUsers([ROLES.PANEL_MEMBER]),
+        ]);
 
       if (interviewResult.status === "fulfilled") {
         setInterviews(interviewResult.value.data);
@@ -149,6 +160,16 @@ export default function InterviewsPage() {
         );
       } else {
         setShortlistedApplications([]);
+      }
+
+      if (panelResult.status === "fulfilled") {
+        setPanelMembers(
+          Array.isArray(panelResult.value.data)
+            ? panelResult.value.data
+            : [],
+        );
+      } else {
+        setPanelMembers([]);
       }
 
       if (
@@ -258,6 +279,51 @@ export default function InterviewsPage() {
 
     setLoading(false);
   };
+
+  async function openPanelAssignModal() {
+    setPanelLoading(true);
+    setPanelError("");
+    setPanelForm({ interviewId: "", panelMemberId: "" });
+
+    try {
+      await load();
+      setPanelModalOpen(true);
+    } finally {
+      setPanelLoading(false);
+    }
+  }
+
+  function closePanelAssignModal() {
+    if (panelLoading) return;
+    setPanelModalOpen(false);
+    setPanelError("");
+  }
+
+  async function handleAssignPanelMember(e) {
+    e.preventDefault();
+    if (!panelForm.interviewId || !panelForm.panelMemberId) {
+      setPanelError("Select both the interview and panel member.");
+      return;
+    }
+
+    setPanelLoading(true);
+    setPanelError("");
+    try {
+      await interviewsApi.addPanelMember({
+        interviewId: Number(panelForm.interviewId),
+        panelMemberId: Number(panelForm.panelMemberId),
+      });
+      await load();
+      setPanelModalOpen(false);
+      setPanelForm({ interviewId: "", panelMemberId: "" });
+      setMessage("Panel member assigned successfully.");
+    } catch (err) {
+      setPanelError(err.response?.data?.message || "Failed to assign panel member.");
+    } finally {
+      setPanelLoading(false);
+    }
+  }
+
 
   const handleScore = async (e) => {
     e.preventDefault();
@@ -459,6 +525,119 @@ export default function InterviewsPage() {
             </Button>
           </form>
         </Card>
+      )}
+
+      {canManageInterviews && (
+        <div className="mt-6">
+          <Button type="button" onClick={openPanelAssignModal}>
+            Assign Panel Member
+          </Button>
+        </div>
+      )}
+
+      {panelModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+          onClick={closePanelAssignModal}
+        >
+          <div
+            className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 flex items-start justify-between">
+              <div>
+                <h3 className="font-heading text-lg font-bold text-secondary">
+                  Assign Panel Member
+                </h3>
+                <p className="text-sm text-muted">
+                  Choose a scheduled interview and assign a panel member.
+                </p>
+              </div>
+              <button
+                onClick={closePanelAssignModal}
+                className="text-slate-400 hover:text-secondary"
+              >
+                <span className="text-xl">×</span>
+              </button>
+            </div>
+
+            <form onSubmit={handleAssignPanelMember} className="space-y-4">
+              <Select
+                label="Interview"
+                required
+                value={panelForm.interviewId}
+                onChange={(e) =>
+                  setPanelForm({
+                    ...panelForm,
+                    interviewId: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select interview</option>
+                {interviews.length === 0 ? (
+                  <option value="" disabled>
+                    No scheduled interviews available
+                  </option>
+                ) : (
+                  interviews.map((interview) => (
+                    <option key={interview.id} value={interview.id}>
+                      {getInterviewLabel(interview)}
+                    </option>
+                  ))
+                )}
+              </Select>
+
+              <Select
+                label="Panel Member"
+                required
+                value={panelForm.panelMemberId}
+                onChange={(e) =>
+                  setPanelForm({
+                    ...panelForm,
+                    panelMemberId: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select panel member</option>
+                {panelMembers.length === 0 ? (
+                  <option value="" disabled>
+                    No panel members available
+                  </option>
+                ) : (
+                  panelMembers.map((member) => (
+                    <option key={member.id} value={member.id}>
+                      {member.fName} {member.lName} — {member.email}
+                    </option>
+                  ))
+                )}
+              </Select>
+
+              {panelError && (
+                <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {panelError}
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 border-t border-slate-100 pt-4">
+                <button
+                  type="button"
+                  onClick={closePanelAssignModal}
+                  disabled={panelLoading}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={panelLoading || !interviews.length || !panelMembers.length}
+                  className="rounded-xl bg-secondary px-4 py-2 text-sm font-semibold text-white hover:bg-secondary-dark disabled:opacity-50"
+                >
+                  {panelLoading ? "Assigning…" : "Assign Panel Member"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {isPanel && (

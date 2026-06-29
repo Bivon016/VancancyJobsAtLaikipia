@@ -136,7 +136,8 @@ public class ApplicationDocumentServiceImpl implements ApplicationDocumentServic
         Applications application = applicationsRepo.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Application not found"));
 
-        if (!application.getApplicant().getId().equals(applicant.getId())) {
+        Applicant applicationApplicant = application.getApplicant();
+        if (applicationApplicant == null || !applicationApplicant.getId().equals(applicant.getId())) {
             throw new RuntimeException("Access denied");
         }
 

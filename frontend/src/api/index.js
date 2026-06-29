@@ -15,6 +15,7 @@ export const jobsApi = {
   close: (id) => api.put(`/jobs/${id}/close`),
   open: (id) => api.put(`/jobs/${id}/open`),
   delete: (id) => api.delete(`/jobs/${id}`),
+  getAll: () => api.get("/jobs/all"),
 };
 
 export const departmentsApi = {
@@ -31,7 +32,7 @@ export const profileApi = {
 };
 
 export const applicationsApi = {
-  apply: (vacancyId) => api.post("/applications/apply", { vacancyId }),
+  apply: (data) => api.post("/applications/apply", data),
   getMy: () => api.get("/applications/my"),
   getByVacancy: (vacancyId) => api.get(`/applications/vacancy/${vacancyId}`),
   getAll: () => api.get("/applications/all"),
@@ -99,6 +100,25 @@ export const selectionsApi = {
   getByVacancy: (vacancyId) => api.get(`/selections/vacancy/${vacancyId}`),
 };
 
+// export const adminApi = {
+//   createUser: (data) => api.post("/admin/users/create", data),
+//   getUsers: (roles) =>
+//     Promise.all(
+//       roles.map((role) => api.get("/admin/users", { params: { roles: role } }))
+//     ).then((responses) => ({
+//       data: responses.flatMap((r) => r.data),
+//     })),
+//   getAllUsers: () => api.get("/admin/users"),
+//   deleteUser: (id) => api.delete(`/admin/users/${id}`),
+//   updateUserRole: (id, role) =>
+//     api.put(`/admin/users/${id}/role`, null, { params: { role } }),
+//   getUserDetail: (id) => api.get(`/admin/users/${id}`),
+//   reassignAndDeleteDeptHead: (id, newHeadId) =>
+//   api.delete(`/admin/users/${id}/reassign-and-delete`, {
+//     params: { newHeadId },
+//   }),
+// };
+
 export const adminApi = {
   createUser: (data) => api.post("/admin/users/create", data),
   getUsers: (roles) =>
@@ -107,4 +127,15 @@ export const adminApi = {
     ).then((responses) => ({
       data: responses.flatMap((r) => r.data),
     })),
+  getAllUsers: () => api.get("/admin/users"),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`),
+  updateUserRole: (id, role) =>
+    api.put(`/admin/users/${id}/role`, null, { params: { role } }),
+  getUserDetail: (id) => api.get(`/admin/users/${id}`),
+  updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
+  reassignAndDeleteDeptHead: (id, newHeadId) =>
+    api.delete(`/admin/users/${id}/reassign-and-delete`, {
+      params: { newHeadId },
+    }),
+    getApplicantDetail: (id) => api.get(`/admin/applicants/${id}`),
 };

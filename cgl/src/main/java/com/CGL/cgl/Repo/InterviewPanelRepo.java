@@ -15,6 +15,7 @@ public interface InterviewPanelRepo extends JpaRepository<InterviewPanel, Long> 
 
     List<InterviewPanel> findByInterview(Interview interview);
 
+    void deleteByPanelMember(Users panelMember);
 
     boolean existsByInterviewAndPanelMember(
             Interview interview,

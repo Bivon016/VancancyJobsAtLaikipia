@@ -12,4 +12,5 @@ public interface DepartmentRepo extends JpaRepository<Departments, Long> {
     boolean existsByDepartmentHeadAndIdNot(Users departmentHead, Long id);
     boolean existsByDepartmentHead(Users head);
     Optional<Departments> findBydepartmentName(String name);
+    Optional<Departments> findByDepartmentHead(Users head);
 }

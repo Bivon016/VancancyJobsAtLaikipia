@@ -84,8 +84,13 @@ public class ShortlistServiceImpl implements ShortlistService {
 
         Shortlist saved = shortlistRepo.save(shortlist);
 
+        Applicant applicant = application.getApplicant();
+        if (applicant == null) {
+            throw new RuntimeException("Applicant not found for application");
+        }
+
         // Notify applicant
-        Users applicantUser = application.getApplicant().getUser();
+        Users applicantUser = applicant.getUser();
         notificationService.createNotification(
             applicantUser,
             "Application Shortlisted",

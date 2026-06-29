@@ -44,21 +44,27 @@ public class JobVacancyController {
     }
 
     @PutMapping("/{id}/close")
-    @PreAuthorize("hasRole('CPSB_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','CPSB_ADMIN')")
     public ResponseEntity<JobVacancy> closeVacancy(@PathVariable Long id) {
         return ResponseEntity.ok(jobVacancyService.closeVacancy(id));
     }
     @PutMapping("/{id}/open")
-    @PreAuthorize("hasRole('CPSB_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','CPSB_ADMIN')")
     public ResponseEntity<JobVacancy> openVacancy(@PathVariable Long id) {
         return ResponseEntity.ok(jobVacancyService.openVacancy(id));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','CPSB_ADMIN')")
     public ResponseEntity<String> deleteVacancyById(@PathVariable Long id) {
         jobVacancyService.deleteVacancyById(id);
         return ResponseEntity.ok("Vacancy deleted successfully");
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','CPSB_ADMIN')")
+    public ResponseEntity<List<JobVacancy>> getAllVacanciesAdmin() { 
+        return ResponseEntity.ok(jobVacancyService.getAllVacancies());
     }
 
 

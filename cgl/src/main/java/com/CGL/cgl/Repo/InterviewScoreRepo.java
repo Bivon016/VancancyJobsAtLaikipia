@@ -17,6 +17,7 @@ public interface InterviewScoreRepo
             Interview interview,
             Users panelMember
     );
+    void deleteByPanelMember(Users panelMember);
 
     List<InterviewScore> findByInterview(
             Interview interview

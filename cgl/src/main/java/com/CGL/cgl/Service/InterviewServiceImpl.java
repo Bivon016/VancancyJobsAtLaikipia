@@ -77,7 +77,11 @@ public class InterviewServiceImpl implements InterviewService {
 
         Interview saved = interviewRepo.save(interview);
 
-        Users applicantUser = application.getApplicant().getUser();
+        Applicant applicant = application.getApplicant();
+        if (applicant == null) {
+            throw new RuntimeException("Applicant not found for application");
+        }
+        Users applicantUser = applicant.getUser();
         String interviewMessage =
             "You have an interview scheduled on " +
             request.getInterviewDate() +

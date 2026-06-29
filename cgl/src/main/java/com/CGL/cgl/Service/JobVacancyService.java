@@ -89,4 +89,9 @@ public class JobVacancyService {
         vacancy.setStatus(ApplicationStatus.OPEN);
         return jobVacancyRepo.save(vacancy);
     }
+
+    public List<JobVacancy> getAllVacancies() {
+        return jobVacancyRepo.findAll();
+
+    }
 }
