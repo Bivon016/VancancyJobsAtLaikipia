@@ -1,9 +1,11 @@
 package com.CGL.cgl.Controller;
 
+import com.CGL.cgl.DTO.CandidateScoreSummary;
 import com.CGL.cgl.DTO.InterviewRequest;
 import com.CGL.cgl.DTO.PanelMemberRequest;
 import com.CGL.cgl.Model.Interview;
 import com.CGL.cgl.Model.InterviewStatus;
+import com.CGL.cgl.Service.InterviewScoreService;
 import com.CGL.cgl.Service.InterviewService;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +18,15 @@ import org.springframework.web.bind.annotation.*;
 public class InterviewController {
 
     private final InterviewService interviewService;
+    private final InterviewScoreService interviewScoreService;
 
-    public InterviewController(InterviewService interviewService) {
+    public InterviewController(InterviewService interviewService, InterviewScoreService interviewScoreService) {
         this.interviewService = interviewService;
+        this.interviewScoreService = interviewScoreService;
     }
 
     @PostMapping("/schedule")
-    @PreAuthorize("hasRole('HR_OFFICER')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','HR_OFFICER')")
     public ResponseEntity<Interview> scheduleInterview(
         @RequestBody InterviewRequest request,
         Authentication authentication
@@ -35,7 +39,7 @@ public class InterviewController {
     }
 
     @PostMapping("/panel")
-    @PreAuthorize("hasRole('HR_OFFICER')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','HR_OFFICER')")
     public ResponseEntity<String> addPanelMember(
         @RequestBody PanelMemberRequest request,
         Authentication authentication
@@ -68,7 +72,7 @@ public class InterviewController {
     }
 
     @PutMapping("/{id}/complete")
-    @PreAuthorize("hasRole('HR_OFFICER')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','HR_OFFICER','PANEL_MEMBER')")
     public ResponseEntity<Interview> completeInterview(
         @PathVariable Long id,
         Authentication authentication
@@ -76,5 +80,13 @@ public class InterviewController {
         String email = authentication.getName();
 
         return ResponseEntity.ok(interviewService.completeInterview(id, email));
+    }
+
+    @GetMapping("/vacancy/{vacancyId}")
+    @PreAuthorize("hasAnyRole('HR_OFFICER','SUPER_ADMIN')")
+    public ResponseEntity<List<CandidateScoreSummary>> getScoresByVacancy(
+            @PathVariable Long vacancyId
+    ) {
+        return ResponseEntity.ok(interviewScoreService.getScoresByVacancy(vacancyId));
     }
 }

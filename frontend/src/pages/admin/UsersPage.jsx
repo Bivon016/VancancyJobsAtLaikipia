@@ -720,6 +720,8 @@ function ApplicantsTab() {
   const [viewingApplicant, setViewingApplicant] = useState(null);
   const [viewLoading, setViewLoading] = useState(false);
   const [viewError, setViewError] = useState("");
+  const [editingApplicant, setEditingApplicant] = useState(false);
+  const [editingApplicantProfile, setEditingApplicantProfile] = useState(false);
 
   function loadApplicants() {
     setLoadingApplicants(true);
@@ -761,24 +763,37 @@ function ApplicantsTab() {
   }
 
 async function handleView(user) {
-  setViewingApplicant({ id: user.id });
-  setViewLoading(true);
-  setViewError("");
-  try {
-    const { data } = await adminApi.getApplicantDetail(user.id);
-    setViewingApplicant(data);
-  } catch (err) {
-    setViewError(
-      err?.response?.data?.message || "Could not load applicant details.",
-    );
-  } finally {
-    setViewLoading(false);
+    setViewingApplicant({ id: user.id });
+    setEditingApplicant(false);
+    setEditingApplicantProfile(false);
+    setViewLoading(true);
+    setViewError("");
+    try {
+      const { data } = await adminApi.getApplicantDetail(user.id);
+      setViewingApplicant(data);
+    } catch (err) {
+      setViewError(
+        err?.response?.data?.message || "Could not load applicant details.",
+      );
+    } finally {
+      setViewLoading(false);
+    }
   }
-}
 
   function closeViewModal() {
     setViewingApplicant(null);
     setViewError("");
+    setEditingApplicant(false);
+    setEditingApplicantProfile(false);
+  }
+
+  function handleApplicantUpdated(updated) {
+    setViewingApplicant((prev) => (prev ? { ...prev, ...updated } : prev));
+    setApplicants((prev) =>
+      prev.map((u) => (u.id === updated.id ? { ...u, ...updated } : u)),
+    );
+    setEditingApplicant(false);
+    setEditingApplicantProfile(false);
   }
 
   return (
@@ -866,15 +881,34 @@ async function handleView(user) {
       </Card>
 
       {viewingApplicant && (
-        <ApplicantDetailModal
-          applicant={viewingApplicant}
-          loading={viewLoading}
-          error={viewError}
-          onClose={() => {
-            setViewingApplicant(null);
-            setViewError("");
-          }}
-        />
+        <>
+          <ApplicantDetailModal
+            applicant={viewingApplicant}
+            loading={viewLoading}
+            error={viewError}
+            editable
+            onClose={closeViewModal}
+            onEditAccount={() => setEditingApplicant(true)}
+            onEditProfile={() => setEditingApplicantProfile(true)}
+          />
+          {editingApplicant && viewingApplicant && (
+            <UserDetailModal
+              user={viewingApplicant}
+              loading={false}
+              error=""
+              editable
+              onClose={() => setEditingApplicant(false)}
+              onUpdated={handleApplicantUpdated}
+            />
+          )}
+          {editingApplicantProfile && viewingApplicant && (
+            <ApplicantProfileEditModal
+              applicant={viewingApplicant}
+              onClose={() => setEditingApplicantProfile(false)}
+              onUpdated={handleApplicantUpdated}
+            />
+          )}
+        </>
       )}
     </div>
   );
@@ -1182,7 +1216,7 @@ function DetailSection({ title, children }) {
   );
 }
 
-function ApplicantDetailModal({ applicant, loading, error, onClose }) {
+function ApplicantDetailModal({ applicant, loading, error, onClose, editable, onEdit, onEditProfile }) {
   const hasDetail = !loading && !error && applicant?.fName;
 
   return (
@@ -1372,16 +1406,410 @@ function ApplicantDetailModal({ applicant, loading, error, onClose }) {
               )}
             </DetailSection>
 
-            <div className="flex justify-end border-t border-slate-100 pt-4">
+            <div className="flex justify-between gap-3 border-t border-slate-100 pt-4">
               <button
                 onClick={onClose}
                 className="rounded-xl bg-secondary px-4 py-2 text-sm font-semibold text-white hover:bg-secondary/90"
               >
                 Close
               </button>
+              {editable && onEdit ? (
+                <button
+                  onClick={onEdit}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-secondary hover:bg-slate-50"
+                >
+                  Edit account
+                </button>
+              ) : null}
+              {editable && onEditProfile ? (
+                <button
+                  onClick={onEditProfile}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-secondary hover:bg-slate-50"
+                >
+                  Edit profile
+                </button>
+              ) : null}
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function ApplicantProfileEditModal({ applicant, onClose, onUpdated }) {
+  const [form, setForm] = useState({
+    fName: applicant?.fName || "",
+    lName: applicant?.lName || "",
+    email: applicant?.email || "",
+    password: "",
+    nationalId: applicant?.nationalId || "",
+    birthDate: applicant?.birthDate || "",
+    gender: applicant?.gender || "",
+    maritalStatus: applicant?.maritalStatus || "",
+    nationality: applicant?.nationality || "",
+    postalAddress: applicant?.postalAddress || "",
+    physicalAddress: applicant?.physicalAddress || "",
+    countyOfBirth: applicant?.countyOfBirth || "",
+    countyOfResidence: applicant?.countyOfResidence || "",
+    subCounty: applicant?.subCounty || "",
+    ward: applicant?.ward || "",
+    village: applicant?.village || "",
+    disabilityStatus: applicant?.disabilityStatus ?? false,
+    disabilityType: applicant?.disabilityType || "",
+    disabilityRegistrationNumber: applicant?.disabilityRegistrationNumber || "",
+    ethnicity: applicant?.ethnicity || "",
+    educationalLevel: applicant?.educationalLevel || "",
+    educationYearOfCompletion: applicant?.educationYearOfCompletion || "",
+    yearsOfExperience: applicant?.yearsOfExperience || "",
+    currentProfession: applicant?.currentProfession || "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+
+  useEffect(() => {
+    if (applicant) {
+      setForm({
+        fName: applicant.fName || "",
+        lName: applicant.lName || "",
+        email: applicant.email || "",
+        password: "",
+        nationalId: applicant.nationalId || "",
+        birthDate: applicant.birthDate || "",
+        gender: applicant.gender || "",
+        maritalStatus: applicant.maritalStatus || "",
+        nationality: applicant.nationality || "",
+        postalAddress: applicant.postalAddress || "",
+        physicalAddress: applicant.physicalAddress || "",
+        countyOfBirth: applicant.countyOfBirth || "",
+        countyOfResidence: applicant.countyOfResidence || "",
+        subCounty: applicant.subCounty || "",
+        ward: applicant.ward || "",
+        village: applicant.village || "",
+        disabilityStatus: applicant.disabilityStatus ?? false,
+        disabilityType: applicant.disabilityType || "",
+        disabilityRegistrationNumber: applicant.disabilityRegistrationNumber || "",
+        ethnicity: applicant.ethnicity || "",
+        educationalLevel: applicant.educationalLevel || "",
+        educationYearOfCompletion: applicant.educationYearOfCompletion || "",
+        yearsOfExperience: applicant.yearsOfExperience || "",
+        currentProfession: applicant.currentProfession || "",
+      });
+    }
+  }, [applicant]);
+
+  async function handleSave(e) {
+    e.preventDefault();
+    setSaving(true);
+    setSaveError("");
+    try {
+      const accountPayload = {
+        fName: form.fName,
+        lName: form.lName,
+        email: form.email,
+        ...(form.password.trim() ? { password: form.password.trim() } : {}),
+      };
+      const accountChanged =
+        form.fName !== applicant.fName ||
+        form.lName !== applicant.lName ||
+        form.email !== applicant.email ||
+        form.password.trim() !== "";
+
+      if (accountChanged) {
+        await adminApi.updateUser(applicant.id, accountPayload);
+      }
+
+      const payload = {
+        nationalId: form.nationalId || undefined,
+        birthDate: form.birthDate || undefined,
+        gender: form.gender || undefined,
+        maritalStatus: form.maritalStatus || undefined,
+        nationality: form.nationality || undefined,
+        postalAddress: form.postalAddress || undefined,
+        physicalAddress: form.physicalAddress || undefined,
+        countyOfBirth: form.countyOfBirth || undefined,
+        countyOfResidence: form.countyOfResidence || undefined,
+        subCounty: form.subCounty || undefined,
+        ward: form.ward || undefined,
+        village: form.village || undefined,
+        disabilityStatus: form.disabilityStatus || undefined,
+        disabilityType: form.disabilityType || undefined,
+        disabilityRegistrationNumber:
+          form.disabilityRegistrationNumber || undefined,
+        ethnicity: form.ethnicity || undefined,
+        educationalLevel: form.educationalLevel || undefined,
+        educationYearOfCompletion: form.educationYearOfCompletion
+          ? Number(form.educationYearOfCompletion)
+          : undefined,
+        yearsOfExperience: form.yearsOfExperience
+          ? Number(form.yearsOfExperience)
+          : undefined,
+        currentProfession: form.currentProfession || undefined,
+      };
+      const { data } = await adminApi.updateApplicantProfile(applicant.id, payload);
+      onUpdated?.(data);
+      onClose();
+    } catch (err) {
+      setSaveError(
+        err?.response?.data?.message || "Could not save applicant profile.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-[95vw] md:max-w-3xl lg:max-w-4xl xl:max-w-5xl rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto overflow-x-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-start justify-between">
+          <div>
+            <h3 className="font-heading text-lg font-bold text-secondary">
+              Edit Applicant Profile
+            </h3>
+            <p className="text-sm text-muted">
+              Update applicant identity, location, education, and experience.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-secondary"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSave} className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="First name"
+              value={form.fName}
+              onChange={(e) => setForm({ ...form, fName: e.target.value })}
+            />
+            <Input
+              label="Last name"
+              value={form.lName}
+              onChange={(e) => setForm({ ...form, lName: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="Email"
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+            <Input
+              label="New password"
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              placeholder="Leave blank to keep current password"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="National ID"
+              value={form.nationalId}
+              onChange={(e) => setForm({ ...form, nationalId: e.target.value })}
+            />
+            <Input
+              label="Birth date"
+              type="date"
+              value={form.birthDate}
+              onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Select
+              label="Gender"
+              value={form.gender || ""}
+              onChange={(e) => setForm({ ...form, gender: e.target.value })}
+            >
+              <option value="">Select gender</option>
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+            </Select>
+            <Select
+              label="Marital status"
+              value={form.maritalStatus || ""}
+              onChange={(e) => setForm({ ...form, maritalStatus: e.target.value })}
+            >
+              <option value="">Select status</option>
+              <option value="SINGLE">Single</option>
+              <option value="MARRIED">Married</option>
+              <option value="DIVORCED">Divorced</option>
+              <option value="WIDOWED">Widowed</option>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="Nationality"
+              value={form.nationality}
+              onChange={(e) => setForm({ ...form, nationality: e.target.value })}
+            />
+            <Input
+              label="Postal address"
+              value={form.postalAddress}
+              onChange={(e) => setForm({ ...form, postalAddress: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="Physical address"
+              value={form.physicalAddress}
+              onChange={(e) => setForm({ ...form, physicalAddress: e.target.value })}
+            />
+            <Input
+              label="County of birth"
+              value={form.countyOfBirth}
+              onChange={(e) => setForm({ ...form, countyOfBirth: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="County of residence"
+              value={form.countyOfResidence}
+              onChange={(e) => setForm({ ...form, countyOfResidence: e.target.value })}
+            />
+            <Input
+              label="Sub-county"
+              value={form.subCounty}
+              onChange={(e) => setForm({ ...form, subCounty: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="Ward"
+              value={form.ward}
+              onChange={(e) => setForm({ ...form, ward: e.target.value })}
+            />
+            <Input
+              label="Village"
+              value={form.village}
+              onChange={(e) => setForm({ ...form, village: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Select
+              label="Disability status"
+              value={form.disabilityStatus ? "yes" : "no"}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  disabilityStatus: e.target.value === "yes",
+                })
+              }
+            >
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </Select>
+            <Input
+              label="Disability type"
+              value={form.disabilityType}
+              onChange={(e) => setForm({ ...form, disabilityType: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="Disability registration no."
+              value={form.disabilityRegistrationNumber}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  disabilityRegistrationNumber: e.target.value,
+                })
+              }
+            />
+            <Input
+              label="Ethnicity"
+              value={form.ethnicity}
+              onChange={(e) => setForm({ ...form, ethnicity: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="Current profession"
+              value={form.currentProfession}
+              onChange={(e) => setForm({ ...form, currentProfession: e.target.value })}
+            />
+            <Input
+              label="Education level"
+              value={form.educationalLevel}
+              onChange={(e) => setForm({ ...form, educationalLevel: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="Year completed"
+              type="number"
+              min="1950"
+              max="2100"
+              value={form.educationYearOfCompletion}
+              onChange={(e) => setForm({ ...form, educationYearOfCompletion: e.target.value })}
+            />
+            <Input
+              label="Years of experience"
+              type="number"
+              min="0"
+              max="60"
+              value={form.yearsOfExperience}
+              onChange={(e) => setForm({ ...form, yearsOfExperience: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Input
+              label="Years of experience"
+              type="number"
+              min="0"
+              max="60"
+              value={form.yearsOfExperience}
+              onChange={(e) => setForm({ ...form, yearsOfExperience: e.target.value })}
+            />
+            <div />
+          </div>
+
+          {saveError && (
+            <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {saveError}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 border-t border-slate-100 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={saving}
+              className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="inline-flex items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-sm font-semibold text-white hover:bg-secondary/90 disabled:opacity-50"
+            >
+              {saving ? "Saving…" : "Save profile"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

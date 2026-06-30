@@ -17,6 +17,7 @@ public class InterviewServiceImpl implements InterviewService {
     private final UserRepo usersRepo;
     private final NotificationService notificationService;
     private final EmailService emailService;
+    private final String appFrontendBaseUrl;
 
     public InterviewServiceImpl(
         InterviewRepo interviewRepo,
@@ -24,7 +25,8 @@ public class InterviewServiceImpl implements InterviewService {
         ApplicationsRepo applicationsRepo,
         UserRepo usersRepo,
         NotificationService notificationService,
-        EmailService emailService
+        EmailService emailService,
+        @org.springframework.beans.factory.annotation.Value("${app.frontend-base-url}") String appFrontendBaseUrl
     ) {
         this.interviewRepo = interviewRepo;
         this.interviewPanelRepo = interviewPanelRepo;
@@ -32,6 +34,7 @@ public class InterviewServiceImpl implements InterviewService {
         this.usersRepo = usersRepo;
         this.notificationService = notificationService;
         this.emailService = emailService;
+        this.appFrontendBaseUrl = appFrontendBaseUrl;
     }
 
     @Override
@@ -82,6 +85,9 @@ public class InterviewServiceImpl implements InterviewService {
             throw new RuntimeException("Applicant not found for application");
         }
         Users applicantUser = applicant.getUser();
+        if (applicantUser == null) {
+            throw new RuntimeException("Applicant user is missing for this application");
+        }
         String interviewMessage =
             "You have an interview scheduled on " +
             request.getInterviewDate() +
@@ -102,6 +108,7 @@ public class InterviewServiceImpl implements InterviewService {
             ? application.getVacancy().getDepartment().getDepartmentName()
             : "Laikipia County";
 
+        String examLink = appFrontendBaseUrl + "/interview/" + saved.getId() + "/exam";
         String htmlBody = EmailTemplates.interviewScheduled(
             applicantUser.getFName(),
             application.getVacancy().getTitle(),
@@ -109,7 +116,8 @@ public class InterviewServiceImpl implements InterviewService {
             referenceNo,
             request.getInterviewDate().toString(),
             request.getInterviewTime().toString(),
-            request.getVenue()
+            request.getVenue(),
+            examLink
         );
 
         emailService.sendHtmlEmail(
@@ -156,32 +164,41 @@ public class InterviewServiceImpl implements InterviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Interview> getInterviewsByStatus(InterviewStatus status) {
-        return interviewRepo.findByStatus(status);
+        return interviewRepo.findByStatusWithDetails(status);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Interview> getMyInterviews(String email) {
         Users user = usersRepo
-            .findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+                .findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<InterviewPanel> panels = interviewPanelRepo.findByPanelMember(
-            user
-        );
+        List<InterviewPanel> panels = interviewPanelRepo.findByPanelMemberWithDetails(user);
 
         return panels.stream().map(InterviewPanel::getInterview).toList();
     }
-
     @Override
     @Transactional
     public Interview completeInterview(Long interviewId, String email) {
         Interview interview = interviewRepo
-            .findById(interviewId)
-            .orElseThrow(() -> new RuntimeException("Interview not found"));
+                .findById(interviewId)
+                .orElseThrow(() -> new RuntimeException("Interview not found"));
+
+        Users user = usersRepo
+                .findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() == Role.PANEL_MEMBER) {
+            boolean isAssigned = interviewPanelRepo.existsByInterviewAndPanelMember(interview, user);
+            if (!isAssigned) {
+                throw new RuntimeException("You are not assigned to this interview");
+            }
+        }
 
         interview.setStatus(InterviewStatus.COMPLETED);
-
         return interviewRepo.save(interview);
     }
 }

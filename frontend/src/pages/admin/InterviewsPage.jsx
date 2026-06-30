@@ -11,6 +11,7 @@ import {
 } from "../../utils/constants";
 import { useAuth } from "../../auth/AuthContext";
 import { normalizeRole, ROLES } from "../../utils/roles";
+import ScoreComparisonView from "./ScoreComparisonView";
 
 const COLUMNS = [
   { key: "no", header: "#" },
@@ -77,6 +78,7 @@ export default function InterviewsPage() {
     remarks: "",
   });
   const [loading, setLoading] = useState(false);
+  const [completingId, setCompletingId] = useState(null);
   const [message, setMessage] = useState("");
 
   const shortlistedGroups = useMemo(() => {
@@ -104,6 +106,25 @@ export default function InterviewsPage() {
       return acc;
     }, new Map());
 
+    return Array.from(groups.values()).sort((a, b) =>
+      a.title.localeCompare(b.title),
+    );
+  }, [shortlistedApplications]);
+
+  const allVacancyGroups = useMemo(() => {
+    const groups = shortlistedApplications.reduce((acc, application) => {
+      const vacancyId = application?.vacancy?.id;
+      if (!vacancyId) return acc;
+      const existing = acc.get(vacancyId) || {
+        vacancyId,
+        title: application?.vacancy?.title || "Untitled vacancy",
+        department:
+          application?.vacancy?.department?.departmentName ||
+          "Unknown department",
+      };
+      acc.set(vacancyId, existing);
+      return acc;
+    }, new Map());
     return Array.from(groups.values()).sort((a, b) =>
       a.title.localeCompare(b.title),
     );
@@ -324,6 +345,21 @@ export default function InterviewsPage() {
     }
   }
 
+  const handleCompleteInterview = async (interviewId) => {
+    setCompletingId(interviewId);
+    setMessage("");
+    try {
+      await interviewsApi.complete(interviewId);
+      setMessage("Interview marked as completed.");
+      await load();
+    } catch (err) {
+      setMessage(
+        err.response?.data?.message || "Failed to mark interview complete.",
+      );
+    } finally {
+      setCompletingId(null);
+    }
+  };
 
   const handleScore = async (e) => {
     e.preventDefault();
@@ -640,6 +676,10 @@ export default function InterviewsPage() {
         </div>
       )}
 
+      {canManageInterviews && (
+        <ScoreComparisonView vacancyGroups={allVacancyGroups} />
+      )}
+
       {isPanel && (
         <Card className="mt-6">
           <CardHeader title="Submit Interview Score" />
@@ -700,23 +740,58 @@ export default function InterviewsPage() {
                 setScoreForm({ ...scoreForm, remarks: e.target.value })
               }
             />
-            {scoreForm.interviewId && (
-              <div className="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 sm:col-span-2">
-                Confirming interview:{" "}
-                <span className="font-semibold">
-                  {getInterviewLabel(
-                    interviews.find(
-                      (interview) =>
-                        String(interview.id) === String(scoreForm.interviewId),
-                    ),
-                  )}
-                </span>
-              </div>
-            )}
+            {scoreForm.interviewId &&
+              (() => {
+                const selectedInterview = interviews.find(
+                  (interview) =>
+                    String(interview.id) === String(scoreForm.interviewId),
+                );
+                const isCompleted = selectedInterview?.status === "COMPLETED";
+
+                return (
+                  <div className="sm:col-span-2 space-y-3">
+                    <div className="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                      Confirming interview:{" "}
+                      <span className="font-semibold">
+                        {getInterviewLabel(selectedInterview)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                      <span
+                        className={
+                          isCompleted ? "text-green-700" : "text-amber-700"
+                        }
+                      >
+                        {isCompleted
+                          ? "This interview is marked completed. You can submit a score."
+                          : "This interview is not yet completed. Mark it complete before scoring."}
+                      </span>
+                      {!isCompleted && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          loading={completingId === selectedInterview?.id}
+                          onClick={() =>
+                            handleCompleteInterview(selectedInterview.id)
+                          }
+                        >
+                          Mark Complete
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
             <Button
               type="submit"
               loading={loading}
-              disabled={!scoreForm.interviewId}
+              disabled={
+                !scoreForm.interviewId ||
+                interviews.find(
+                  (i) => String(i.id) === String(scoreForm.interviewId),
+                )?.status !== "COMPLETED"
+              }
             >
               Submit Score
             </Button>

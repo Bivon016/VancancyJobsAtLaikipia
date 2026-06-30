@@ -2,6 +2,7 @@ package com.CGL.cgl.DTO;
 
 import com.CGL.cgl.Model.Gender;
 import com.CGL.cgl.Model.MaritalStatus;
+import com.CGL.cgl.Model.Role;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -18,6 +19,7 @@ public class AdminApplicantDetailDTO {
     private String lName;
     private String email;
     private String phoneNumber;
+    private Role role;
     private boolean emailVerified;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

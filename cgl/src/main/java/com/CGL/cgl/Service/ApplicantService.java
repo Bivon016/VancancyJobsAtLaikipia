@@ -172,6 +172,98 @@ public class ApplicantService {
         return toResponse(applicantRepo.save(applicant));
     }
 
+    public ApplicantProfileResponse updateProfileByUserId(
+        ApplicantProfileRequest request,
+        Long userId
+    ) {
+        Users users = userRepo
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Applicant applicant = applicantRepo
+            .findByUser(users)
+            .orElseThrow(() ->
+                new ResourceNotFoundException("Applicant profile not found")
+            );
+
+        validateProfileRequest(request);
+
+        if (
+            request.getNationalId() != null &&
+            !request.getNationalId().equals(applicant.getNationalId())
+        ) {
+            applicantRepo
+                .findByNationalId(request.getNationalId())
+                .ifPresent(existing -> {
+                    if (!existing.getId().equals(applicant.getId())) {
+                        throw new ConflictException(
+                            "National ID already registered"
+                        );
+                    }
+                });
+            applicant.setNationalId(request.getNationalId());
+        }
+        if (request.getBirthDate() != null) {
+            applicant.setBirthDate(request.getBirthDate());
+        }
+        if (request.getGender() != null) {
+            applicant.setGender(request.getGender());
+        }
+        if (request.getMaritalStatus() != null) {
+            applicant.setMaritalStatus(request.getMaritalStatus());
+        }
+        if (request.getNationality() != null) {
+            applicant.setNationality(request.getNationality());
+        }
+        if (request.getPostalAddress() != null) {
+            applicant.setPostalAddress(request.getPostalAddress());
+        }
+        if (request.getPhysicalAddress() != null) {
+            applicant.setPhysicalAddress(request.getPhysicalAddress());
+        }
+        if (request.getCountyOfBirth() != null) {
+            applicant.setCountyOfBirth(request.getCountyOfBirth());
+        }
+        if (request.getCountyOfResidence() != null) {
+            applicant.setCountyOfResidence(request.getCountyOfResidence());
+        }
+        if (request.getSubCounty() != null) {
+            applicant.setSubCounty(request.getSubCounty());
+        }
+        if (request.getWard() != null) {
+            applicant.setWard(request.getWard());
+        }
+        if (request.getVillage() != null) {
+            applicant.setVillage(request.getVillage());
+        }
+        if (request.getDisabilityStatus() != null) {
+            applicant.setDisabilityStatus(request.getDisabilityStatus());
+        }
+        applicant.setDisabilityType(normalizeDisabilityType(request));
+        applicant.setDisabilityRegistrationNumber(
+            normalizeDisabilityRegistrationNumber(request)
+        );
+        if (request.getEthnicity() != null) {
+            applicant.setEthnicity(request.getEthnicity());
+        }
+        if (request.getEducationalLevel() != null) {
+            applicant.setEducationalLevel(request.getEducationalLevel());
+        }
+        if (request.getEducationYearOfCompletion() != null) {
+            applicant.setEducationYearOfCompletion(
+                request.getEducationYearOfCompletion()
+            );
+        }
+        if (request.getYearsOfExperience() != null) {
+            applicant.setYearsOfExperience(request.getYearsOfExperience());
+        }
+        if (request.getCurrentProfession() != null) {
+            applicant.setCurrentProfession(request.getCurrentProfession());
+        }
+
+        return toResponse(applicantRepo.save(applicant));
+    }
+
     public ApplicantProfileResponse getProfile(String email) {
         Users users = userRepo
             .findByEmail(email)

@@ -31,7 +31,12 @@ import AdminApplicationsPage from "./pages/admin/AdminApplicationsPage";
 import ShortlistsPage from "./pages/admin/ShortlistsPage";
 import InterviewsPage from "./pages/admin/InterviewsPage";
 import SelectionsPage from "./pages/admin/SelectionsPage";
+import InterviewSetupPage from "./pages/admin/InterviewSetupPage";
+import PanelInterviewsPage from "./pages/panel/PanelInterviewsPage";
+import VacancyQuestionsPage from "./pages/panel/VacancyQuestionsPage";
+import { Interviewexamsystem } from "./pages/applicant/Interviewexamsystem";
 import { ROLES } from "./utils/roles";
+
 
 export default function App() {
   return (
@@ -136,6 +141,21 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            {/* <Route
+  path="interviews/:interviewId/questions"
+  element={
+    <ProtectedRoute
+      roles={[
+        ROLES.SUPER_ADMIN,
+        ROLES.HR_OFFICER,
+        ROLES.CPSB_ADMIN,
+        ROLES.PANEL_MEMBER,
+      ]}
+    >
+      <InterviewExamSystem />
+    </ProtectedRoute>
+  }
+/> */}
             <Route
               path="vacancies"
               element={
@@ -188,6 +208,43 @@ export default function App() {
               }
             />
             <Route
+              path="interview-setup"
+              element={
+                <ProtectedRoute
+                  roles={[
+                    ROLES.SUPER_ADMIN,
+                    ROLES.HR_OFFICER,
+                  ]}
+                >
+                  <InterviewSetupPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="panel/my-interviews"
+              element={
+                <ProtectedRoute
+                  roles={[ROLES.PANEL_MEMBER]}
+                >
+                  <PanelInterviewsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="panel/vacancy-questions"
+              element={
+                <ProtectedRoute
+                  roles={[
+                    ROLES.SUPER_ADMIN,
+                    ROLES.HR_OFFICER,
+                    ROLES.PANEL_MEMBER,
+                  ]}
+                >
+                  <VacancyQuestionsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="selections"
               element={
                 <ProtectedRoute
@@ -202,6 +259,22 @@ export default function App() {
               }
             />
           </Route>
+
+          <Route
+            path="/interview/:interviewId/:view"
+            element={
+              <ProtectedRoute
+                roles={[
+                  ROLES.APPLICANT,
+                  ROLES.PANEL_MEMBER,
+                  ROLES.SUPER_ADMIN,
+                  ROLES.HR_OFFICER,
+                ]}
+              >
+                <Interviewexamsystem />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

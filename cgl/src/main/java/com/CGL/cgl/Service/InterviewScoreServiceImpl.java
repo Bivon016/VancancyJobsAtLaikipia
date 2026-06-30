@@ -1,5 +1,6 @@
 package com.CGL.cgl.Service;
 
+import com.CGL.cgl.DTO.CandidateScoreSummary;
 import com.CGL.cgl.DTO.InterviewScoreRequest;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
@@ -171,5 +172,10 @@ public class InterviewScoreServiceImpl
                         .sum();
 
         return total / scores.size();
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public List<CandidateScoreSummary> getScoresByVacancy(Long vacancyId) {
+        return interviewScoreRepo.findScoreSummaryByVacancy(vacancyId);
     }
 }

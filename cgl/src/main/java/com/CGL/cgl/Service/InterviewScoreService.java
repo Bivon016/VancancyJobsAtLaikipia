@@ -1,5 +1,6 @@
 package com.CGL.cgl.Service;
 
+import com.CGL.cgl.DTO.CandidateScoreSummary;
 import com.CGL.cgl.DTO.InterviewScoreRequest;
 import com.CGL.cgl.Model.InterviewScore;
 
@@ -19,4 +20,6 @@ public interface InterviewScoreService {
     Double getAverageScore(
             Long interviewId
     );
+    List<CandidateScoreSummary> getScoresByVacancy(Long vacancyId);
+
 }

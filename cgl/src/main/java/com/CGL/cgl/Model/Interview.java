@@ -3,6 +3,7 @@ package com.CGL.cgl.Model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,13 +25,10 @@ public class Interview {
     private Long id;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "application_id",
-            unique = true
-    )
-    private Applications application;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "application_id", unique = true)
+    private Applications application;
 
     private LocalDate interviewDate;
 
@@ -47,11 +45,16 @@ public class Interview {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
+    @JsonIgnore
     private Users createdBy;
 
 
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    private Integer durationMinutes;
+
+    private LocalDateTime examStartedAt;
 
 }

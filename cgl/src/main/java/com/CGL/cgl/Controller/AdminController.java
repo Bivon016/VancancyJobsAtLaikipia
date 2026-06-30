@@ -23,19 +23,22 @@ public class AdminController {
     private final AdminService adminService;
     private final PasswordEncoder passwordEncoder;
     private final ApplicantRepo applicantRepo;
+    private final com.CGL.cgl.Service.ApplicantService applicantService;
 
     public AdminController(
             RegisterService registerService,
             UserRepo userRepo,
             AdminService adminService,
             PasswordEncoder passwordEncoder,
-            ApplicantRepo applicantRepo
+            ApplicantRepo applicantRepo,
+            com.CGL.cgl.Service.ApplicantService applicantService
     ) {
         this.registerService = registerService;
         this.userRepo = userRepo;
         this.adminService = adminService;
         this.passwordEncoder = passwordEncoder;
         this.applicantRepo = applicantRepo;
+        this.applicantService = applicantService;
     }
 
     @GetMapping("/applicants/{id}")
@@ -52,6 +55,25 @@ public class AdminController {
         return ResponseEntity.ok(toApplicantDetail(user, profile));
     }
 
+    @PutMapping("/applicants/{id}/profile")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<AdminApplicantDetailDTO> updateApplicantProfile(
+            @PathVariable Long id,
+            @RequestBody ApplicantProfileRequest request
+    ) {
+        Users user = userRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() != Role.APPLICANT) {
+            throw new RuntimeException("This user is not an applicant");
+        }
+
+        applicantService.updateProfileByUserId(request, id);
+        Applicant profile = applicantRepo.findByUser_Id(id)
+                .orElseThrow(() -> new RuntimeException("Applicant profile not found"));
+        return ResponseEntity.ok(toApplicantDetail(user, profile));
+    }
+
     private AdminApplicantDetailDTO toApplicantDetail(Users user, Applicant profile) {
         AdminApplicantDetailDTO.AdminApplicantDetailDTOBuilder builder = AdminApplicantDetailDTO.builder()
                 .id(user.getId())
@@ -59,6 +81,7 @@ public class AdminController {
                 .lName(user.getLName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
+                .role(user.getRole())
                 .emailVerified(user.isEmailVerified())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
@@ -212,6 +235,5 @@ public class AdminController {
                 .updatedAt(user.getUpdatedAt())
                 .build();
     }
-
 
 }

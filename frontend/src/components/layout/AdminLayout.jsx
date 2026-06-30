@@ -68,6 +68,24 @@ const ALL_LINKS = [
     ],
   },
   {
+    to: "/admin/interview-setup",
+    label: "Create Interview",
+    icon: Calendar,
+    roles: [ROLES.SUPER_ADMIN, ROLES.HR_OFFICER],
+  },
+  {
+    to: "/admin/panel/my-interviews",
+    label: "My Interviews",
+    icon: ClipboardList,
+    roles: [ROLES.PANEL_MEMBER],
+  },
+  {
+    to: "/admin/panel/vacancy-questions",
+    label: "Question Bank",
+    icon: ClipboardList,
+    roles: [ROLES.SUPER_ADMIN, ROLES.HR_OFFICER, ROLES.PANEL_MEMBER],
+  },
+  {
     to: "/admin/selections",
     label: "Final Selection",
     icon: Star,

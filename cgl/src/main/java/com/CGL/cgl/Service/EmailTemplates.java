@@ -166,7 +166,7 @@ public class EmailTemplates {
     public static String interviewScheduled(String firstName, String vacancyTitle,
                                              String departmentName, String referenceNo,
                                              String interviewDate, String interviewTime,
-                                             String venue) {
+                                             String venue, String examLink) {
         return header()
             + "<p style=\"margin:0 0 4px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:#6C757D;\">Interview invitation</p>"
             + "<h1 style=\"margin:0 0 20px;font-size:22px;font-weight:600;color:#212529;\">Your interview has been scheduled</h1>"
@@ -183,7 +183,7 @@ public class EmailTemplates {
                 + "<td style=\"padding:5px 0;text-align:right;\">" + badge("Interview Scheduled", "#FFF3CD", "#856404") + "</td></tr>"
               )
             + "<p style=\"margin:0;font-size:15px;color:#495057;line-height:1.7;\">Please arrive at least 15 minutes before your scheduled time. Bring a copy of your National ID and any certificates listed in your application.</p>"
-            + button("View details on portal", "https://jobs.laikipia.go.ke")
+            + button("Open exam link", examLink)
             + footer();
     }
 

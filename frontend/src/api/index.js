@@ -91,6 +91,7 @@ export const scoresApi = {
   submit: (data) => api.post("/scores", data),
   getByInterview: (id) => api.get(`/scores/interview/${id}`),
   getAverage: (id) => api.get(`/scores/interview/${id}/average`),
+  getByVacancy: (vacancyId) => api.get(`/scores/vacancy/${vacancyId}`),
 };
 
 export const selectionsApi = {
@@ -100,24 +101,36 @@ export const selectionsApi = {
   getByVacancy: (vacancyId) => api.get(`/selections/vacancy/${vacancyId}`),
 };
 
-// export const adminApi = {
-//   createUser: (data) => api.post("/admin/users/create", data),
-//   getUsers: (roles) =>
-//     Promise.all(
-//       roles.map((role) => api.get("/admin/users", { params: { roles: role } }))
-//     ).then((responses) => ({
-//       data: responses.flatMap((r) => r.data),
-//     })),
-//   getAllUsers: () => api.get("/admin/users"),
-//   deleteUser: (id) => api.delete(`/admin/users/${id}`),
-//   updateUserRole: (id, role) =>
-//     api.put(`/admin/users/${id}/role`, null, { params: { role } }),
-//   getUserDetail: (id) => api.get(`/admin/users/${id}`),
-//   reassignAndDeleteDeptHead: (id, newHeadId) =>
-//   api.delete(`/admin/users/${id}/reassign-and-delete`, {
-//     params: { newHeadId },
-//   }),
-// };
+
+export const interviewQuestionsApi = {
+  postQuestion: (data) => api.post("/api/interview-questions", data),
+  postVacancyQuestion: (data) => api.post("/api/interview-questions/vacancy", data),
+  postVacancyQuestionsBatch: (data) => api.post("/api/interview-questions/vacancy/batch", data),
+  getForInterview: (interviewId) =>
+    api.get(`/api/interview-questions/interview/${interviewId}`),
+  getForVacancy: (vacancyId) =>
+    api.get(`/api/interview-questions/vacancy/${vacancyId}`),
+  updateStatus: (questionId, status) =>
+    api.patch(`/api/interview-questions/${questionId}/status`, null, {
+      params: { status },
+    }),
+  delete: (questionId) => api.delete(`/api/interview-questions/${questionId}`),
+};
+
+export const interviewAnswersApi = {
+  submitAnswer: (data) => api.post("/api/interview-answers", data),
+  getForInterview: (interviewId) =>
+    api.get(`/api/interview-answers/interview/${interviewId}`),
+  getForQuestion: (questionId) =>
+    api.get(`/api/interview-answers/question/${questionId}`),
+};
+
+export const examSessionApi = {
+  startExam: (interviewId) =>
+    api.post(`/api/exam-session/${interviewId}/start`),
+  autoSubmitRemaining: (interviewId, answers) =>
+    api.post(`/api/exam-session/${interviewId}/auto-submit`, answers),
+};
 
 export const adminApi = {
   createUser: (data) => api.post("/admin/users/create", data),
@@ -138,4 +151,5 @@ export const adminApi = {
       params: { newHeadId },
     }),
     getApplicantDetail: (id) => api.get(`/admin/applicants/${id}`),
+  updateApplicantProfile: (id, data) => api.put(`/admin/applicants/${id}/profile`, data),
 };
