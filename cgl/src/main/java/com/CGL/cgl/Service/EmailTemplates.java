@@ -224,4 +224,22 @@ public class EmailTemplates {
             + button("Browse open vacancies", "https://jobs.laikipia.go.ke/vacancies")
             + footer();
     }
+
+    public static String assessmentInvited(String firstName, String vacancyTitle,
+                                            String departmentName, String assessmentLink) {
+        return header()
+            + "<p style=\"margin:0 0 4px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:#6C757D;\">Pre-screening assessment</p>"
+            + "<h1 style=\"margin:0 0 20px;font-size:22px;font-weight:600;color:#212529;\">Complete your pre-screening assessment</h1>"
+            + "<p style=\"margin:0 0 16px;font-size:15px;color:#495057;line-height:1.7;\">Dear <strong style=\"color:#212529;\">" + firstName + "</strong>,</p>"
+            + "<p style=\"margin:0 0 20px;font-size:15px;color:#495057;line-height:1.7;\">Congratulations on being shortlisted for <strong style=\"color:#212529;\">" + vacancyTitle + "</strong>. As part of the next stage, we invite you to complete a short pre-screening assessment.</p>"
+            + infoBox("Assessment details",
+                row("Position", vacancyTitle),
+                row("Department", departmentName),
+                "<tr><td style=\"padding:5px 0;font-size:13px;color:#6C757D;\">Status</td>"
+                + "<td style=\"padding:5px 0;text-align:right;\">" + badge("Assessment Required", "#FFF3CD", "#856404") + "</td></tr>"
+              )
+            + "<p style=\"margin:0;font-size:15px;color:#495057;line-height:1.7;\">Please complete the assessment at your earliest convenience. The assessment consists of a few questions to help us better understand your qualifications for this role.</p>"
+            + button("Start assessment", assessmentLink)
+            + footer();
+    }
 }

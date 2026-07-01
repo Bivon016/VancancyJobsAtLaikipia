@@ -153,3 +153,18 @@ export const adminApi = {
     getApplicantDetail: (id) => api.get(`/admin/applicants/${id}`),
   updateApplicantProfile: (id, data) => api.put(`/admin/applicants/${id}/profile`, data),
 };
+
+export const assessmentApi = {
+  create: (data) => api.post("/api/assessments", data),
+  addQuestion: (assessmentId, data) => api.post(`/api/assessments/${assessmentId}/questions`, data),
+  deleteQuestion: (questionId) => api.delete(`/api/assessments/questions/${questionId}`),
+  activate: (assessmentId) => api.put(`/api/assessments/${assessmentId}/activate`),
+  close: (assessmentId) => api.put(`/api/assessments/${assessmentId}/close`),
+  getAll: () => api.get("/api/assessments"),
+  getAvailable: () => api.get("/api/assessments/available"),
+  getForApplicant: (assessmentId) => api.get(`/api/assessments/${assessmentId}`),
+  submitResponse: (assessmentId, answers) => api.post(`/api/assessments/${assessmentId}/submit`, answers),
+  getResponses: (assessmentId) => api.get(`/api/assessments/${assessmentId}/responses`),
+  submitRecommendation: (responseId, recommendation) => api.put(`/api/assessments/responses/${responseId}/recommendation`, { recommendation }),
+  getSummary: (vacancyId) => api.get(`/api/assessments/vacancy/${vacancyId}/summary`),
+};

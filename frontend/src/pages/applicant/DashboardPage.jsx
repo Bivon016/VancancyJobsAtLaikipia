@@ -9,17 +9,19 @@ import {
   MapPinned,
   Sparkles,
   User,
+  ClipboardCheck,
 } from "lucide-react";
 import Card, { CardHeader } from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import StatusBadge from "../../components/vacancies/StatusBadge";
-import { applicationsApi, notificationsApi, profileApi } from "../../api";
+import { applicationsApi, notificationsApi, profileApi, assessmentApi } from "../../api";
 import { formatDateTime, isProfileComplete } from "../../utils/constants";
 
 export default function ApplicantDashboard() {
   const [profile, setProfile] = useState(null);
   const [applications, setApplications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [availableAssessments, setAvailableAssessments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [profileError, setProfileError] = useState(false);
 
@@ -31,11 +33,13 @@ export default function ApplicantDashboard() {
       }),
       applicationsApi.getMy().catch(() => ({ data: [] })),
       notificationsApi.getUnread().catch(() => ({ data: [] })),
+      assessmentApi.getAvailable().catch(() => ({ data: [] })),
     ])
-      .then(([prof, apps, notifs]) => {
+      .then(([prof, apps, notifs, assess]) => {
         setProfile(prof.data);
         setApplications(apps.data);
         setUnreadCount(notifs.data.length);
+        setAvailableAssessments(assess.data || []);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -127,6 +131,15 @@ export default function ApplicantDashboard() {
           sub={`${unreadCount} unread`}
           tone="from-emerald-500/15 to-teal-500/10"
         />
+        {availableAssessments.length > 0 && (
+          <QuickLink
+            to={`/assessment/${availableAssessments[0].id}`}
+            icon={ClipboardCheck}
+            label="Assessments"
+            sub={`${availableAssessments.length} pending`}
+            tone="from-pink-500/15 to-rose-500/10"
+          />
+        )}
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">

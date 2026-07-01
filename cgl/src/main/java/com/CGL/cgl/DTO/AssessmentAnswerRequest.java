@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LlmScoreResult {
-
-    private Integer score;
-
-    private String feedback;
+public class AssessmentAnswerRequest {
+    private Long questionId;
+    private String answerText;
 }

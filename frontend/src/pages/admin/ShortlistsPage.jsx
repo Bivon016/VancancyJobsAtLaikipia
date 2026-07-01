@@ -14,6 +14,7 @@ import PdfReportView from "../../components/pdf/PdfReportView";
 import StatusBadge from "../../components/vacancies/StatusBadge";
 import {
   applicationsApi,
+  assessmentApi,
   documentsApi,
   jobsApi,
   shortlistApi,
@@ -56,16 +57,25 @@ export default function ShortlistsPage() {
   const [remarks, setRemarks] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [assessmentSummary, setAssessmentSummary] = useState(null);
 
   useEffect(() => {
     jobsApi
       .getAllOpen()
       .then(({ data }) => {
         setVacancies(data);
-        if (data.length) setVacancyId(String(data[0].id));
+        if (data.length) {
+          setVacancyId(String(data[0].id));
+          loadAssessmentSummary(data[0].id);
+        }
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!vacancyId) return;
+    loadAssessmentSummary(Number(vacancyId));
+  }, [vacancyId]);
 
   const loadDocuments = useCallback(async (applicationId) => {
     if (!applicationId) {
@@ -116,6 +126,52 @@ export default function ShortlistsPage() {
     () => applications.find((a) => a.id === Number(shortlistAppId)) || null,
     [applications, shortlistAppId],
   );
+
+  const selectedApplicantAssessment = useMemo(() => {
+    if (!assessmentSummary?.responses?.length || !selectedApplication) {
+      return null;
+    }
+    const email = selectedApplication.applicant?.user?.email;
+    return assessmentSummary.responses.find((response) => {
+      if (!response) return false;
+      if (email && response.applicantEmail === email) return true;
+      return response.applicantName === getApplicantName(selectedApplication);
+    });
+  }, [assessmentSummary, selectedApplication]);
+
+  const assessmentRecommendationCounts = useMemo(() => {
+    const counts = {
+      PROCEED: 0,
+      HOLD: 0,
+      DO_NOT_PROCEED: 0,
+      PENDING: 0,
+    };
+
+    (assessmentSummary?.responses || []).forEach((response) => {
+      const recommendation = response?.recommendation
+        ? typeof response.recommendation === "string"
+          ? response.recommendation
+          : response.recommendation.name
+        : "PENDING";
+
+      if (counts[recommendation] !== undefined) {
+        counts[recommendation] += 1;
+      } else {
+        counts.PENDING += 1;
+      }
+    });
+
+    return counts;
+  }, [assessmentSummary]);
+
+  const loadAssessmentSummary = async (vacancyId) => {
+    try {
+      const { data } = await assessmentApi.getSummary(vacancyId);
+      setAssessmentSummary(data);
+    } catch (err) {
+      setAssessmentSummary(null);
+    }
+  };
 
   const handleShortlist = async (e) => {
     e.preventDefault();
@@ -168,6 +224,64 @@ export default function ShortlistsPage() {
               title="Shortlist Applicant"
               subtitle="Select a vacancy and review a candidate before adding them to the shortlist."
             />
+            {assessmentSummary && (
+              <div className="mb-6 rounded-3xl border border-slate-200 bg-slate-50/80 p-5 text-sm text-slate-700">
+                <div className="mb-3 text-sm font-semibold text-secondary">Assessment guidance</div>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Vacancy</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-900">{assessmentSummary.vacancyTitle}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Responses</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-900">{assessmentSummary.totalSubmitted}</p>
+                    <p className="text-xs text-slate-500">Participant submissions</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Shortlisted</p>
+                    <p className="mt-2 text-sm font-semibold text-slate-900">{assessmentSummary.totalShortlisted}</p>
+                    <p className="text-xs text-slate-500">Already shortlisted</p>
+                  </div>
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Proceed</p>
+                    <p className="mt-2 text-2xl font-semibold text-emerald-700">{assessmentRecommendationCounts.PROCEED}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Hold</p>
+                    <p className="mt-2 text-2xl font-semibold text-amber-700">{assessmentRecommendationCounts.HOLD}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Do not proceed</p>
+                    <p className="mt-2 text-2xl font-semibold text-rose-700">{assessmentRecommendationCounts.DO_NOT_PROCEED}</p>
+                  </div>
+                </div>
+                {assessmentSummary.responses?.length > 0 && (
+                  <div className="mt-4 rounded-3xl border border-slate-200 bg-white p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Latest recommended applicants</p>
+                      <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">
+                        {assessmentSummary.responses.length} total responses
+                      </span>
+                    </div>
+                    <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                      {assessmentSummary.responses.slice(0, 3).map((response) => (
+                        <li key={response.responseId} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3">
+                          <div>
+                            <p className="font-medium text-slate-900">{response.applicantName}</p>
+                            <p className="text-xs text-slate-500">{response.applicantEmail}</p>
+                          </div>
+                          <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
+                            {response.recommendation?.replace(/_/g, " ") || "Pending"}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
             <form onSubmit={handleShortlist} className="space-y-5">
               <Select
                 label="Vacancy"
@@ -395,6 +509,40 @@ export default function ShortlistsPage() {
                     },
                   ]}
                 />
+
+                {selectedApplicantAssessment && (
+                  <div className="rounded-2xl border border-primary/20 bg-primary/5 px-4 py-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-primary">
+                          Pre-screening assessment result
+                        </p>
+                        <p className="mt-1 text-xs text-slate-600">
+                          Use the applicant's assessment recommendation to support shortlist decisions.
+                        </p>
+                      </div>
+                      <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary shadow-sm">
+                        {selectedApplicantAssessment.recommendation?.replace(/_/g, " ") || "Pending"}
+                      </span>
+                    </div>
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Submitted</p>
+                        <p className="mt-2 text-sm font-semibold text-slate-900">
+                          {selectedApplicantAssessment.submittedAt
+                            ? new Date(selectedApplicantAssessment.submittedAt).toLocaleString()
+                            : "—"}
+                        </p>
+                      </div>
+                      <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                        <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Answered questions</p>
+                        <p className="mt-2 text-sm font-semibold text-slate-900">
+                          {selectedApplicantAssessment.answers?.length || 0}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {selectedApplication.suitabilityStatement && (
                   <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-4">

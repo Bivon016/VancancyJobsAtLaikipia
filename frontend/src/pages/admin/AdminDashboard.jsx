@@ -8,6 +8,7 @@ import {
   Shield,
   Sparkles,
   Users,
+  FileText,
 } from "lucide-react";
 import Card from "../../components/ui/Card";
 import { useAuth } from "../../auth/AuthContext";
@@ -52,6 +53,12 @@ const ROLE_LINKS = {
       tone: "from-pink-500/15 to-rose-500/10",
     },
     {
+      to: "/admin/assessments",
+      label: "Pre-screening assessments",
+      icon: FileText,
+      tone: "from-emerald-500/15 to-teal-500/10",
+    },
+    {
       to: "/admin/interviews",
       label: "View interviews",
       icon: CalendarDays,
@@ -76,6 +83,12 @@ const ROLE_LINKS = {
       label: "Create & manage vacancies",
       icon: Briefcase,
       tone: "from-amber-500/15 to-orange-500/10",
+    },
+    {
+      to: "/admin/assessments",
+      label: "Pre-screening assessments",
+      icon: FileText,
+      tone: "from-emerald-500/15 to-teal-500/10",
     },
     {
       to: "/admin/selections",
@@ -106,6 +119,12 @@ const ROLE_LINKS = {
       tone: "from-pink-500/15 to-rose-500/10",
     },
     {
+      to: "/admin/assessments",
+      label: "Pre-screening assessments",
+      icon: FileText,
+      tone: "from-emerald-500/15 to-teal-500/10",
+    },
+    {
       to: "/admin/interviews",
       label: "Schedule interviews",
       icon: CalendarDays,
@@ -119,6 +138,12 @@ const ROLE_LINKS = {
     },
   ],
   PANEL_MEMBER: [
+    {
+      to: "/admin/assessments",
+      label: "Review assessments",
+      icon: FileText,
+      tone: "from-emerald-500/15 to-teal-500/10",
+    },
     {
       to: "/admin/interviews",
       label: "My assigned interviews",

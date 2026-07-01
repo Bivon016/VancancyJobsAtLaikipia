@@ -53,8 +53,4 @@ public class Interview {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    private Integer durationMinutes;
-
-    private LocalDateTime examStartedAt;
-
 }
