@@ -3,8 +3,6 @@ package com.CGL.cgl.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -59,5 +57,10 @@ public class Users {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    @Transient
+    public String getFullName() {
+        return fName + " " + lName;
     }
 }
