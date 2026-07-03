@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Card, { CardHeader } from "../../components/ui/Card";
 import Input, { Select } from "../../components/ui/Input";
@@ -46,11 +47,24 @@ const getInterviewLabel = (interview) => {
 };
 
 export default function InterviewsPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const role = normalizeRole(user?.role);
   const isPanel = role === ROLES.PANEL_MEMBER;
   const canManageInterviews =
     role === ROLES.HR_OFFICER || role === ROLES.SUPER_ADMIN;
+  const canAccessOnlineInterviews =
+    [ROLES.SUPER_ADMIN, ROLES.HR_OFFICER, ROLES.CPSB_ADMIN, ROLES.PANEL_MEMBER].includes(role);
+  const canAccessEvaluation = [ROLES.SUPER_ADMIN, ROLES.PANEL_MEMBER].includes(role);
+  const canAccessResults = [
+    ROLES.SUPER_ADMIN,
+    ROLES.HR_OFFICER,
+    ROLES.CPSB_ADMIN,
+    ROLES.PANEL_MEMBER,
+  ].includes(role);
+  const canAccessQuestionBank = [ROLES.SUPER_ADMIN, ROLES.PANEL_MEMBER].includes(role);
+  const canAccessQuestionSets = [ROLES.SUPER_ADMIN, ROLES.PANEL_MEMBER].includes(role);
+  const canAccessAnalytics = [ROLES.SUPER_ADMIN, ROLES.HR_OFFICER, ROLES.CPSB_ADMIN].includes(role);
 
   const [interviews, setInterviews] = useState([]);
   const [shortlistedApplications, setShortlistedApplications] = useState([]);
@@ -356,6 +370,66 @@ export default function InterviewsPage() {
             ? "Schedule interviews by job category and shortlisted applicant names"
             : "View interview schedules and reports"}
       </p>
+
+      <Card className="mt-6">
+        <CardHeader title="Interview tools" subtitle="Quick access to the online interview workflow and evaluation pages." />
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {canAccessOnlineInterviews && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/admin/interviews/online')}
+            >
+              Online Interviews
+            </Button>
+          )}
+          {canAccessEvaluation && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/admin/interviews/evaluate')}
+            >
+              Evaluation
+            </Button>
+          )}
+          {canAccessResults && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/admin/interviews/result')}
+            >
+              Results
+            </Button>
+          )}
+          {canAccessQuestionBank && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/admin/online/question-bank')}
+            >
+              Question Bank
+            </Button>
+          )}
+          {canAccessQuestionSets && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/admin/online/question-sets')}
+            >
+              Question Sets
+            </Button>
+          )}
+          {canAccessAnalytics && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate('/admin/online/analytics')}
+            >
+              Analytics
+            </Button>
+          )}
+        </div>
+      </Card>
 
       {canManageInterviews && (
         <Card className="mt-6">

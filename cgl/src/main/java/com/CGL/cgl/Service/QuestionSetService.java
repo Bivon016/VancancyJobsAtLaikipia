@@ -141,6 +141,7 @@ public class QuestionSetService {
         return toResponse(saved, user.getRole());
     }
 
+    @Transactional(readOnly = true)
     public QuestionSetResponse getQuestionSetById(Long setId, String email) {
         Users user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -155,6 +156,7 @@ public class QuestionSetService {
         return toResponse(questionSet, user.getRole());
     }
 
+    @Transactional(readOnly = true)
     public List<QuestionSetResponse> getAllQuestionSets(String email) {
         Users user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -166,6 +168,7 @@ public class QuestionSetService {
         return sets.stream().map(s -> toResponse(s, user.getRole())).toList();
     }
 
+    @Transactional(readOnly = true)
     public List<QuestionSetResponse> getQuestionSetsByVacancy(Long vacancyId, String email) {
         Users user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -173,9 +176,8 @@ public class QuestionSetService {
         JobVacancy vacancy = jobVacancyRepo.findById(vacancyId)
                 .orElseThrow(() -> new RuntimeException("Vacancy not found"));
 
-        List<QuestionSet> sets = user.getRole() == Role.HR_OFFICER
-                ? questionSetRepo.findByVacancyAndPublished(vacancy, true)
-                : questionSetRepo.findByVacancy(vacancy);
+        // Show all sets for the selected vacancy so scheduling can choose draft sets
+        List<QuestionSet> sets = questionSetRepo.findByVacancy(vacancy);
 
         return sets.stream().map(s -> toResponse(s, user.getRole())).toList();
     }

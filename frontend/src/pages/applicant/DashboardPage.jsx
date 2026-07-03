@@ -14,30 +14,44 @@ import Card, { CardHeader } from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import StatusBadge from "../../components/vacancies/StatusBadge";
 import { applicationsApi, notificationsApi, profileApi } from "../../api";
+import { interviewService } from "../../services/interviewService";
 import { formatDateTime, isProfileComplete } from "../../utils/constants";
 
 export default function ApplicantDashboard() {
   const [profile, setProfile] = useState(null);
   const [applications, setApplications] = useState([]);
+  const [onlineInterviews, setOnlineInterviews] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [profileError, setProfileError] = useState(false);
 
+  const loadDashboardData = async () => {
+    try {
+      const [prof, apps, notifs, interviews] = await Promise.all([
+        profileApi.get().catch(() => {
+          setProfileError(true);
+          return { data: null };
+        }),
+        applicationsApi.getMy().catch(() => ({ data: [] })),
+        notificationsApi.getUnread().catch(() => ({ data: [] })),
+        interviewService.getMy().catch(() => ({ data: [] })),
+      ]);
+
+      setProfile(prof.data);
+      setApplications(apps.data);
+      setUnreadCount(notifs.data.length);
+      setOnlineInterviews(interviews.data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    Promise.all([
-      profileApi.get().catch(() => {
-        setProfileError(true);
-        return { data: null };
-      }),
-      applicationsApi.getMy().catch(() => ({ data: [] })),
-      notificationsApi.getUnread().catch(() => ({ data: [] })),
-    ])
-      .then(([prof, apps, notifs]) => {
-        setProfile(prof.data);
-        setApplications(apps.data);
-        setUnreadCount(notifs.data.length);
-      })
-      .finally(() => setLoading(false));
+    void loadDashboardData();
+    const interval = window.setInterval(() => {
+      void loadDashboardData();
+    }, 15000);
+    return () => window.clearInterval(interval);
   }, []);
 
   const complete = isProfileComplete(profile);
@@ -127,6 +141,15 @@ export default function ApplicantDashboard() {
           sub={`${unreadCount} unread`}
           tone="from-emerald-500/15 to-teal-500/10"
         />
+        {onlineInterviews.length > 0 && (
+          <QuickLink
+            to={`/interview/${onlineInterviews[0].interviewToken}`}
+            icon={FileText}
+            label="Online Interview"
+            sub={`You have ${onlineInterviews.length} active invite${onlineInterviews.length > 1 ? "s" : ""}`}
+            tone="from-cyan-500/15 to-sky-500/10"
+          />
+        )}
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
@@ -210,6 +233,37 @@ export default function ApplicantDashboard() {
           </Link>
         </Card>
       </div>
+
+      {onlineInterviews.length > 0 && (
+        <Card className="mt-8 bg-gradient-to-br from-white via-white to-slate-50">
+          <CardHeader
+            title="Online interview available"
+            subtitle="You have an active online interview invite in your portal."
+          />
+          <div className="space-y-4 px-6 pb-6 pt-2">
+            {onlineInterviews.map((interview) => (
+              <div
+                key={interview.id}
+                className="rounded-2xl border border-slate-200 bg-white/80 p-4"
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-semibold text-slate-900">{interview.vacancyTitle || "Online interview"}</p>
+                    <p className="text-sm text-muted">
+                      Available until {formatDateTime(interview.closesAt)}
+                    </p>
+                  </div>
+                  <Link to={`/interview/${interview.interviewToken}`}>
+                    <Button variant="primary" size="sm">
+                      Start interview
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       <Card className="mt-8 bg-gradient-to-br from-white via-white to-slate-50">
         <CardHeader

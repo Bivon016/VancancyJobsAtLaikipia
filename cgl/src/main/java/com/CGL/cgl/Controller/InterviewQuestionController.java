@@ -34,6 +34,14 @@ public class InterviewQuestionController {
         return ResponseEntity.ok(interviewQuestionService.getAllQuestions(authentication.getName()));
     }
 
+    @PostMapping("/batch")
+    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<List<InterviewQuestionResponse>> createQuestions(
+            @RequestBody List<CreateInterviewQuestionRequest> requests,
+            Authentication authentication) {
+        return ResponseEntity.ok(interviewQuestionService.createQuestions(requests, authentication.getName()));
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN') or hasRole('HR_OFFICER')")
     public ResponseEntity<InterviewQuestionResponse> getQuestionById(

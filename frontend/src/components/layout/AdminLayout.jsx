@@ -3,6 +3,7 @@ import {
   Building2,
   Calendar,
   ClipboardList,
+  FileText,
   LayoutDashboard,
   LogOut,
   Star,
@@ -59,6 +60,17 @@ const ALL_LINKS = [
   {
     to: "/admin/interviews",
     label: "Interviews",
+    icon: Calendar,
+    roles: [
+      ROLES.SUPER_ADMIN,
+      ROLES.HR_OFFICER,
+      ROLES.CPSB_ADMIN,
+      ROLES.PANEL_MEMBER,
+    ],
+  },
+  {
+    to: "/admin/interviews/online",
+    label: "Online Interviews",
     icon: Calendar,
     roles: [
       ROLES.SUPER_ADMIN,

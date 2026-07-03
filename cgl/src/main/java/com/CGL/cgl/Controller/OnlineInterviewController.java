@@ -59,6 +59,12 @@ public class OnlineInterviewController {
         return ResponseEntity.ok(onlineInterviewService.getInterviewForApplicant(token, authentication.getName()));
     }
 
+    @GetMapping("/my")
+    @PreAuthorize("hasRole('APPLICANT')")
+    public ResponseEntity<List<OnlineInterviewResponse>> getMyInterviews(Authentication authentication) {
+        return ResponseEntity.ok(onlineInterviewService.getMyInterviews(authentication.getName()));
+    }
+
     @GetMapping
     @PreAuthorize("hasRole('HR_OFFICER') or hasRole('SUPER_ADMIN')")
     public ResponseEntity<List<OnlineInterviewResponse>> getInterviews(

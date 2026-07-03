@@ -52,8 +52,8 @@ const ROLE_LINKS = {
       tone: "from-pink-500/15 to-rose-500/10",
     },
     {
-      to: "/admin/interviews",
-      label: "View interviews",
+      to: "/admin/interviews/online",
+      label: "View online interviews",
       icon: CalendarDays,
       tone: "from-indigo-500/15 to-blue-500/10",
     },
@@ -106,8 +106,8 @@ const ROLE_LINKS = {
       tone: "from-pink-500/15 to-rose-500/10",
     },
     {
-      to: "/admin/interviews",
-      label: "Schedule interviews",
+      to: "/admin/interviews/online",
+      label: "Open online interviews",
       icon: CalendarDays,
       tone: "from-indigo-500/15 to-blue-500/10",
     },

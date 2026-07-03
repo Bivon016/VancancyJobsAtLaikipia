@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface OnlineInterviewRepo extends JpaRepository<OnlineInterview, Long> {
     Optional<OnlineInterview> findByApplication(Applications application);
     Optional<OnlineInterview> findByInterviewToken(String interviewToken);
+    List<OnlineInterview> findByApplication_Applicant(Applicant applicant);
     List<OnlineInterview> findByApplication_Vacancy(JobVacancy vacancy);
     List<OnlineInterview> findByApplication_VacancyAndStatus(JobVacancy vacancy, OnlineInterviewStatus status);
     List<OnlineInterview> findByStatus(OnlineInterviewStatus status);

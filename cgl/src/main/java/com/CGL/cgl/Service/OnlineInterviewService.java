@@ -3,6 +3,10 @@ package com.CGL.cgl.Service;
 import com.CGL.cgl.DTO.*;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
+import com.CGL.cgl.Service.EmailService;
+import com.CGL.cgl.Service.EmailTemplates;
+import com.CGL.cgl.Service.NotificationService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +24,18 @@ public class OnlineInterviewService {
     private final JobVacancyRepo jobVacancyRepo;
     private final QuestionSetRepo questionSetRepo;
     private final QuestionSetItemRepo questionSetItemRepo;
+    private final NotificationService notificationService;
+    private final EmailService emailService;
+
+    @Value("${app.frontend-base-url:http://localhost:5173}")
+    private String frontendBaseUrl;
 
     public OnlineInterviewService(ApplicationsRepo applicationsRepo, UserRepo userRepo,
                                   OnlineInterviewRepo onlineInterviewRepo, ApplicantRepo applicantRepo,
                                   JobVacancyRepo jobVacancyRepo, QuestionSetRepo questionSetRepo,
-                                  QuestionSetItemRepo questionSetItemRepo) {
+                                  QuestionSetItemRepo questionSetItemRepo,
+                                  NotificationService notificationService,
+                                  EmailService emailService) {
         this.applicationsRepo = applicationsRepo;
         this.userRepo = userRepo;
         this.onlineInterviewRepo = onlineInterviewRepo;
@@ -32,6 +43,8 @@ public class OnlineInterviewService {
         this.jobVacancyRepo = jobVacancyRepo;
         this.questionSetRepo = questionSetRepo;
         this.questionSetItemRepo = questionSetItemRepo;
+        this.notificationService = notificationService;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -170,6 +183,20 @@ public class OnlineInterviewService {
                 .build();
     }
 
+    public List<OnlineInterviewResponse> getMyInterviews(String email) {
+        Applicant applicant = applicantRepo.findByUser_Email(email)
+                .orElseThrow(() -> new RuntimeException("Applicant not found"));
+
+        List<OnlineInterview> interviews = onlineInterviewRepo.findByApplication_Applicant(applicant);
+        interviews.forEach(this::expireIfPastWindow);
+
+        return interviews.stream()
+                .filter(interview -> interview.getStatus() == OnlineInterviewStatus.OPEN
+                        || interview.getStatus() == OnlineInterviewStatus.IN_PROGRESS)
+                .map(this::toResponse)
+                .toList();
+    }
+
     public List<OnlineInterviewResponse> getInterviews(Long vacancyId, OnlineInterviewStatus status, String email) {
         requireHrOrAdmin(email);
 
@@ -262,18 +289,24 @@ public class OnlineInterviewService {
                 .submitted(false)
                 .build();
 
-        return onlineInterviewRepo.save(onlineInterview);
+        OnlineInterview saved = onlineInterviewRepo.save(onlineInterview);
+        notifyApplicantOfInterview(saved);
+        return saved;
     }
 
     private QuestionSet resolveQuestionSetForVacancy(JobVacancy vacancy, Long requestedQuestionSetId) {
         if (requestedQuestionSetId != null) {
             QuestionSet questionSet = questionSetRepo.findById(requestedQuestionSetId)
                     .orElseThrow(() -> new RuntimeException("Question set not found"));
-            if (!Boolean.TRUE.equals(questionSet.getPublished())) {
-                throw new RuntimeException("Question set is not published");
-            }
             if (questionSet.getVacancy() == null || !questionSet.getVacancy().getId().equals(vacancy.getId())) {
                 throw new RuntimeException("Question set does not belong to this vacancy");
+            }
+            if (!Boolean.TRUE.equals(questionSet.getPublished())) {
+                if (questionSet.getItems() == null || questionSet.getItems().isEmpty()) {
+                    throw new RuntimeException("Cannot schedule an empty question set");
+                }
+                questionSet.setPublished(true);
+                questionSetRepo.save(questionSet);
             }
             return questionSet;
         }
@@ -296,6 +329,51 @@ public class OnlineInterviewService {
             interview.setStatus(OnlineInterviewStatus.EXPIRED);
             onlineInterviewRepo.save(interview);
         }
+    }
+
+    private void notifyApplicantOfInterview(OnlineInterview interview) {
+        Applicant applicant = interview.getApplication().getApplicant();
+        if (applicant == null || applicant.getUser() == null) {
+            return;
+        }
+
+        Users applicantUser = applicant.getUser();
+        String vacancyTitle = interview.getApplication().getVacancy() != null
+                ? interview.getApplication().getVacancy().getTitle()
+                : "your vacancy";
+        String opens = interview.getOpensAt() != null ? interview.getOpensAt().toString() : "unknown";
+        String closes = interview.getClosesAt() != null ? interview.getClosesAt().toString() : "unknown";
+
+        String portalLink = frontendBaseUrl.replaceAll("/+$", "") + "/interview/" + interview.getInterviewToken();
+        String notificationMessage = String.format(
+                "Your online interview for %s is available from %s until %s. Start it here: %s",
+                vacancyTitle, opens, closes, portalLink);
+
+        notificationService.createNotification(
+                applicantUser,
+                "Online interview invitation",
+                notificationMessage
+        );
+        String departmentName = interview.getApplication().getVacancy() != null
+                && interview.getApplication().getVacancy().getDepartment() != null
+                ? interview.getApplication().getVacancy().getDepartment().getDepartmentName()
+                : "Laikipia County";
+
+        String htmlBody = EmailTemplates.interviewScheduled(
+                applicantUser.getFName(),
+                vacancyTitle,
+                departmentName,
+                String.valueOf(interview.getApplication().getId()),
+                opens,
+                closes,
+                portalLink
+        );
+
+        emailService.sendHtmlEmail(
+                applicantUser.getEmail(),
+                "Online interview invitation",
+                htmlBody
+        );
     }
 
     private OnlineInterviewResponse toResponse(OnlineInterview interview) {

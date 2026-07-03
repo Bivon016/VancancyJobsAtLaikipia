@@ -194,6 +194,12 @@ export default function VacancyDetailPage() {
             >
               {applied ? "Already Applied" : "Start Application"}
             </Button>
+            {applied && (
+              <p className="mt-3 text-sm text-muted">
+                You have already submitted an application for this vacancy.
+                Application details are locked and cannot be changed.
+              </p>
+            )}
           </Card>
 
           <Card variant="plain" className="flex gap-2">

@@ -50,6 +50,39 @@ public class InterviewQuestionService {
         return toResponse(saved, user.getRole());
     }
 
+    @Transactional
+    public List<InterviewQuestionResponse> createQuestions(List<CreateInterviewQuestionRequest> requests, String email) {
+        Users user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() != Role.PANEL_MEMBER && user.getRole() != Role.SUPER_ADMIN) {
+            throw new RuntimeException("You are not allowed to perform this action!");
+        }
+
+        if (requests == null || requests.isEmpty()) {
+            throw new RuntimeException("At least one question is required");
+        }
+
+        List<InterviewQuestion> questions = requests.stream().map(request -> {
+            validate(request);
+            return InterviewQuestion.builder()
+                    .title(request.getTitle().trim())
+                    .questionText(request.getQuestionText().trim())
+                    .questionType(request.getQuestionType())
+                    .defaultMarks(request.getDefaultMarks())
+                    .expectedAnswer(request.getExpectedAnswer())
+                    .markingGuide(request.getMarkingGuide())
+                    .difficultyLevel(request.getDifficultyLevel())
+                    .required(request.getRequired() == null ? Boolean.TRUE : request.getRequired())
+                    .createdBy(user)
+                    .build();
+        }).toList();
+
+        List<InterviewQuestion> savedQuestions = interviewQuestionRepo.saveAll(questions);
+        return savedQuestions.stream().map(q -> toResponse(q, user.getRole())).toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<InterviewQuestionResponse> getAllQuestions(String email) {
         Users user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -59,6 +92,7 @@ public class InterviewQuestionService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public InterviewQuestionResponse getQuestionById(Long id, String email) {
         Users user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));

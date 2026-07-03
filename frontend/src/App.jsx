@@ -22,6 +22,7 @@ import DocumentsPage from "./pages/applicant/DocumentsPage";
 import ApplicationsPage from "./pages/applicant/ApplicationsPage";
 import NotificationsPage from "./pages/applicant/NotificationsPage";
 import ApplyVacancyPage from "./pages/applicant/ApplyVacancyPage";
+import InterviewPage from "./pages/applicant/InterviewPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import UsersPage from "./pages/admin/UsersPage";
 import DepartmentsPage from "./pages/admin/DepartmentsPage";
@@ -30,6 +31,12 @@ import VacanciesPage from "./pages/admin/VacanciesPage";
 import AdminApplicationsPage from "./pages/admin/AdminApplicationsPage";
 import ShortlistsPage from "./pages/admin/ShortlistsPage";
 import InterviewsPage from "./pages/admin/InterviewsPage";
+import OnlineInterviewsPage from "./pages/admin/OnlineInterviewsPage";
+import OnlineInterviewPanelPage from "./pages/admin/OnlineInterviewPanelPage";
+import InterviewResultPage from "./pages/admin/InterviewResultPage";
+import QuestionBankPage from "./pages/admin/question-bank/QuestionBankPage";
+import QuestionSetsPage from "./pages/admin/question-sets/QuestionSetsPage";
+import AnalyticsPage from "./pages/admin/AnalyticsPage";
 import SelectionsPage from "./pages/admin/SelectionsPage";
 import { ROLES } from "./utils/roles";
 
@@ -89,6 +96,7 @@ export default function App() {
             <Route path="applications" element={<ApplicationsPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="vacancies/:id/apply" element={<ApplyVacancyPage />} />
+            <Route path="interview/:token" element={<InterviewPage />} />
           </Route>
 
           <Route
@@ -184,6 +192,72 @@ export default function App() {
                   ]}
                 >
                   <InterviewsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="interviews/online"
+              element={
+                <ProtectedRoute
+                  roles={[
+                    ROLES.SUPER_ADMIN,
+                    ROLES.HR_OFFICER,
+                    ROLES.CPSB_ADMIN,
+                    ROLES.PANEL_MEMBER,
+                  ]}
+                >
+                  <OnlineInterviewsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="interviews/evaluate"
+              element={
+                <ProtectedRoute
+                  roles={[ROLES.SUPER_ADMIN, ROLES.PANEL_MEMBER]}
+                >
+                  <OnlineInterviewPanelPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="interviews/result"
+              element={
+                <ProtectedRoute
+                  roles={[
+                    ROLES.SUPER_ADMIN,
+                    ROLES.HR_OFFICER,
+                    ROLES.CPSB_ADMIN,
+                    ROLES.PANEL_MEMBER,
+                  ]}
+                >
+                  <InterviewResultPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="online/question-bank"
+              element={
+                <ProtectedRoute roles={[ROLES.SUPER_ADMIN, ROLES.PANEL_MEMBER]}>
+                  <QuestionBankPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="online/question-sets"
+              element={
+                <ProtectedRoute roles={[ROLES.SUPER_ADMIN, ROLES.PANEL_MEMBER]}>
+                  <QuestionSetsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="online/analytics"
+              element={
+                <ProtectedRoute roles={[ROLES.SUPER_ADMIN, ROLES.HR_OFFICER, ROLES.CPSB_ADMIN]}>
+                  <AnalyticsPage />
                 </ProtectedRoute>
               }
             />

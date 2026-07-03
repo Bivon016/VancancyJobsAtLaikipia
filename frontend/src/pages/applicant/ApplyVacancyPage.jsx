@@ -253,12 +253,16 @@ export default function ApplyVacancyPage() {
         <Card>
           <CardHeader
             title="Application already submitted"
-            subtitle="You have already applied for this vacancy."
+            subtitle="Your application is locked and cannot be edited or resubmitted."
           />
           <div className="space-y-4 text-sm text-muted">
             <p>
-              You can review your submitted application from your application
-              history and continue uploading supporting documents if needed.
+              You have already submitted an application for this vacancy. All
+              application details are locked from further changes.
+            </p>
+            <p>
+              If you need to update any information, please contact the
+              recruitment team instead of submitting a new application.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link to="/applications">

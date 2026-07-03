@@ -7,20 +7,51 @@ import {
   LogOut,
   User,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
+import { interviewService } from "../../services/interviewService";
 import Button from "../ui/Button";
-
-const links = [
-  { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { to: "/profile", label: "My Profile", icon: User },
-  { to: "/applications", label: "My Applications", icon: Briefcase },
-  { to: "/documents", label: "Documents", icon: FileText },
-  { to: "/notifications", label: "Notifications", icon: Bell },
-];
 
 export default function ApplicantLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [inviteLink, setInviteLink] = useState(null);
+
+  const refreshInviteLink = async () => {
+    try {
+      const { data } = await interviewService.getMy();
+      if (Array.isArray(data) && data.length > 0) {
+        setInviteLink(`/interview/${data[0].interviewToken}`);
+      } else {
+        setInviteLink(null);
+      }
+    } catch {
+      setInviteLink(null);
+    }
+  };
+
+  useEffect(() => {
+    void refreshInviteLink();
+    const interval = window.setInterval(() => {
+      void refreshInviteLink();
+    }, 15000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const links = [
+    { to: "/dashboard", label: "Overview", icon: LayoutDashboard },
+    { to: "/profile", label: "My Profile", icon: User },
+    { to: "/applications", label: "My Applications", icon: Briefcase },
+    { to: "/documents", label: "Documents", icon: FileText },
+    { to: "/notifications", label: "Notifications", icon: Bell },
+  ];
+  if (inviteLink) {
+    links.splice(3, 0, {
+      to: inviteLink,
+      label: "Online Interview",
+      icon: FileText,
+    });
+  }
 
   const handleLogout = () => {
     logout();

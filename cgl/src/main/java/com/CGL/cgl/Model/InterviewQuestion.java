@@ -23,6 +23,7 @@ public class InterviewQuestion {
     private String questionText;
 
     @Enumerated(EnumType.STRING)
+    @Column(length = 50, columnDefinition = "VARCHAR(50)")
     private QuestionType questionType;
 
     private Integer defaultMarks;

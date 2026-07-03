@@ -24,6 +24,15 @@ api.interceptors.request.use((config) => {
   if (authToken) {
     config.headers.Authorization = `Bearer ${authToken}`;
   }
+
+  if (import.meta.env.DEV) {
+    console.debug("API request:", {
+      method: config.method,
+      url: config.baseURL ? `${config.baseURL}${config.url}` : config.url,
+      headers: config.headers,
+    });
+  }
+
   return config;
 });
 
