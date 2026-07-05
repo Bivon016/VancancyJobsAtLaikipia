@@ -15,6 +15,8 @@ export default function InterviewResultPage() {
   const navigate = useNavigate();
   const [interview, setInterview] = useState(null);
   const [result, setResult] = useState(null);
+  const [availableInterviews, setAvailableInterviews] = useState([]);
+  const [selectedInterviewId, setSelectedInterviewId] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -24,12 +26,22 @@ export default function InterviewResultPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const interviewId = params.get('interviewId');
-    if (!interviewId) {
-      setError('No interview selected.');
-      setLoading(false);
-      return;
-    }
-    const load = async () => {
+    setSelectedInterviewId(interviewId || '');
+
+    const loadInterviews = async () => {
+      try {
+        const response = await interviewService.getAll();
+        setAvailableInterviews(response.data || []);
+      } catch {
+        setAvailableInterviews([]);
+      }
+    };
+
+    const loadInterview = async () => {
+      if (!interviewId) {
+        setLoading(false);
+        return;
+      }
       try {
         setLoading(true);
         const [interviewResult, resultResult] = await Promise.all([
@@ -44,21 +56,53 @@ export default function InterviewResultPage() {
         setLoading(false);
       }
     };
+
+    const load = async () => {
+      setLoading(true);
+      await loadInterviews();
+      await loadInterview();
+    };
+
     void load();
   }, []);
 
   const handleFinalize = async () => {
-    const params = new URLSearchParams(window.location.search);
-    const interviewId = params.get('interviewId');
     try {
       setSubmitting(true);
-      const { data } = await resultService.finalize(interviewId, { recommendation: form.recommendation, panelRemarks: form.panelRemarks });
+      const { data } = await resultService.finalize(selectedInterviewId, { recommendation: form.recommendation, panelRemarks: form.panelRemarks });
       setResult(data);
       setConfirmOpen(false);
     } catch (err) {
       setError(err.response?.data?.message || 'Unable to finalize interview.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleInterviewSelection = async (event) => {
+    const interviewId = event.target.value;
+    setSelectedInterviewId(interviewId);
+    if (!interviewId) {
+      setInterview(null);
+      setResult(null);
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+    try {
+      const [interviewResult, resultResult] = await Promise.all([
+        interviewService.getById(interviewId),
+        resultService.getResult(interviewId).catch(() => null),
+      ]);
+      setInterview(interviewResult.data);
+      setResult(resultResult?.data || null);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Unable to load interview result.');
+      setInterview(null);
+      setResult(null);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,6 +117,23 @@ export default function InterviewResultPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
+      <Card className="mb-6 border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-50">
+        <CardHeader title="Select interview" subtitle="Choose the online interview you want to view results for." />
+        <div className="space-y-4 px-4 pb-4 pt-2">
+          <Select label="Interview" value={selectedInterviewId} onChange={handleInterviewSelection}>
+            <option value="">Select interview</option>
+            {availableInterviews.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.applicantName ? `${item.applicantName} — ${item.vacancyTitle || 'Vacancy'}` : `Interview #${item.id}`}
+              </option>
+            ))}
+          </Select>
+          {!selectedInterviewId && availableInterviews.length === 0 && (
+            <p className="text-sm text-muted">No online interviews available to select.</p>
+          )}
+        </div>
+      </Card>
+
       <InterviewHeader title="Interview result" subtitle="Review the completed interview outcome and finalize the recommendation if needed." meta={[{ label: 'Applicant', value: interview?.applicantName || '—', icon: 'user' }, { label: 'Vacancy', value: interview?.vacancyTitle || '—', icon: 'calendar' }, { label: 'Status', value: interview?.status || 'SCHEDULED', icon: 'clock' }]} />
 
       {error && (

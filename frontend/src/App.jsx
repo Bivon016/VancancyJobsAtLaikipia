@@ -36,6 +36,7 @@ import OnlineInterviewPanelPage from "./pages/admin/OnlineInterviewPanelPage";
 import InterviewResultPage from "./pages/admin/InterviewResultPage";
 import QuestionBankPage from "./pages/admin/question-bank/QuestionBankPage";
 import QuestionSetsPage from "./pages/admin/question-sets/QuestionSetsPage";
+import QuestionSetDetailPage from "./pages/admin/question-sets/QuestionSetDetailPage";
 import AnalyticsPage from "./pages/admin/AnalyticsPage";
 import SelectionsPage from "./pages/admin/SelectionsPage";
 import { ROLES } from "./utils/roles";
@@ -247,12 +248,19 @@ export default function App() {
             <Route
               path="online/question-sets"
               element={
-                <ProtectedRoute roles={[ROLES.SUPER_ADMIN, ROLES.PANEL_MEMBER]}>
+                <ProtectedRoute roles={[ROLES.SUPER_ADMIN, ROLES.PANEL_MEMBER, ROLES.HR_OFFICER]}>
                   <QuestionSetsPage />
                 </ProtectedRoute>
               }
             />
-
+            <Route
+              path="online/question-sets/:id"
+              element={
+                <ProtectedRoute roles={[ROLES.SUPER_ADMIN, ROLES.PANEL_MEMBER, ROLES.HR_OFFICER]}>
+                  <QuestionSetDetailPage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="online/analytics"
               element={

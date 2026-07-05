@@ -164,7 +164,6 @@ public class OnlineInterviewService {
                         .orderIndex(item.getOrderIndex())
                         .marks(item.getMarks())
                         .required(item.getRequired())
-                        .questionTitle(item.getQuestion().getTitle())
                         .questionText(item.getQuestion().getQuestionText())
                         .questionType(item.getQuestion().getQuestionType())
                         .build())

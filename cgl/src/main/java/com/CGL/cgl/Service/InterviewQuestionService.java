@@ -35,7 +35,6 @@ public class InterviewQuestionService {
         validate(request);
 
         InterviewQuestion question = InterviewQuestion.builder()
-                .title(request.getTitle().trim())
                 .questionText(request.getQuestionText().trim())
                 .questionType(request.getQuestionType())
                 .defaultMarks(request.getDefaultMarks())
@@ -66,7 +65,6 @@ public class InterviewQuestionService {
         List<InterviewQuestion> questions = requests.stream().map(request -> {
             validate(request);
             return InterviewQuestion.builder()
-                    .title(request.getTitle().trim())
                     .questionText(request.getQuestionText().trim())
                     .questionType(request.getQuestionType())
                     .defaultMarks(request.getDefaultMarks())
@@ -104,9 +102,6 @@ public class InterviewQuestionService {
     }
 
     private void validate(CreateInterviewQuestionRequest request) {
-        if (request.getTitle() == null || request.getTitle().isBlank()) {
-            throw new RuntimeException("Title is required");
-        }
         if (request.getQuestionText() == null || request.getQuestionText().isBlank()) {
             throw new RuntimeException("Question text is required");
         }
@@ -126,7 +121,6 @@ public class InterviewQuestionService {
 
         return InterviewQuestionResponse.builder()
                 .id(q.getId())
-                .title(q.getTitle())
                 .questionText(q.getQuestionText())
                 .questionType(q.getQuestionType())
                 .defaultMarks(q.getDefaultMarks())

@@ -12,7 +12,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateInterviewQuestionRequest {
-    private String title;
     private String questionText;
     private QuestionType questionType;
     private Integer defaultMarks;

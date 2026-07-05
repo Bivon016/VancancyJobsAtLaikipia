@@ -137,7 +137,7 @@ export default function OnlineInterviewPanelPage() {
           return (
             <ScoreCard
               key={answer.id}
-              question={{ questionTitle: answer.questionTitle }}
+              question={{ questionText: answer.questionText }}
               answer={answer.answerText}
               score={score}
               maxMarks={answer.maxMarks}

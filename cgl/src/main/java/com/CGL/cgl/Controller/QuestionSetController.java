@@ -20,7 +20,7 @@ public class QuestionSetController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN') or hasRole('HR_OFFICER')")
     public ResponseEntity<QuestionSetResponse> createQuestionSet(
             @RequestBody CreateQuestionSetRequest request,
             Authentication authentication) {
@@ -28,7 +28,7 @@ public class QuestionSetController {
     }
 
     @PostMapping("/{id}/questions")
-    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN') or hasRole('HR_OFFICER')")
     public ResponseEntity<QuestionSetResponse> addQuestion(
             @PathVariable Long id,
             @RequestBody AddQuestionToSetRequest request,
@@ -37,7 +37,7 @@ public class QuestionSetController {
     }
 
     @DeleteMapping("/{id}/questions/{questionId}")
-    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN') or hasRole('HR_OFFICER')")
     public ResponseEntity<QuestionSetResponse> removeQuestion(
             @PathVariable Long id,
             @PathVariable Long questionId,
@@ -46,13 +46,13 @@ public class QuestionSetController {
     }
 
     @PatchMapping("/{id}/publish")
-    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN') or hasRole('HR_OFFICER')")
     public ResponseEntity<QuestionSetResponse> publish(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(questionSetService.publishQuestionSet(id, authentication.getName()));
     }
 
     @PatchMapping("/{id}/unpublish")
-    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN') or hasRole('HR_OFFICER')")
     public ResponseEntity<QuestionSetResponse> unpublish(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(questionSetService.unpublishQuestionSet(id, authentication.getName()));
     }
@@ -67,6 +67,15 @@ public class QuestionSetController {
     @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN') or hasRole('HR_OFFICER')")
     public ResponseEntity<QuestionSetResponse> getById(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(questionSetService.getQuestionSetById(id, authentication.getName()));
+    }
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN') or hasRole('HR_OFFICER')")
+    public ResponseEntity<QuestionSetResponse> updateQuestionSet(
+            @PathVariable Long id,
+            @RequestBody UpdateQuestionSetRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(questionSetService.updateQuestionSet(id, request, authentication.getName()));
     }
 
     @GetMapping("/vacancy/{vacancyId}")

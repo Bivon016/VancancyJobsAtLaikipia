@@ -54,8 +54,7 @@ export default function QuestionBankPage() {
           <div className="grid gap-4">
             {questions.map((q) => (
               <Card key={q.id} className="rounded-[24px] border p-4">
-                <h3 className="font-heading text-lg font-bold text-primary">{q.title}</h3>
-                <p className="mt-2 text-sm text-muted">{q.questionText}</p>
+                <h3 className="font-heading text-lg font-bold text-primary">{q.questionText}</h3>
                 <div className="mt-3 flex items-center gap-3">
                   <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-muted">{q.questionType}</div>
                   <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-muted">{q.difficultyLevel}</div>

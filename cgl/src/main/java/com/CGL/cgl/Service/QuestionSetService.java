@@ -156,6 +156,26 @@ public class QuestionSetService {
         return toResponse(questionSet, user.getRole());
     }
 
+    @Transactional
+    public QuestionSetResponse updateQuestionSet(Long setId, UpdateQuestionSetRequest request, String email) {
+        Users user = requirePanelOrAdmin(email);
+
+        QuestionSet questionSet = questionSetRepo.findById(setId)
+                .orElseThrow(() -> new RuntimeException("Question set not found"));
+
+        if (Boolean.TRUE.equals(questionSet.getPublished())) {
+            throw new RuntimeException("Cannot modify a published question set. Unpublish it first.");
+        }
+
+        if (request.getTitle() != null && !request.getTitle().isBlank()) {
+            questionSet.setTitle(request.getTitle().trim());
+        }
+        questionSet.setDescription(request.getDescription());
+
+        QuestionSet saved = questionSetRepo.save(questionSet);
+        return toResponse(saved, user.getRole());
+    }
+
     @Transactional(readOnly = true)
     public List<QuestionSetResponse> getAllQuestionSets(String email) {
         Users user = userRepo.findByEmail(email)

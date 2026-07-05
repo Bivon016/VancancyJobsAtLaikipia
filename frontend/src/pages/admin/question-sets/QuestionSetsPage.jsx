@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Card, { CardHeader } from '../../../components/ui/Card';
 import EmptyState from '../../../components/ui/EmptyState';
 import Button from '../../../components/ui/Button';
@@ -6,6 +7,7 @@ import { questionSetService } from '../../../services/questionSetService';
 import { formatDateTime } from '../../../utils/constants';
 
 export default function QuestionSetsPage() {
+  const navigate = useNavigate();
   const [sets, setSets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -49,8 +51,12 @@ export default function QuestionSetsPage() {
                     <p className="mt-2 text-xs text-muted">{s.items?.length || 0} questions • Created {formatDateTime(s.createdAt)}</p>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <Button variant="outline" size="sm">View</Button>
-                    <Button variant="outline" size="sm">Edit</Button>
+                    <Button variant="outline" size="sm" onClick={() => navigate(`/admin/online/question-sets/${s.id}`)}>
+                      View
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => navigate(`/admin/online/question-sets/${s.id}`)}>
+                      Edit
+                    </Button>
                   </div>
                 </div>
               </Card>

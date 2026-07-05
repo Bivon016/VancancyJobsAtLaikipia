@@ -46,7 +46,6 @@ export default function OnlineInterviewsPage() {
   const [questionSubmitting, setQuestionSubmitting] = useState(false);
   const [questionForms, setQuestionForms] = useState([
     {
-      title: '',
       questionText: '',
       questionType: 'LONG_ANSWER',
       defaultMarks: '5',
@@ -54,6 +53,7 @@ export default function OnlineInterviewsPage() {
       markingGuide: '',
       difficultyLevel: 'EASY',
       required: false,
+      options: '',
     },
   ]);
   const QUESTION_TYPES = [
@@ -252,11 +252,11 @@ export default function OnlineInterviewsPage() {
     }
 
     const invalid = questionForms.some(
-      (question) => !question.title.trim() || !question.questionText.trim()
+      (question) => !question.questionText.trim()
     );
 
     if (invalid) {
-      setQuestionCreateError('Each question must have a title and question text.');
+      setQuestionCreateError('Each question must have question text.');
       return;
     }
 
@@ -264,7 +264,6 @@ export default function OnlineInterviewsPage() {
       setQuestionSubmitting(true);
       const { data: createdQuestions } = await questionBankService.createBatch(
         questionForms.map((question) => ({
-          title: question.title.trim(),
           questionText: question.questionText.trim(),
           questionType: question.questionType,
           defaultMarks: Number(question.defaultMarks) || 1,
@@ -289,7 +288,6 @@ export default function OnlineInterviewsPage() {
       setQuestionCreateOpen(false);
       setQuestionForms([
         {
-          title: '',
           questionText: '',
           questionType: 'LONG_ANSWER',
           defaultMarks: '5',
@@ -609,18 +607,6 @@ export default function OnlineInterviewsPage() {
                       )}
                     </div>
 
-                    <div className="mt-4">
-                      <Input
-                        label="Title"
-                        placeholder="Short internal title"
-                        value={question.title}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setQuestionForms((current) => current.map((item, idx) => idx === index ? { ...item, title: value } : item));
-                        }}
-                      />
-                    </div>
-
                     <Textarea
                       label="Question text"
                       placeholder="Enter the full question prompt"
@@ -675,6 +661,18 @@ export default function OnlineInterviewsPage() {
                       </Select>
                     </div>
 
+                    {(question.questionType === 'MULTIPLE_CHOICE' || question.questionType === 'CHECKBOX') && (
+                      <Textarea
+                        label="Options"
+                        placeholder="Enter each option on a new line or comma-separated"
+                        value={question.options}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setQuestionForms((current) => current.map((item, idx) => idx === index ? { ...item, options: value } : item));
+                        }}
+                      />
+                    )}
+
                     <Textarea
                       label="Expected answer"
                       placeholder="Optional answer guidance"
@@ -705,7 +703,6 @@ export default function OnlineInterviewsPage() {
                       setQuestionForms((current) => [
                         ...current,
                         {
-                          title: '',
                           questionText: '',
                           questionType: 'LONG_ANSWER',
                           defaultMarks: '5',
@@ -713,6 +710,7 @@ export default function OnlineInterviewsPage() {
                           markingGuide: '',
                           difficultyLevel: 'EASY',
                           required: false,
+                          options: '',
                         },
                       ])
                     }
@@ -749,7 +747,7 @@ export default function OnlineInterviewsPage() {
             <div className="grid gap-4">
               {questions.map((q) => (
                 <Card key={q.id} className="rounded-[24px] border p-4">
-                  <h3 className="font-heading text-lg font-bold text-primary">{q.title}</h3>
+                  <h3 className="font-heading text-lg font-bold text-primary">{q.questionText}</h3>
                   <p className="mt-2 text-sm text-muted">{q.questionText}</p>
                   <div className="mt-3 flex flex-wrap gap-3">
                     <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-muted">{q.questionType}</div>

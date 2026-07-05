@@ -15,7 +15,6 @@ public class ApplicantInterviewQuestionResponse {
     private Integer orderIndex;
     private Integer marks;
     private Boolean required;
-    private String questionTitle;
     private String questionText;
     private QuestionType questionType;
 }

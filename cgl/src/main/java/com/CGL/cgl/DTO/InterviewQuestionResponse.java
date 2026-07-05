@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class InterviewQuestionResponse {
     private long id;
-    private String title;
     private String questionText;
     private QuestionType questionType;
     private Integer defaultMarks;

@@ -22,7 +22,7 @@ export default function ScoreCard({
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-accent">Question {index}</p>
-          <h3 className="mt-2 font-heading text-lg font-bold text-primary">{question?.questionTitle || question?.title || 'Untitled question'}</h3>
+          <h3 className="mt-2 font-heading text-lg font-bold text-primary">{question?.questionText || 'Untitled question'}</h3>
         </div>
         <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-muted">
           Max {maxMarks ?? 0} marks

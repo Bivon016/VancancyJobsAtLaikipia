@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class ApplicantAnswerScoreResponse {
     private Long id;
     private Long applicantAnswerId;
-    private String questionTitle;
     private String panelMemberName;
     private Double marksAwarded;
     private Integer maxMarks;

@@ -120,7 +120,7 @@ public class ApplicantAnswerService {
         return ApplicantAnswerResponse.builder()
                 .id(answer.getId())
                 .questionSetItemId(answer.getQuestionSetItem().getId())
-                .questionTitle(answer.getQuestionSetItem().getQuestion().getTitle())
+                .questionText(answer.getQuestionSetItem().getQuestion().getQuestionText())
                 .maxMarks(answer.getQuestionSetItem().getMarks())
                 .answerText(answer.getAnswerText())
                 .answeredAt(answer.getAnsweredAt())

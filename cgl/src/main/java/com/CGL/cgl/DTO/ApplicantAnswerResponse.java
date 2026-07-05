@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class ApplicantAnswerResponse {
     private Long id;
     private Long questionSetItemId;
-    private String questionTitle;
+    private String questionText;
     private Integer maxMarks;
     private String answerText;
     private LocalDateTime answeredAt;

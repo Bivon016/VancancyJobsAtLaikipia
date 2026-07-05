@@ -87,7 +87,6 @@ public class ApplicantAnswerScoreService {
         return ApplicantAnswerScoreResponse.builder()
                 .id(score.getId())
                 .applicantAnswerId(score.getApplicantAnswer().getId())
-                .questionTitle(score.getApplicantAnswer().getQuestionSetItem().getQuestion().getTitle())
                 .panelMemberName(score.getPanelMember().getFullName())
                 .marksAwarded(score.getMarksAwarded())
                 .maxMarks(score.getApplicantAnswer().getQuestionSetItem().getMarks())
