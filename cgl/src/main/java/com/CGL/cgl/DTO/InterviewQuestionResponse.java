@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -22,6 +23,7 @@ public class InterviewQuestionResponse {
     private String markingGuide;     // null unless viewer is PANEL_MEMBER or SUPER_ADMIN
     private DifficultyLevel difficultyLevel;
     private Boolean required;
+    private List<QuestionOptionResponse> options; // correct flag null unless viewer is PANEL_MEMBER or SUPER_ADMIN
     private String createdByName;
     private LocalDateTime createdAt;
 }

@@ -49,4 +49,22 @@ public class InterviewQuestionController {
             Authentication authentication) {
         return ResponseEntity.ok(interviewQuestionService.getQuestionById(id, authentication.getName()));
     }
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<InterviewQuestionResponse> updateQuestion(
+            @PathVariable Long id,
+            @RequestBody CreateInterviewQuestionRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(interviewQuestionService.updateQuestion(id, request, authentication.getName()));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('PANEL_MEMBER') or hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Void> deleteQuestion(
+            @PathVariable Long id,
+            Authentication authentication) {
+        interviewQuestionService.deleteQuestion(id, authentication.getName());
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -8,7 +8,10 @@ import com.CGL.cgl.Repo.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ApplicantAnswerService {
@@ -104,6 +107,9 @@ public class ApplicantAnswerService {
         return toResponse(answer, null);
     }
 
+    private static final Set<QuestionType> OPTION_BASED_TYPES =
+            Set.of(QuestionType.MULTIPLE_CHOICE, QuestionType.CHECKBOX, QuestionType.TRUE_FALSE);
+
     private ApplicantAnswerResponse toResponse(ApplicantAnswer answer, Users panelMember) {
         PanelScoreSummaryResponse myScore = null;
         if (panelMember != null) {
@@ -117,12 +123,43 @@ public class ApplicantAnswerService {
                     .orElse(null);
         }
 
+        InterviewQuestion question = answer.getQuestionSetItem().getQuestion();
+        QuestionType questionType = question.getQuestionType();
+
+        List<String> selectedOptionTexts = null;
+        Boolean answeredCorrectly = null;
+
+        if (OPTION_BASED_TYPES.contains(questionType) && answer.getAnswerText() != null) {
+            Set<String> selectedIds = Arrays.stream(answer.getAnswerText().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toSet());
+
+            selectedOptionTexts = question.getOptions().stream()
+                    .filter(o -> selectedIds.contains(String.valueOf(o.getId())))
+                    .map(InterviewQuestionOption::getOptionText)
+                    .toList();
+
+            // Only surface correctness to panel members/admins scoring the answer -
+            // never to the applicant themselves via getAnswersForInterview.
+            if (panelMember != null) {
+                Set<String> correctIds = question.getOptions().stream()
+                        .filter(o -> Boolean.TRUE.equals(o.getCorrect()))
+                        .map(o -> String.valueOf(o.getId()))
+                        .collect(Collectors.toSet());
+                answeredCorrectly = selectedIds.equals(correctIds);
+            }
+        }
+
         return ApplicantAnswerResponse.builder()
                 .id(answer.getId())
                 .questionSetItemId(answer.getQuestionSetItem().getId())
-                .questionText(answer.getQuestionSetItem().getQuestion().getQuestionText())
+                .questionText(question.getQuestionText())
+                .questionType(questionType)
                 .maxMarks(answer.getQuestionSetItem().getMarks())
                 .answerText(answer.getAnswerText())
+                .selectedOptionTexts(selectedOptionTexts)
+                .answeredCorrectly(answeredCorrectly)
                 .answeredAt(answer.getAnsweredAt())
                 .lastEditedAt(answer.getLastEditedAt())
                 .myScore(myScore)

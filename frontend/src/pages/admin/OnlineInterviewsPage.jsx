@@ -6,6 +6,7 @@ import Button from '../../components/ui/Button';
 import Input, { Select, Textarea } from '../../components/ui/Input';
 import EmptyState from '../../components/ui/EmptyState';
 import InterviewHeader from '../../components/interviews/InterviewHeader';
+import QuestionEditorCard, { emptyQuestion, duplicateQuestion, validateQuestion } from '../../components/interviews/QuestionEditorCard';
 import { applicationsApi, jobsApi } from '../../api';
 import { interviewService } from '../../services/interviewService';
 import { questionSetService } from '../../services/questionSetService';
@@ -44,32 +45,7 @@ export default function OnlineInterviewsPage() {
   const [questionCreateError, setQuestionCreateError] = useState('');
   const [questionCreateMessage, setQuestionCreateMessage] = useState('');
   const [questionSubmitting, setQuestionSubmitting] = useState(false);
-  const [questionForms, setQuestionForms] = useState([
-    {
-      questionText: '',
-      questionType: 'LONG_ANSWER',
-      defaultMarks: '5',
-      expectedAnswer: '',
-      markingGuide: '',
-      difficultyLevel: 'EASY',
-      required: false,
-      options: '',
-    },
-  ]);
-  const QUESTION_TYPES = [
-    { value: 'LONG_ANSWER', label: 'Long answer' },
-    { value: 'SHORT_ANSWER', label: 'Short answer' },
-    { value: 'MULTIPLE_CHOICE', label: 'Multiple choice' },
-    { value: 'TRUE_FALSE', label: 'True / false' },
-    { value: 'YES_NO', label: 'Yes / no' },
-    { value: 'CHECKBOX', label: 'Checkbox' },
-    { value: 'FILE_UPLOAD', label: 'File upload' },
-  ];
-  const DIFFICULTY_LEVELS = [
-    { value: 'EASY', label: 'Easy' },
-    { value: 'MEDIUM', label: 'Medium' },
-    { value: 'HARD', label: 'Hard' },
-  ];
+  const [questionForms, setQuestionForms] = useState([emptyQuestion()]);
   const [sets, setSets] = useState([]);
   const [setsLoading, setSetsLoading] = useState(true);
   const [setsError, setSetsError] = useState('');
@@ -241,6 +217,14 @@ export default function OnlineInterviewsPage() {
     }
   };
 
+  const validateQuestionForms = () => {
+    for (const question of questionForms) {
+      const err = validateQuestion(question);
+      if (err) return err;
+    }
+    return '';
+  };
+
   const handleCreateQuestion = async (event) => {
     event.preventDefault();
     setQuestionCreateError('');
@@ -251,12 +235,9 @@ export default function OnlineInterviewsPage() {
       return;
     }
 
-    const invalid = questionForms.some(
-      (question) => !question.questionText.trim()
-    );
-
-    if (invalid) {
-      setQuestionCreateError('Each question must have question text.');
+    const validationError = validateQuestionForms();
+    if (validationError) {
+      setQuestionCreateError(validationError);
       return;
     }
 
@@ -271,6 +252,9 @@ export default function OnlineInterviewsPage() {
           markingGuide: question.markingGuide.trim() || null,
           difficultyLevel: question.difficultyLevel,
           required: question.required,
+          options: ['MULTIPLE_CHOICE', 'TRUE_FALSE', 'CHECKBOX'].includes(question.questionType)
+            ? question.options.map((o) => ({ optionText: o.optionText.trim(), correct: o.correct }))
+            : null,
         }))
       );
 
@@ -286,17 +270,7 @@ export default function OnlineInterviewsPage() {
 
       setQuestionCreateMessage('Questions created and added to the selected set successfully.');
       setQuestionCreateOpen(false);
-      setQuestionForms([
-        {
-          questionText: '',
-          questionType: 'LONG_ANSWER',
-          defaultMarks: '5',
-          expectedAnswer: '',
-          markingGuide: '',
-          difficultyLevel: 'EASY',
-          required: false,
-        },
-      ]);
+      setQuestionForms([emptyQuestion()]);
       await loadQuestionBank();
       await loadQuestionSets();
     } catch (err) {
@@ -571,11 +545,11 @@ export default function OnlineInterviewsPage() {
         )}
         {questionCreateOpen && (
           <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/40 px-4 py-8">
-            <div className="mx-auto w-full max-w-4xl max-h-[calc(100vh-4rem)] overflow-y-auto rounded-[32px] bg-white shadow-2xl">
+            <div className="mx-auto w-full max-w-2xl max-h-[calc(100vh-4rem)] overflow-y-auto rounded-[24px] bg-slate-50 shadow-2xl">
               <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-slate-200 bg-white px-6 py-5">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-900">Create interview questions</h2>
-                  <p className="mt-1 text-sm text-slate-500">Add multiple questions to the shared bank in one batch.</p>
+                  <h2 className="text-lg font-semibold text-slate-900">Create questions</h2>
+                  <p className="mt-1 text-sm text-slate-500">Add as many as you need, then attach them to a set below.</p>
                 </div>
                 <button
                   type="button"
@@ -585,139 +559,48 @@ export default function OnlineInterviewsPage() {
                   Close
                 </button>
               </div>
-              <form onSubmit={handleCreateQuestion} className="space-y-5 px-6 py-6">
+
+              <form onSubmit={handleCreateQuestion} className="space-y-4 px-6 py-6">
+                <Select
+                  label="Add to question set"
+                  value={selectedQuestionBankSetId}
+                  onChange={(e) => setSelectedQuestionBankSetId(e.target.value)}
+                >
+                  <option value="">Select a question set...</option>
+                  {questionSets.map((set) => (
+                    <option key={set.id} value={set.id}>
+                      {set.title}
+                    </option>
+                  ))}
+                </Select>
+
                 {questionForms.map((question, index) => (
-                  <div key={index} className="rounded-3xl border border-slate-200 p-5">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <h3 className="text-base font-semibold text-slate-900">Question {index + 1}</h3>
-                        <p className="text-sm text-slate-500">Fill the fields below for this item.</p>
-                      </div>
-                      {questionForms.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setQuestionForms((current) => current.filter((_, idx) => idx !== index));
-                          }}
-                        >
-                          Remove
-                        </Button>
-                      )}
-                    </div>
-
-                    <Textarea
-                      label="Question text"
-                      placeholder="Enter the full question prompt"
-                      value={question.questionText}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setQuestionForms((current) => current.map((item, idx) => idx === index ? { ...item, questionText: value } : item));
-                      }}
-                    />
-
-                    <div className="grid gap-4 lg:grid-cols-3">
-                      <Select
-                        label="Question type"
-                        value={question.questionType}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setQuestionForms((current) => current.map((item, idx) => idx === index ? { ...item, questionType: value } : item));
-                        }}
-                      >
-                        {QUESTION_TYPES.map((type) => (
-                          <option key={type.value} value={type.value}>
-                            {type.label}
-                          </option>
-                        ))}
-                      </Select>
-
-                      <Select
-                        label="Difficulty"
-                        value={question.difficultyLevel}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setQuestionForms((current) => current.map((item, idx) => idx === index ? { ...item, difficultyLevel: value } : item));
-                        }}
-                      >
-                        {DIFFICULTY_LEVELS.map((level) => (
-                          <option key={level.value} value={level.value}>
-                            {level.label}
-                          </option>
-                        ))}
-                      </Select>
-
-                      <Select
-                        label="Required"
-                        value={question.required ? 'true' : 'false'}
-                        onChange={(e) => {
-                          const value = e.target.value === 'true';
-                          setQuestionForms((current) => current.map((item, idx) => idx === index ? { ...item, required: value } : item));
-                        }}
-                      >
-                        <option value="false">No</option>
-                        <option value="true">Yes</option>
-                      </Select>
-                    </div>
-
-                    {(question.questionType === 'MULTIPLE_CHOICE' || question.questionType === 'CHECKBOX') && (
-                      <Textarea
-                        label="Options"
-                        placeholder="Enter each option on a new line or comma-separated"
-                        value={question.options}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setQuestionForms((current) => current.map((item, idx) => idx === index ? { ...item, options: value } : item));
-                        }}
-                      />
-                    )}
-
-                    <Textarea
-                      label="Expected answer"
-                      placeholder="Optional answer guidance"
-                      value={question.expectedAnswer}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setQuestionForms((current) => current.map((item, idx) => idx === index ? { ...item, expectedAnswer: value } : item));
-                      }}
-                    />
-
-                    <Textarea
-                      label="Marking guide"
-                      placeholder="Optional marking instructions"
-                      value={question.markingGuide}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setQuestionForms((current) => current.map((item, idx) => idx === index ? { ...item, markingGuide: value } : item));
-                      }}
-                    />
-                  </div>
-                ))}
-
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() =>
+                  <QuestionEditorCard
+                    key={index}
+                    question={question}
+                    index={index + 1}
+                    autoFocus={index === questionForms.length - 1 && questionForms.length > 1}
+                    onChange={(next) =>
+                      setQuestionForms((current) => current.map((item, idx) => (idx === index ? next : item)))
+                    }
+                    onDuplicate={() =>
                       setQuestionForms((current) => [
-                        ...current,
-                        {
-                          questionText: '',
-                          questionType: 'LONG_ANSWER',
-                          defaultMarks: '5',
-                          expectedAnswer: '',
-                          markingGuide: '',
-                          difficultyLevel: 'EASY',
-                          required: false,
-                          options: '',
-                        },
+                        ...current.slice(0, index + 1),
+                        duplicateQuestion(question),
+                        ...current.slice(index + 1),
                       ])
                     }
-                  >
-                    Add another question
-                  </Button>
-                </div>
+                    onDelete={questionForms.length > 1 ? () => setQuestionForms((current) => current.filter((_, idx) => idx !== index)) : undefined}
+                  />
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => setQuestionForms((current) => [...current, emptyQuestion()])}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 py-3 text-sm font-semibold text-slate-500 hover:border-primary hover:text-primary"
+                >
+                  <PlusCircle className="h-4 w-4" /> Add question
+                </button>
 
                 {questionCreateError && (
                   <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -725,12 +608,12 @@ export default function OnlineInterviewsPage() {
                   </div>
                 )}
 
-                <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
                   <Button type="button" variant="outline" onClick={() => setQuestionCreateOpen(false)}>
                     Cancel
                   </Button>
                   <Button type="submit" loading={questionSubmitting} variant="primary">
-                    Create questions
+                    Create {questionForms.length > 1 ? `${questionForms.length} questions` : 'question'}
                   </Button>
                 </div>
               </form>

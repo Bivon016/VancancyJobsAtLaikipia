@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -17,4 +19,5 @@ public class ApplicantInterviewQuestionResponse {
     private Boolean required;
     private String questionText;
     private QuestionType questionType;
+    private List<ApplicantQuestionOptionResponse> options; // no correct flag, ever
 }

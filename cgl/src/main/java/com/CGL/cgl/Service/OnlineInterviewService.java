@@ -166,6 +166,18 @@ public class OnlineInterviewService {
                         .required(item.getRequired())
                         .questionText(item.getQuestion().getQuestionText())
                         .questionType(item.getQuestion().getQuestionType())
+                        .options(item.getQuestion().getOptions().stream()
+                                .sorted((a, b) -> {
+                                    Integer ai = a.getOrderIndex() != null ? a.getOrderIndex() : 0;
+                                    Integer bi = b.getOrderIndex() != null ? b.getOrderIndex() : 0;
+                                    return ai.compareTo(bi);
+                                })
+                                .map(o -> ApplicantQuestionOptionResponse.builder()
+                                        .id(o.getId())
+                                        .optionText(o.getOptionText())
+                                        .orderIndex(o.getOrderIndex())
+                                        .build())
+                                .toList())
                         .build())
                 .toList();
 

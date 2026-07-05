@@ -14,5 +14,6 @@ public interface QuestionSetItemRepo extends JpaRepository<QuestionSetItem, Long
     List<QuestionSetItem> findByQuestionSetOrderByOrderIndexAsc(QuestionSet questionSet);
     Optional<QuestionSetItem> findByQuestionSetAndQuestion(QuestionSet questionSet, InterviewQuestion question);
     int countByQuestionSet(QuestionSet questionSet);
+    boolean existsByQuestion(InterviewQuestion question);
 }
 

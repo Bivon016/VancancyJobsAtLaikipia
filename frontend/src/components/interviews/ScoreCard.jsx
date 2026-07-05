@@ -6,6 +6,7 @@ import Input from '../ui/Input';
 export default function ScoreCard({
   question,
   answer,
+  answeredCorrectly,
   score,
   onScoreChange,
   onCommentChange,
@@ -31,7 +32,17 @@ export default function ScoreCard({
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_0.8fr]">
         <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Applicant answer</p>
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Applicant answer</p>
+            {answeredCorrectly === true && (
+              <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Correct
+              </span>
+            )}
+            {answeredCorrectly === false && (
+              <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">Incorrect</span>
+            )}
+          </div>
           <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-700">{answer || 'No answer provided.'}</p>
         </div>
         <div className="space-y-4">

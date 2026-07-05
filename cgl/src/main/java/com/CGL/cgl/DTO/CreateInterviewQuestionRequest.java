@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,4 +21,5 @@ public class CreateInterviewQuestionRequest {
     private String markingGuide;
     private DifficultyLevel difficultyLevel;
     private Boolean required;
+    private List<QuestionOptionRequest> options; // required for MULTIPLE_CHOICE, CHECKBOX, TRUE_FALSE
 }
