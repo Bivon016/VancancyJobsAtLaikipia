@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -52,17 +53,26 @@ public class ApplicationController {
     @GetMapping("/vacancy/{vacancyId}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN','CPSB_ADMIN','HR_OFFICER')")
     public ResponseEntity<List<Applications>> getAllApplicationsForVacancy(
-        @PathVariable Long vacancyId
+        @PathVariable Long vacancyId,
+        @RequestParam(defaultValue = "false") boolean includeClosed
     ) {
         return ResponseEntity.ok(
-            applicationService.getAllApplicationsForVacancy(vacancyId)
+            applicationService.getAllApplicationsForVacancy(vacancyId, includeClosed)
         );
     }
 
     @GetMapping("/all")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN','CPSB_ADMIN','HR_OFFICER')")
-    public ResponseEntity<List<Applications>> getAllApplications() {
-        return ResponseEntity.ok(applicationService.getAllApplications());
+    public ResponseEntity<List<Applications>> getAllApplications(
+        @RequestParam(defaultValue = "false") boolean includeClosed
+    ) {
+        return ResponseEntity.ok(applicationService.getAllApplications(includeClosed));
+    }
+
+    @GetMapping("/closed")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','CPSB_ADMIN','HR_OFFICER')")
+    public ResponseEntity<List<Applications>> getClosedApplications() {
+        return ResponseEntity.ok(applicationService.getClosedApplications());
     }
 
     @PutMapping("/{id}/status")
@@ -77,6 +87,22 @@ public class ApplicationController {
                 request.getStatus(),
                 request.getRemarks()
             )
+        );
+    }
+
+    @PutMapping("/{id}/mark-done")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','HR_OFFICER')")
+    public ResponseEntity<Applications> markApplicationDone(@PathVariable Long id) {
+        return ResponseEntity.ok(
+            applicationService.markApplicationDone(id, getCurrentUserEmail())
+        );
+    }
+
+    @PutMapping("/{id}/reopen")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN','HR_OFFICER')")
+    public ResponseEntity<Applications> reopenApplication(@PathVariable Long id) {
+        return ResponseEntity.ok(
+            applicationService.reopenApplication(id, getCurrentUserEmail())
         );
     }
 }

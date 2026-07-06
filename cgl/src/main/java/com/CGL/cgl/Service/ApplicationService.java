@@ -3,6 +3,7 @@ package com.CGL.cgl.Service;
 import com.CGL.cgl.DTO.ApplicationRefereeDTO;
 import com.CGL.cgl.DTO.ApplicationsDTO;
 import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
 import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.Applicant;
 import com.CGL.cgl.Model.ApplicationReferee;
@@ -10,6 +11,7 @@ import com.CGL.cgl.Model.ApplicationState;
 import com.CGL.cgl.Model.ApplicationStatus;
 import com.CGL.cgl.Model.Applications;
 import com.CGL.cgl.Model.JobVacancy;
+import com.CGL.cgl.Model.Role;
 import com.CGL.cgl.Model.Users;
 import com.CGL.cgl.Repo.ApplicantRepo;
 import com.CGL.cgl.Repo.ApplicationsRepo;
@@ -76,6 +78,10 @@ public class ApplicationService {
                 .isPresent()
         ) {
             throw new ConflictException("You have already applied");
+        }
+
+        if (request.getReferees() == null || request.getReferees().isEmpty()) {
+            throw new ConflictException("At least one referee is required");
         }
 
         Applications application = Applications.builder()
@@ -166,7 +172,7 @@ public class ApplicationService {
 
         Applicant applicant = application.getApplicant();
         if (applicant == null) {
-            throw new RuntimeException("Applicant not found for application");
+            throw new ResourceNotFoundException("Applicant not found for application");
         }
         Users applicantUser = applicant.getUser();
         String jobTitle = application.getVacancy().getTitle();
@@ -200,17 +206,73 @@ public class ApplicationService {
         return saved;
     }
 
-    public List<Applications> getAllApplicationsForVacancy(Long vacancyId) {
+    public List<Applications> getAllApplicationsForVacancy(Long vacancyId, boolean includeClosed) {
         JobVacancy vacancy = jobVacancyRepo
             .findById(vacancyId)
             .orElseThrow(() ->
                 new ResourceNotFoundException("Vacancy not found")
             );
-        return applicationsRepo.findByVacancy(vacancy);
+        return includeClosed
+            ? applicationsRepo.findByVacancy(vacancy)
+            : applicationsRepo.findByVacancyAndClosed(vacancy, false);
     }
 
-    public List<Applications> getAllApplications() {
-        return applicationsRepo.findAll();
+    public List<Applications> getAllApplications(boolean includeClosed) {
+        return includeClosed
+            ? applicationsRepo.findAll()
+            : applicationsRepo.findByClosed(false);
+    }
+
+    public List<Applications> getClosedApplications() {
+        return applicationsRepo.findByClosed(true);
+    }
+
+    public Applications markApplicationDone(Long applicationId, String email) {
+        Applications application = applicationsRepo
+            .findById(applicationId)
+            .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        Users user = userRepo
+            .findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (user.getRole() != Role.SUPER_ADMIN && user.getRole() != Role.HR_OFFICER) {
+            throw new ForbiddenException("Only Super Admin or HR Officer can mark an application as done");
+        }
+
+        if (application.isClosed()) {
+            throw new ConflictException("Application is already marked as done");
+        }
+
+        application.setClosed(true);
+        application.setClosedAt(LocalDateTime.now());
+        application.setClosedBy(user);
+
+        return applicationsRepo.save(application);
+    }
+
+    public Applications reopenApplication(Long applicationId, String email) {
+        Applications application = applicationsRepo
+            .findById(applicationId)
+            .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
+
+        Users user = userRepo
+            .findByEmail(email)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (user.getRole() != Role.SUPER_ADMIN && user.getRole() != Role.HR_OFFICER) {
+            throw new ForbiddenException("Only Super Admin or HR Officer can reopen an application");
+        }
+
+        if (!application.isClosed()) {
+            throw new ConflictException("Application is not marked as done");
+        }
+
+        application.setClosed(false);
+        application.setClosedAt(null);
+        application.setClosedBy(null);
+
+        return applicationsRepo.save(application);
     }
 
     private ApplicationReferee toReferee(

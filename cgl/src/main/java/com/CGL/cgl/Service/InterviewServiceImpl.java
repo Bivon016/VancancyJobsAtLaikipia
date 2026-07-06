@@ -2,6 +2,9 @@ package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.InterviewRequest;
 import com.CGL.cgl.DTO.PanelMemberRequest;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
 import java.util.List;
@@ -40,25 +43,25 @@ public class InterviewServiceImpl implements InterviewService {
         // 1. Get user from token
         Users user = usersRepo
             .findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // 2. Fetch application
         Applications application = applicationsRepo
             .findById(request.getApplicationId())
-            .orElseThrow(() -> new RuntimeException("Application not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         // 3. Application must be SHORTLISTED
         if (
             application.getApplicationStatus() != ApplicationState.SHORTLISTED
         ) {
-            throw new RuntimeException(
+            throw new ConflictException(
                 "Only shortlisted applications can get interviews"
             );
         }
 
         // 4. Check interview already exists
         if (interviewRepo.findByApplication(application).isPresent()) {
-            throw new RuntimeException("Interview already scheduled");
+            throw new ConflictException("Interview already scheduled");
         }
 
         // 5. Build interview
@@ -79,7 +82,7 @@ public class InterviewServiceImpl implements InterviewService {
 
         Applicant applicant = application.getApplicant();
         if (applicant == null) {
-            throw new RuntimeException("Applicant not found for application");
+            throw new ResourceNotFoundException("Applicant not found for application");
         }
         Users applicantUser = applicant.getUser();
         String interviewMessage =
@@ -126,15 +129,15 @@ public class InterviewServiceImpl implements InterviewService {
     public void addPanelMember(PanelMemberRequest request, String email) {
         Interview interview = interviewRepo
             .findById(request.getInterviewId())
-            .orElseThrow(() -> new RuntimeException("Interview not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
 
         Users panelMember = usersRepo
             .findById(request.getPanelMemberId())
-            .orElseThrow(() -> new RuntimeException("Panel member not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Panel member not found"));
 
         // check role
         if (panelMember.getRole() != Role.PANEL_MEMBER) {
-            throw new RuntimeException("User is not a panel member");
+            throw new ConflictException("User is not a panel member");
         }
 
         // prevent duplicate
@@ -144,7 +147,7 @@ public class InterviewServiceImpl implements InterviewService {
                 panelMember
             )
         ) {
-            throw new RuntimeException("Panel member already assigned");
+            throw new ConflictException("Panel member already assigned");
         }
 
         InterviewPanel panel = InterviewPanel.builder()
@@ -164,7 +167,7 @@ public class InterviewServiceImpl implements InterviewService {
     public List<Interview> getMyInterviews(String email) {
         Users user = usersRepo
             .findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         List<InterviewPanel> panels = interviewPanelRepo.findByPanelMember(
             user
@@ -178,7 +181,7 @@ public class InterviewServiceImpl implements InterviewService {
     public Interview completeInterview(Long interviewId, String email) {
         Interview interview = interviewRepo
             .findById(interviewId)
-            .orElseThrow(() -> new RuntimeException("Interview not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
 
         interview.setStatus(InterviewStatus.COMPLETED);
 

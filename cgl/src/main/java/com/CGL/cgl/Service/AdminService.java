@@ -1,5 +1,7 @@
 package com.CGL.cgl.Service;
 
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
 import org.springframework.stereotype.Service;
@@ -40,10 +42,10 @@ public class AdminService {
     @Transactional
     public void deleteUser(Long userId) {
         Users user = userRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getRole() == Role.DEPT_HEAD) {
-            throw new RuntimeException(
+            throw new ConflictException(
                     "Cannot delete a Department Head directly. Reassign the department first."
             );
         }
@@ -54,26 +56,26 @@ public class AdminService {
     @Transactional
     public void reassignAndDeleteDeptHead(Long userId, Long newHeadId) {
         Users user = userRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getRole() != Role.DEPT_HEAD) {
-            throw new RuntimeException("User is not a Department Head");
+            throw new ConflictException("User is not a Department Head");
         }
 
         Users newHead = userRepo.findById(newHeadId)
-                .orElseThrow(() -> new RuntimeException("New department head not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("New department head not found"));
 
         if (newHead.getRole() != Role.DEPT_HEAD) {
-            throw new RuntimeException("Selected user is not a Department Head");
+            throw new ConflictException("Selected user is not a Department Head");
         }
 
         if (newHead.getId().equals(userId)) {
-            throw new RuntimeException("New head must be a different user");
+            throw new ConflictException("New head must be a different user");
         }
 
         // Check new head is not already heading another department
         if (departmentRepo.existsByDepartmentHead(newHead)) {
-            throw new RuntimeException(
+            throw new ConflictException(
                     "Selected user is already heading another department"
             );
         }

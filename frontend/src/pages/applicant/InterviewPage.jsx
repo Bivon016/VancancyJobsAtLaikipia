@@ -115,10 +115,11 @@ export default function InterviewPage() {
 
   const statusBadge = useMemo(() => {
     const styles = {
-      SCHEDULED: 'bg-amber-100 text-amber-800',
+      OPEN: 'bg-amber-100 text-amber-800',
       IN_PROGRESS: 'bg-blue-100 text-blue-800',
       SUBMITTED: 'bg-emerald-100 text-emerald-800',
       EVALUATED: 'bg-slate-100 text-slate-700',
+      EXPIRED: 'bg-red-100 text-red-700',
     };
     return styles[interview?.status] || 'bg-slate-100 text-slate-700';
   }, [interview?.status]);
@@ -143,7 +144,7 @@ export default function InterviewPage() {
         meta={[
           { label: 'Applicant', value: 'You', icon: 'user' },
           { label: 'Vacancy', value: interview.vacancyTitle || '—', icon: 'calendar' },
-          { label: 'Status', value: interview.status || 'SCHEDULED', icon: 'clock' },
+          { label: 'Status', value: interview.status || 'OPEN', icon: 'clock' },
         ]}
       />
 

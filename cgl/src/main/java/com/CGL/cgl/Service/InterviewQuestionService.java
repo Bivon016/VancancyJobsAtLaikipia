@@ -1,6 +1,9 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.CreateInterviewQuestionRequest;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.DTO.InterviewQuestionResponse;
 import com.CGL.cgl.DTO.QuestionOptionRequest;
 import com.CGL.cgl.DTO.QuestionOptionResponse;
@@ -51,7 +54,7 @@ public class InterviewQuestionService {
         Users user = requirePanelOrAdmin(email);
 
         if (requests == null || requests.isEmpty()) {
-            throw new RuntimeException("At least one question is required");
+            throw new ConflictException("At least one question is required");
         }
 
         List<InterviewQuestion> questions = requests.stream().map(request -> {
@@ -69,7 +72,7 @@ public class InterviewQuestionService {
         validate(request);
 
         InterviewQuestion question = interviewQuestionRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Question not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
 
         question.setQuestionText(request.getQuestionText().trim());
         question.setQuestionType(request.getQuestionType());
@@ -93,10 +96,10 @@ public class InterviewQuestionService {
         requirePanelOrAdmin(email);
 
         InterviewQuestion question = interviewQuestionRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Question not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
 
         if (questionSetItemRepo.existsByQuestion(question)) {
-            throw new RuntimeException("Cannot delete a question that is already used in a question set. Remove it from all question sets first.");
+            throw new ConflictException("Cannot delete a question that is already used in a question set. Remove it from all question sets first.");
         }
 
         interviewQuestionRepo.deleteById(id);
@@ -105,7 +108,7 @@ public class InterviewQuestionService {
     @Transactional(readOnly = true)
     public List<InterviewQuestionResponse> getAllQuestions(String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         return interviewQuestionRepo.findAll().stream()
                 .map(q -> toResponse(q, user.getRole()))
@@ -115,10 +118,10 @@ public class InterviewQuestionService {
     @Transactional(readOnly = true)
     public InterviewQuestionResponse getQuestionById(Long id, String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         InterviewQuestion question = interviewQuestionRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Question not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
 
         return toResponse(question, user.getRole());
     }
@@ -127,10 +130,10 @@ public class InterviewQuestionService {
 
     private Users requirePanelOrAdmin(String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getRole() != Role.PANEL_MEMBER && user.getRole() != Role.SUPER_ADMIN) {
-            throw new RuntimeException("You are not allowed to perform this action!");
+            throw new ForbiddenException("You are not allowed to perform this action!");
         }
         return user;
     }
@@ -170,16 +173,16 @@ public class InterviewQuestionService {
 
     private void validate(CreateInterviewQuestionRequest request) {
         if (request.getQuestionText() == null || request.getQuestionText().isBlank()) {
-            throw new RuntimeException("Question text is required");
+            throw new ConflictException("Question text is required");
         }
         if (request.getQuestionType() == null) {
-            throw new RuntimeException("Question type is required");
+            throw new ConflictException("Question type is required");
         }
         if (request.getDifficultyLevel() == null) {
-            throw new RuntimeException("Difficulty level is required");
+            throw new ConflictException("Difficulty level is required");
         }
         if (request.getDefaultMarks() == null || request.getDefaultMarks() <= 0) {
-            throw new RuntimeException("Default marks must be greater than 0");
+            throw new ConflictException("Default marks must be greater than 0");
         }
 
         boolean needsOptions = OPTION_BASED_TYPES.contains(request.getQuestionType());
@@ -187,34 +190,34 @@ public class InterviewQuestionService {
 
         if (needsOptions) {
             if (options == null || options.size() < 2) {
-                throw new RuntimeException(request.getQuestionType() + " questions require at least 2 options");
+                throw new ConflictException(request.getQuestionType() + " questions require at least 2 options");
             }
             for (QuestionOptionRequest option : options) {
                 if (option.getOptionText() == null || option.getOptionText().isBlank()) {
-                    throw new RuntimeException("Every option must have text");
+                    throw new ConflictException("Every option must have text");
                 }
             }
             boolean hasCorrectOption = options.stream().anyMatch(o -> Boolean.TRUE.equals(o.getCorrect()));
             if (!hasCorrectOption) {
-                throw new RuntimeException("At least one option must be marked correct");
+                throw new ConflictException("At least one option must be marked correct");
             }
             if (request.getQuestionType() == QuestionType.TRUE_FALSE) {
                 if (options.size() != 2) {
-                    throw new RuntimeException("TRUE_FALSE questions must have exactly 2 options");
+                    throw new ConflictException("TRUE_FALSE questions must have exactly 2 options");
                 }
                 long correctCount = options.stream().filter(o -> Boolean.TRUE.equals(o.getCorrect())).count();
                 if (correctCount != 1) {
-                    throw new RuntimeException("TRUE_FALSE questions must have exactly 1 correct option");
+                    throw new ConflictException("TRUE_FALSE questions must have exactly 1 correct option");
                 }
             }
             if (request.getQuestionType() == QuestionType.MULTIPLE_CHOICE) {
                 long correctCount = options.stream().filter(o -> Boolean.TRUE.equals(o.getCorrect())).count();
                 if (correctCount != 1) {
-                    throw new RuntimeException("MULTIPLE_CHOICE questions must have exactly 1 correct option");
+                    throw new ConflictException("MULTIPLE_CHOICE questions must have exactly 1 correct option");
                 }
             }
         } else if (options != null && !options.isEmpty()) {
-            throw new RuntimeException(request.getQuestionType() + " questions do not use options");
+            throw new ConflictException(request.getQuestionType() + " questions do not use options");
         }
     }
 

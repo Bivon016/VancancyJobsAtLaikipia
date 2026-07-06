@@ -1,6 +1,7 @@
 import { CheckCircle2, Clock3, MessageSquareQuote } from 'lucide-react';
 import { Textarea } from '../ui/Input';
 import Button from '../ui/Button';
+import QuestionOptionsList from './QuestionOptionsList';
 
 const OPTION_TYPES = ['MULTIPLE_CHOICE', 'TRUE_FALSE', 'CHECKBOX'];
 
@@ -29,16 +30,16 @@ export default function QuestionCard({
   const options = question?.options || [];
   const selectedIds = parseSelectedIds(answer);
 
-  const handleSingleSelect = (optionId) => {
-    onAnswerChange(String(optionId));
-  };
-
-  const handleMultiSelect = (optionId) => {
-    const id = String(optionId);
-    const next = selectedIds.includes(id)
-      ? selectedIds.filter((existing) => existing !== id)
-      : [...selectedIds, id];
-    onAnswerChange(next.join(','));
+  const handleSelect = (optionId) => {
+    if (questionType === 'CHECKBOX') {
+      const id = String(optionId);
+      const next = selectedIds.includes(id)
+        ? selectedIds.filter((existing) => existing !== id)
+        : [...selectedIds, id];
+      onAnswerChange(next.join(','));
+    } else {
+      onAnswerChange(String(optionId));
+    }
   };
 
   return (
@@ -58,37 +59,13 @@ export default function QuestionCard({
         <p className="text-sm leading-7 text-slate-700">{question?.questionText || 'No prompt provided.'}</p>
 
         {isOptionBased ? (
-          <div className="space-y-2">
-            {options.length === 0 && (
-              <p className="text-sm text-amber-700">
-                This question has no options configured. Contact HR — it may need to be fixed in the question bank.
-              </p>
-            )}
-            {options.map((option) => {
-              const id = String(option.id);
-              const checked = questionType === 'CHECKBOX' ? selectedIds.includes(id) : selectedIds[0] === id;
-              return (
-                <label
-                  key={option.id}
-                  className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-sm transition-colors ${
-                    checked ? 'border-primary bg-primary/5' : 'border-slate-200'
-                  } ${isReadOnly ? 'cursor-not-allowed opacity-70' : 'hover:border-primary/50'}`}
-                >
-                  <input
-                    type={questionType === 'CHECKBOX' ? 'checkbox' : 'radio'}
-                    name={`question-${question?.questionSetItemId}`}
-                    checked={checked}
-                    disabled={isReadOnly}
-                    onChange={() =>
-                      questionType === 'CHECKBOX' ? handleMultiSelect(option.id) : handleSingleSelect(option.id)
-                    }
-                    className="h-4 w-4"
-                  />
-                  <span className="text-slate-700">{option.optionText}</span>
-                </label>
-              );
-            })}
-          </div>
+          <QuestionOptionsList
+            options={options}
+            questionType={questionType}
+            selectedIds={selectedIds}
+            onSelect={isReadOnly ? undefined : handleSelect}
+            isReadOnly={isReadOnly}
+          />
         ) : (
           <Textarea
             label="Your response"

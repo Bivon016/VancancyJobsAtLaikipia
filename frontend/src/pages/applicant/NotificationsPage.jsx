@@ -1,9 +1,44 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { BellRing, CheckCheck } from "lucide-react";
 import Card, { CardHeader } from "../../components/ui/Card";
 import EmptyState from "../../components/ui/EmptyState";
 import { notificationsApi } from "../../api";
 import { formatDateTime } from "../../utils/constants";
+
+const URL_PATTERN = /(https?:\/\/[^\s]+)/g;
+
+// Notifications like "Start it here: http://.../interview/{token}" store a
+// raw URL in the message text. Render it as an actual clickable action
+// (using client-side routing when it points at our own app) instead of a
+// flat string the applicant has to copy-paste.
+function renderMessageWithLinks(message) {
+  const parts = message.split(URL_PATTERN);
+  return parts.map((part, i) => {
+    if (!URL_PATTERN.test(part)) {
+      URL_PATTERN.lastIndex = 0;
+      return <span key={i}>{part}</span>;
+    }
+    URL_PATTERN.lastIndex = 0;
+    try {
+      const url = new URL(part);
+      if (url.origin === window.location.origin) {
+        return (
+          <Link key={i} to={url.pathname} className="font-semibold text-primary underline">
+            Open in portal
+          </Link>
+        );
+      }
+    } catch {
+      // fall through to plain link below
+    }
+    return (
+      <a key={i} href={part} target="_blank" rel="noreferrer" className="font-semibold text-primary underline">
+        {part}
+      </a>
+    );
+  });
+}
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
@@ -20,6 +55,10 @@ export default function NotificationsPage() {
 
   useEffect(() => {
     load();
+    const interval = window.setInterval(() => {
+      load();
+    }, 5000);
+    return () => window.clearInterval(interval);
   }, [load]);
 
   const handleRead = async (id) => {
@@ -107,7 +146,7 @@ export default function NotificationsPage() {
                       </span>
                     </div>
                     <p className="mt-2 text-sm leading-6 text-muted">
-                      {n.message}
+                      {renderMessageWithLinks(n.message)}
                     </p>
                   </div>
                 </div>

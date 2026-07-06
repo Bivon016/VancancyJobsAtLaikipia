@@ -6,6 +6,7 @@ import Button from '../../../components/ui/Button';
 import EmptyState from '../../../components/ui/EmptyState';
 import Input, { Textarea } from '../../../components/ui/Input';
 import { questionSetService } from '../../../services/questionSetService';
+import QuestionOptionsList from '../../../components/interviews/QuestionOptionsList';
 import { formatDateTime } from '../../../utils/constants';
 
 export default function QuestionSetDetailPage() {
@@ -234,6 +235,17 @@ export default function QuestionSetDetailPage() {
                     )}
                   </div>
                 </div>
+                {['MULTIPLE_CHOICE', 'TRUE_FALSE', 'CHECKBOX'].includes(item.question?.questionType) && (
+                  <div className="mt-4">
+                    <QuestionOptionsList
+                      options={item.question?.options || []}
+                      questionType={item.question?.questionType}
+                      selectedIds={[]}
+                      isReadOnly
+                      showCorrectness
+                    />
+                  </div>
+                )}
               </Card>
             ))}
           </div>

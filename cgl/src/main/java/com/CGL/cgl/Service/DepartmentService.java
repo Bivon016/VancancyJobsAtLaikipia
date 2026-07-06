@@ -1,6 +1,9 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.DepartmentRequest;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.Departments;
 import com.CGL.cgl.Model.Role;
 import com.CGL.cgl.Model.Users;
@@ -23,13 +26,13 @@ public class DepartmentService {
 
     public Departments createDepartment(DepartmentRequest request){
         Users head = userRepo.findById(request.getDepartmentHead())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if(head.getRole() != Role.DEPT_HEAD){
-            throw new RuntimeException("User is not a department Head");
+            throw new ForbiddenException("User is not a department Head");
         }
         if (departmentRepo.existsByDepartmentHead(head)) {
-            throw new RuntimeException("User is already heading another department");
+            throw new ConflictException("User is already heading another department");
         }
         Departments department = Departments.builder()
                 .departmentName(request.getDepartmentName())
@@ -42,7 +45,7 @@ public class DepartmentService {
     public Departments updateDepartment(DepartmentRequest request, Long id){
 
         Departments exists = departmentRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("department not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("department not found"));
         if (request.getDepartmentName() != null) {
             exists.setDepartmentName(request.getDepartmentName());
         }
@@ -52,14 +55,14 @@ public class DepartmentService {
         
         if (request.getDepartmentHead() != null) {
             Users head = userRepo.findById(request.getDepartmentHead())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
             if (head.getRole() != Role.DEPT_HEAD) {
-                throw new RuntimeException("User is not a department Head");
+                throw new ForbiddenException("User is not a department Head");
             }
 
             if (departmentRepo.existsByDepartmentHeadAndIdNot(head, id)) {
-                throw new RuntimeException("User is already heading another department");
+                throw new ConflictException("User is already heading another department");
             }
 
             exists.setDepartmentHead(head);

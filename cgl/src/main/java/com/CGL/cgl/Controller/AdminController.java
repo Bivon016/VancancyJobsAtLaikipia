@@ -1,6 +1,8 @@
 package com.CGL.cgl.Controller;
 
 import com.CGL.cgl.DTO.*;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.Applicant;
 import com.CGL.cgl.Model.Role;
 import com.CGL.cgl.Model.Users;
@@ -42,10 +44,10 @@ public class AdminController {
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<AdminApplicantDetailDTO> getApplicantDetail(@PathVariable Long id) {
         Users user = userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getRole() != Role.APPLICANT) {
-            throw new RuntimeException("This user is not an applicant");
+            throw new ConflictException("This user is not an applicant");
         }
 
         Applicant profile = applicantRepo.findByUser_Id(id).orElse(null);
@@ -135,7 +137,7 @@ public class AdminController {
             @RequestParam Role role
     ) {
         Users user = userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setRole(role);
         userRepo.save(user);
         return ResponseEntity.ok(toUserOption(user));
@@ -145,7 +147,7 @@ public class AdminController {
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<AdminUserDetailDTO> getUserDetail(@PathVariable Long id) {
         Users user = userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return ResponseEntity.ok(toUserDetail(user));
     }
 
@@ -173,13 +175,13 @@ public class AdminController {
             @RequestBody AdminUpdateUserRequest request
     ) {
         Users user = userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (request.getEmail() != null && !request.getEmail().isBlank()
                 && !request.getEmail().equalsIgnoreCase(user.getEmail())) {
             userRepo.findByEmail(request.getEmail()).ifPresent(existing -> {
                 if (!existing.getId().equals(id)) {
-                    throw new RuntimeException("Email is already in use by another account");
+                    throw new ConflictException("Email is already in use by another account");
                 }
             });
             user.setEmail(request.getEmail());

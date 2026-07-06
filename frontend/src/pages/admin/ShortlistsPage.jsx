@@ -45,16 +45,19 @@ export default function ShortlistsPage() {
   const role = normalizeRole(user?.role);
   const canManageShortlists =
     role === ROLES.HR_OFFICER || role === ROLES.CPSB_ADMIN;
+  const canMarkDone = role === ROLES.SUPER_ADMIN || role === ROLES.HR_OFFICER;
 
   const [vacancies, setVacancies] = useState([]);
   const [vacancyId, setVacancyId] = useState("");
   const [applications, setApplications] = useState([]);
+  const [showClosed, setShowClosed] = useState(false);
   const [shortlistAppId, setShortlistAppId] = useState("");
   const [documents, setDocuments] = useState([]);
   const [documentsLoading, setDocumentsLoading] = useState(false);
   const [documentsError, setDocumentsError] = useState("");
   const [remarks, setRemarks] = useState("");
   const [loading, setLoading] = useState(false);
+  const [markDoneLoading, setMarkDoneLoading] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -92,7 +95,7 @@ export default function ShortlistsPage() {
 
   useEffect(() => {
     if (!vacancyId) return;
-    applicationsApi.getByVacancy(vacancyId).then(({ data }) => {
+    applicationsApi.getByVacancy(vacancyId, showClosed).then(({ data }) => {
       setApplications(data);
       const nextAppId = data[0] ? String(data[0].id) : "";
       const activeAppId = data.some(
@@ -104,7 +107,27 @@ export default function ShortlistsPage() {
       setShortlistAppId(activeAppId);
       loadDocuments(activeAppId);
     });
-  }, [vacancyId, shortlistAppId, loadDocuments]);
+  }, [vacancyId, shortlistAppId, showClosed, loadDocuments]);
+
+  const handleMarkDone = async () => {
+    if (!selectedApplication) return;
+    setMarkDoneLoading(true);
+    try {
+      if (selectedApplication.closed) {
+        await applicationsApi.reopen(selectedApplication.id);
+        setMessage("Application reopened.");
+      } else {
+        await applicationsApi.markDone(selectedApplication.id);
+        setMessage("Application marked as done — it's now hidden from the default queue.");
+      }
+      const { data } = await applicationsApi.getByVacancy(vacancyId, showClosed);
+      setApplications(data);
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Failed to update application.");
+    } finally {
+      setMarkDoneLoading(false);
+    }
+  };
 
   const handleApplicationChange = (value) => {
     setShortlistAppId(value);
@@ -193,10 +216,23 @@ export default function ShortlistsPage() {
                       qualifications, and documents.
                     </p>
                   </div>
-                  <span className="rounded-full bg-secondary/5 px-3 py-1 text-xs font-semibold text-secondary">
-                    {applications.length} applicant
-                    {applications.length === 1 ? "" : "s"}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    {canMarkDone && (
+                      <label className="flex items-center gap-2 text-xs font-medium text-muted">
+                        <input
+                          type="checkbox"
+                          checked={showClosed}
+                          onChange={(e) => setShowClosed(e.target.checked)}
+                          className="h-3.5 w-3.5 rounded border-slate-300"
+                        />
+                        Show done applications
+                      </label>
+                    )}
+                    <span className="rounded-full bg-secondary/5 px-3 py-1 text-xs font-semibold text-secondary">
+                      {applications.length} applicant
+                      {applications.length === 1 ? "" : "s"}
+                    </span>
+                  </div>
                 </div>
 
                 {applications.length === 0 ? (
@@ -242,9 +278,16 @@ export default function ShortlistsPage() {
                                 {formatDateTime(application.applicationDate)}
                               </p>
                             </div>
-                            <StatusBadge
-                              status={application.applicationStatus}
-                            />
+                            <div className="flex flex-col items-end gap-2">
+                              <StatusBadge
+                                status={application.applicationStatus}
+                              />
+                              {application.closed && (
+                                <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+                                  Done
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </button>
                       );
@@ -276,7 +319,20 @@ export default function ShortlistsPage() {
               subtitle="Full profile and qualification summary for shortlisting decisions."
               action={
                 selectedApplication ? (
-                  <StatusBadge status={selectedApplication.applicationStatus} />
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status={selectedApplication.applicationStatus} />
+                    {canMarkDone && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        loading={markDoneLoading}
+                        onClick={handleMarkDone}
+                      >
+                        {selectedApplication.closed ? "Reopen" : "Mark as Done"}
+                      </Button>
+                    )}
+                  </div>
                 ) : null
               }
             />

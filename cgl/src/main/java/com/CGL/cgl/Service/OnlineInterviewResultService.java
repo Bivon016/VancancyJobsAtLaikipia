@@ -2,6 +2,9 @@ package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.FinalizeResultRequest;
 import com.CGL.cgl.DTO.OnlineInterviewResultResponse;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
 import org.springframework.stereotype.Service;
@@ -37,27 +40,27 @@ public class OnlineInterviewResultService {
     @Transactional
     public OnlineInterviewResultResponse finalizeResult(Long interviewId, FinalizeResultRequest request, String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getRole() != Role.PANEL_MEMBER && user.getRole() != Role.SUPER_ADMIN) {
-            throw new RuntimeException("You are not allowed to perform this action!");
+            throw new ForbiddenException("You are not allowed to perform this action!");
         }
 
         OnlineInterview interview = onlineInterviewRepo.findById(interviewId)
-                .orElseThrow(() -> new RuntimeException("Interview not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
 
         if (interview.getStatus() != OnlineInterviewStatus.SUBMITTED
                 && interview.getStatus() != OnlineInterviewStatus.EVALUATED) {
-            throw new RuntimeException("Interview must be submitted before it can be finalized");
+            throw new ConflictException("Interview must be submitted before it can be finalized");
         }
 
         if (request.getRecommendation() == null) {
-            throw new RuntimeException("Recommendation is required");
+            throw new ConflictException("Recommendation is required");
         }
 
         List<ApplicantAnswer> answers = applicantAnswerRepo.findByOnlineInterview(interview);
         if (answers.isEmpty()) {
-            throw new RuntimeException("No answers exist for this interview");
+            throw new ConflictException("No answers exist for this interview");
         }
 
         Map<Long, List<ApplicantAnswerScore>> scoresByAnswer = answers.stream()
@@ -68,7 +71,7 @@ public class OnlineInterviewResultService {
 
         boolean anyUnscored = scoresByAnswer.values().stream().anyMatch(List::isEmpty);
         if (anyUnscored) {
-            throw new RuntimeException("All answers must be scored by at least one panel member before finalizing");
+            throw new ConflictException("All answers must be scored by at least one panel member before finalizing");
         }
 
         double totalScore = 0.0;
@@ -109,10 +112,10 @@ public class OnlineInterviewResultService {
 
     public OnlineInterviewResultResponse getResult(Long interviewId) {
         OnlineInterview interview = onlineInterviewRepo.findById(interviewId)
-                .orElseThrow(() -> new RuntimeException("Interview not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
 
         OnlineInterviewResult result = resultRepo.findByOnlineInterview(interview)
-                .orElseThrow(() -> new RuntimeException("Result not yet finalized for this interview"));
+                .orElseThrow(() -> new ResourceNotFoundException("Result not yet finalized for this interview"));
 
         return toResponse(result);
     }
@@ -120,7 +123,7 @@ public class OnlineInterviewResultService {
         requireHrOrAdminOrPanel(email);
 
         JobVacancy vacancy = jobVacancyRepo.findById(vacancyId)
-                .orElseThrow(() -> new RuntimeException("Vacancy not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Vacancy not found"));
 
         List<OnlineInterviewResult> results = recommendationFilter != null
                 ? resultRepo.findByVacancyAndRecommendation(vacancy, recommendationFilter)
@@ -136,10 +139,10 @@ public class OnlineInterviewResultService {
 
     private Users requireHrOrAdminOrPanel(String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getRole() != Role.HR_OFFICER && user.getRole() != Role.SUPER_ADMIN && user.getRole() != Role.PANEL_MEMBER) {
-            throw new RuntimeException("You are not allowed to perform this action!");
+            throw new ForbiddenException("You are not allowed to perform this action!");
         }
         return user;
     }

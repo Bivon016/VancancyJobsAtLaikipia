@@ -1,6 +1,9 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.*;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
 import com.CGL.cgl.Service.EmailService;
@@ -53,17 +56,17 @@ public class OnlineInterviewService {
 
         Applications application = applicationsRepo
                 .findById(request.getApplicationId())
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         QuestionSet questionSet = questionSetRepo.findById(request.getQuestionSetId())
-                .orElseThrow(() -> new RuntimeException("Question set not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question set not found"));
 
         if (!Boolean.TRUE.equals(questionSet.getPublished())) {
-            throw new RuntimeException("Question set is not published");
+            throw new ConflictException("Question set is not published");
         }
         if (application.getVacancy() != null && questionSet.getVacancy() != null
                 && !application.getVacancy().getId().equals(questionSet.getVacancy().getId())) {
-            throw new RuntimeException("Question set does not belong to this application's vacancy");
+            throw new ConflictException("Question set does not belong to this application's vacancy");
         }
 
         OnlineInterview saved = createForApplication(request, application, questionSet, user);
@@ -75,7 +78,7 @@ public class OnlineInterviewService {
         Users user = requireHrOrAdmin(email);
 
         JobVacancy vacancy = jobVacancyRepo.findById(vacancyId)
-                .orElseThrow(() -> new RuntimeException("Vacancy not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Vacancy not found"));
 
         QuestionSet questionSet = resolveQuestionSetForVacancy(vacancy, windowTemplate.getQuestionSetId());
 
@@ -103,7 +106,7 @@ public class OnlineInterviewService {
     @Transactional
     public OnlineInterviewResponse startInterview(String interviewToken, String email) {
         OnlineInterview interview = onlineInterviewRepo.findByInterviewToken(interviewToken)
-                .orElseThrow(() -> new RuntimeException("Interview not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
 
         requireOwnership(interview, email);
         expireIfPastWindow(interview);
@@ -113,17 +116,17 @@ public class OnlineInterviewService {
         }
 
         if (interview.getStatus() != OnlineInterviewStatus.OPEN) {
-            throw new RuntimeException("Interview is not open for starting (status: " + interview.getStatus() + ")");
+            throw new ConflictException("Interview is not open for starting (status: " + interview.getStatus() + ")");
         }
 
         LocalDateTime now = LocalDateTime.now();
         if (now.isBefore(interview.getOpensAt())) {
-            throw new RuntimeException("Interview has not opened yet");
+            throw new ConflictException("Interview has not opened yet");
         }
         if (now.isAfter(interview.getClosesAt())) {
             interview.setStatus(OnlineInterviewStatus.EXPIRED);
             onlineInterviewRepo.save(interview);
-            throw new RuntimeException("Interview window has closed");
+            throw new ConflictException("Interview window has closed");
         }
 
         interview.setStatus(OnlineInterviewStatus.IN_PROGRESS);
@@ -134,12 +137,12 @@ public class OnlineInterviewService {
     @Transactional
     public OnlineInterviewResponse submitInterview(String interviewToken, String email) {
         OnlineInterview interview = onlineInterviewRepo.findByInterviewToken(interviewToken)
-                .orElseThrow(() -> new RuntimeException("Interview not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
 
         requireOwnership(interview, email);
 
         if (interview.getStatus() != OnlineInterviewStatus.IN_PROGRESS) {
-            throw new RuntimeException("Interview is not in progress (status: " + interview.getStatus() + ")");
+            throw new ConflictException("Interview is not in progress (status: " + interview.getStatus() + ")");
         }
 
         interview.setStatus(OnlineInterviewStatus.SUBMITTED);
@@ -150,7 +153,7 @@ public class OnlineInterviewService {
 
     public ApplicantInterviewResponse getInterviewForApplicant(String interviewToken, String email) {
         OnlineInterview interview = onlineInterviewRepo.findByInterviewToken(interviewToken)
-                .orElseThrow(() -> new RuntimeException("Interview not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
 
         requireOwnership(interview, email);
         expireIfPastWindow(interview);
@@ -196,7 +199,7 @@ public class OnlineInterviewService {
 
     public List<OnlineInterviewResponse> getMyInterviews(String email) {
         Applicant applicant = applicantRepo.findByUser_Email(email)
-                .orElseThrow(() -> new RuntimeException("Applicant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Applicant not found"));
 
         List<OnlineInterview> interviews = onlineInterviewRepo.findByApplication_Applicant(applicant);
         interviews.forEach(this::expireIfPastWindow);
@@ -214,11 +217,11 @@ public class OnlineInterviewService {
         List<OnlineInterview> interviews;
         if (vacancyId != null && status != null) {
             JobVacancy vacancy = jobVacancyRepo.findById(vacancyId)
-                    .orElseThrow(() -> new RuntimeException("Vacancy not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Vacancy not found"));
             interviews = onlineInterviewRepo.findByApplication_VacancyAndStatus(vacancy, status);
         } else if (vacancyId != null) {
             JobVacancy vacancy = jobVacancyRepo.findById(vacancyId)
-                    .orElseThrow(() -> new RuntimeException("Vacancy not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Vacancy not found"));
             interviews = onlineInterviewRepo.findByApplication_Vacancy(vacancy);
         } else if (status != null) {
             interviews = onlineInterviewRepo.findByStatus(status);
@@ -231,14 +234,14 @@ public class OnlineInterviewService {
 
     public OnlineInterviewResponse getInterviewById(Long id, String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getRole() != Role.HR_OFFICER && user.getRole() != Role.SUPER_ADMIN && user.getRole() != Role.PANEL_MEMBER) {
-            throw new RuntimeException("You are not allowed to perform this action!");
+            throw new ForbiddenException("You are not allowed to perform this action!");
         }
 
         OnlineInterview interview = onlineInterviewRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Interview not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
         return toResponse(interview);
     }
 
@@ -246,7 +249,7 @@ public class OnlineInterviewService {
     public OnlineInterviewResponse expireInterview(Long interviewId, String email) {
         requireHrOrAdmin(email);
         OnlineInterview interview = onlineInterviewRepo.findById(interviewId)
-                .orElseThrow(() -> new RuntimeException("Interview not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
         expireIfPastWindow(interview);
         return toResponse(interview);
     }
@@ -255,37 +258,37 @@ public class OnlineInterviewService {
 
     private void requireOwnership(OnlineInterview interview, String email) {
         Applicant applicant = applicantRepo.findByUser_Email(email)
-                .orElseThrow(() -> new RuntimeException("Applicant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Applicant not found"));
 
         Applicant owner = interview.getApplication().getApplicant();
         if (owner == null || !owner.getId().equals(applicant.getId())) {
-            throw new RuntimeException("You cannot access another applicant's interview.");
+            throw new ForbiddenException("You cannot access another applicant's interview.");
         }
     }
 
     private Users requireHrOrAdmin(String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User Not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User Not found"));
 
         if (user.getRole() != Role.SUPER_ADMIN && user.getRole() != Role.HR_OFFICER) {
-            throw new RuntimeException("You are not allowed to perform this action!");
+            throw new ForbiddenException("You are not allowed to perform this action!");
         }
         return user;
     }
 
     private OnlineInterview createForApplication(OnlineInterviewRequest request, Applications application, QuestionSet questionSet, Users user) {
         if (application.getApplicationStatus() != ApplicationState.SHORTLISTED) {
-            throw new RuntimeException("Only shortlisted applications can get interviews");
+            throw new ConflictException("Only shortlisted applications can get interviews");
         }
         if (onlineInterviewRepo.findByApplication(application).isPresent()) {
-            throw new RuntimeException("Interview already exists");
+            throw new ConflictException("Interview already exists");
         }
         if (request.getDurationMinutes() == null || request.getDurationMinutes() <= 0) {
-            throw new RuntimeException("Duration must be greater than 0");
+            throw new ConflictException("Duration must be greater than 0");
         }
         if (request.getOpensAt() == null || request.getClosesAt() == null
                 || !request.getOpensAt().isBefore(request.getClosesAt())) {
-            throw new RuntimeException("opensAt must be before closesAt");
+            throw new ConflictException("opensAt must be before closesAt");
         }
 
         OnlineInterview onlineInterview = OnlineInterview.builder()
@@ -308,13 +311,13 @@ public class OnlineInterviewService {
     private QuestionSet resolveQuestionSetForVacancy(JobVacancy vacancy, Long requestedQuestionSetId) {
         if (requestedQuestionSetId != null) {
             QuestionSet questionSet = questionSetRepo.findById(requestedQuestionSetId)
-                    .orElseThrow(() -> new RuntimeException("Question set not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Question set not found"));
             if (questionSet.getVacancy() == null || !questionSet.getVacancy().getId().equals(vacancy.getId())) {
-                throw new RuntimeException("Question set does not belong to this vacancy");
+                throw new ConflictException("Question set does not belong to this vacancy");
             }
             if (!Boolean.TRUE.equals(questionSet.getPublished())) {
                 if (questionSet.getItems() == null || questionSet.getItems().isEmpty()) {
-                    throw new RuntimeException("Cannot schedule an empty question set");
+                    throw new ConflictException("Cannot schedule an empty question set");
                 }
                 questionSet.setPublished(true);
                 questionSetRepo.save(questionSet);
@@ -324,10 +327,10 @@ public class OnlineInterviewService {
 
         List<QuestionSet> published = questionSetRepo.findByVacancyAndPublished(vacancy, true);
         if (published.isEmpty()) {
-            throw new RuntimeException("No published question set exists for this vacancy");
+            throw new ConflictException("No published question set exists for this vacancy");
         }
         if (published.size() > 1) {
-            throw new RuntimeException("Multiple published question sets exist for this vacancy — specify questionSetId");
+            throw new ConflictException("Multiple published question sets exist for this vacancy — specify questionSetId");
         }
         return published.get(0);
     }

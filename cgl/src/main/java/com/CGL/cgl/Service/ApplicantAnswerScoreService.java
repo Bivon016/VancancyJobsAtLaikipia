@@ -1,6 +1,9 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.ApplicantAnswerScoreResponse;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.DTO.SubmitScoreRequest;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.ApplicantAnswerRepo;
@@ -28,29 +31,29 @@ public class ApplicantAnswerScoreService {
     @Transactional
     public ApplicantAnswerScoreResponse submitScore(SubmitScoreRequest request, String email) {
         Users panelMember = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (panelMember.getRole() != Role.PANEL_MEMBER && panelMember.getRole() != Role.SUPER_ADMIN) {
-            throw new RuntimeException("You are not allowed to perform this action!");
+            throw new ForbiddenException("You are not allowed to perform this action!");
         }
 
 
         ApplicantAnswer answer = applicantAnswerRepo.findById(request.getApplicantAnswerId())
-                .orElseThrow(() -> new RuntimeException("Applicant answer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Applicant answer not found"));
 
 
         if (answer.getOnlineInterview().getStatus() != OnlineInterviewStatus.SUBMITTED
                 && answer.getOnlineInterview().getStatus() != OnlineInterviewStatus.EVALUATED) {
-            throw new RuntimeException("Cannot score an interview before it has been submitted");
+            throw new ConflictException("Cannot score an interview before it has been submitted");
         }
 
         if (request.getMarksAwarded() == null || request.getMarksAwarded() < 0) {
-            throw new RuntimeException("Marks awarded must be zero or greater");
+            throw new ConflictException("Marks awarded must be zero or greater");
         }
 
         Integer maxMarks = answer.getQuestionSetItem().getMarks();
         if (maxMarks != null && request.getMarksAwarded() > maxMarks) {
-            throw new RuntimeException("Marks awarded cannot exceed the question's max marks (" + maxMarks + ")");
+            throw new ConflictException("Marks awarded cannot exceed the question's max marks (" + maxMarks + ")");
         }
 
         ApplicantAnswerScore score = scoreRepo
@@ -72,7 +75,7 @@ public class ApplicantAnswerScoreService {
         return scoreRepo.findByOnlineInterview(
                         applicantAnswerRepo.findById(interviewId)
                                 .map(ApplicantAnswer::getOnlineInterview)
-                                .orElseThrow(() -> new RuntimeException("Interview not found"))
+                                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"))
                 )
                 .stream()
                 .map(this::toResponse)

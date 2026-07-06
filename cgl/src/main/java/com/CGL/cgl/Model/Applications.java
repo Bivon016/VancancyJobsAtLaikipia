@@ -46,6 +46,20 @@ public class Applications {
     @Column(nullable = true)
     private String remarks;
 
+    // "Mark as done" — lets SUPER_ADMIN/HR_OFFICER close out an application
+    // once its whole lifecycle (selected, appointed, rejected, etc.) is
+    // finished, so it stops cluttering the default applications queue.
+    // The applicant can still see it in their own "My Applications" list;
+    // this only affects the HR/Admin working views.
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean closed = false;
+
+    private LocalDateTime closedAt;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Users closedBy;
+
     @Column(length = 4000)
     private String suitabilityStatement;
 

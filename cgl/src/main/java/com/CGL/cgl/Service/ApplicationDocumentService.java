@@ -11,7 +11,8 @@ public interface ApplicationDocumentService {
     ApplicationDocument uploadDocument(
             MultipartFile file,
             DocumentType documentType,
-            Long applicationId
+            Long applicationId,
+            String email
     );
 
 

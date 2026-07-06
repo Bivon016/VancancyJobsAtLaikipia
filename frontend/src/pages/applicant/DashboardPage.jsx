@@ -50,8 +50,15 @@ export default function ApplicantDashboard() {
     void loadDashboardData();
     const interval = window.setInterval(() => {
       void loadDashboardData();
-    }, 15000);
-    return () => window.clearInterval(interval);
+    }, 5000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void loadDashboardData();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, []);
 
   const complete = isProfileComplete(profile);

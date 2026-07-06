@@ -138,7 +138,10 @@ export default function OnlineInterviewPanelPage() {
             <ScoreCard
               key={answer.id}
               question={{ questionText: answer.questionText }}
-              answer={answer.selectedOptionTexts?.length ? answer.selectedOptionTexts.join(', ') : answer.answerText}
+              answer={answer.answerText}
+              questionType={answer.questionType}
+              options={answer.options}
+              selectedOptionIds={answer.selectedOptionIds}
               answeredCorrectly={answer.answeredCorrectly}
               score={score}
               maxMarks={answer.maxMarks}

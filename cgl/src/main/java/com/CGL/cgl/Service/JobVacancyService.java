@@ -1,6 +1,8 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.JobVacancyRequest;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.JobVacancyRepo;
 import com.CGL.cgl.Repo.RecruitmentRequestRepo;
@@ -28,16 +30,16 @@ public class JobVacancyService {
     public JobVacancy createVacancy(JobVacancyRequest request, String email) {
         Users createdBy = userRepo
             .findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         RecruitmentRequest recruitmentRequest = recruitmentRequestRepo
             .findById(request.getRecruitmentRequestId())
             .orElseThrow(() ->
-                new RuntimeException("Recruitment request not found")
+                new ResourceNotFoundException("Recruitment request not found")
             );
 
         if (recruitmentRequest.getStatus() != Status.APPROVED) {
-            throw new RuntimeException(
+            throw new ConflictException(
                 "Cannot create vacancy for unapproved request"
             );
         }
@@ -66,13 +68,13 @@ public class JobVacancyService {
     public JobVacancy getVacancyById(Long id) {
         return jobVacancyRepo
             .findById(id)
-            .orElseThrow(() -> new RuntimeException("Vacancy not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Vacancy not found"));
     }
 
     public JobVacancy closeVacancy(Long id) {
         JobVacancy vacancy = jobVacancyRepo
             .findById(id)
-            .orElseThrow(() -> new RuntimeException("Vacancy not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Vacancy not found"));
 
         vacancy.setStatus(ApplicationStatus.CLOSED);
         return jobVacancyRepo.save(vacancy);
@@ -85,7 +87,7 @@ public class JobVacancyService {
     public JobVacancy openVacancy(Long id) {
         JobVacancy vacancy = jobVacancyRepo
             .findById(id)
-            .orElseThrow(() -> new RuntimeException("Vacancy not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Vacancy not found"));
         vacancy.setStatus(ApplicationStatus.OPEN);
         return jobVacancyRepo.save(vacancy);
     }

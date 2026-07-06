@@ -1,6 +1,9 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.ApplicantAnswerResponse;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.DTO.PanelScoreSummaryResponse;
 import com.CGL.cgl.DTO.SubmitAnswerRequest;
 import com.CGL.cgl.Model.*;
@@ -36,27 +39,27 @@ public class ApplicantAnswerService {
     @Transactional
     public ApplicantAnswerResponse submitAnswer(String interviewToken, SubmitAnswerRequest request, String email) {
         OnlineInterview interview = onlineInterviewRepo.findByInterviewToken(interviewToken)
-                .orElseThrow(() -> new RuntimeException("Interview not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
 
         Applicant applicant = applicantRepo.findByUser_Email(email)
-                .orElseThrow(() -> new RuntimeException("Applicant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Applicant not found"));
 
         Applicant interviewOwner = interview.getApplication().getApplicant();
         if (interviewOwner == null || !interviewOwner.getId().equals(applicant.getId())) {
-            throw new RuntimeException("You cannot answer another applicant's interview.");
+            throw new ForbiddenException("You cannot answer another applicant's interview.");
         }
 
         if (interview.getStatus() != OnlineInterviewStatus.IN_PROGRESS) {
-            throw new RuntimeException("Interview must be started before answering (status: " + interview.getStatus() + ")");
+            throw new ConflictException("Interview must be started before answering (status: " + interview.getStatus() + ")");
         }
 
         QuestionSetItem questionSetItem = questionSetItemRepo.findById(request.getQuestionSetItemId())
-                .orElseThrow(() -> new RuntimeException("Question not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
 
         if (interview.getQuestionSet() == null
                 || questionSetItem.getQuestionSet() == null
                 || questionSetItem.getQuestionSet().getId()!=(interview.getQuestionSet().getId())) {
-            throw new RuntimeException("This question does not belong to this interview's question set");
+            throw new ConflictException("This question does not belong to this interview's question set");
         }
 
         ApplicantAnswer answer = applicantAnswerRepo
@@ -74,7 +77,7 @@ public class ApplicantAnswerService {
 
     public List<ApplicantAnswerResponse> getAnswersForInterview(String interviewToken, String email) {
         OnlineInterview interview = onlineInterviewRepo.findByInterviewToken(interviewToken)
-                .orElseThrow(() -> new RuntimeException("Interview not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
 
         Applicant applicant = applicantRepo.findByUser_Email(email).orElse(null);
         boolean isOwner = applicant != null
@@ -82,7 +85,7 @@ public class ApplicantAnswerService {
                 && interview.getApplication().getApplicant().getId().equals(applicant.getId());
 
         if (!isOwner) {
-            throw new RuntimeException("You cannot view another applicant's answers.");
+            throw new ForbiddenException("You cannot view another applicant's answers.");
         }
 
         return applicantAnswerRepo.findByOnlineInterview(interview)
@@ -93,10 +96,10 @@ public class ApplicantAnswerService {
 
     public List<ApplicantAnswerResponse> getAnswersForPanel(Long interviewId, String email) {
         Users panelMember = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         OnlineInterview interview = onlineInterviewRepo.findById(interviewId)
-                .orElseThrow(() -> new RuntimeException("Interview not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
 
         return applicantAnswerRepo.findByOnlineInterview(interview)
                 .stream()
@@ -127,13 +130,36 @@ public class ApplicantAnswerService {
         QuestionType questionType = question.getQuestionType();
 
         List<String> selectedOptionTexts = null;
+        List<String> selectedOptionIds = null;
+        List<com.CGL.cgl.DTO.QuestionOptionResponse> optionResponses = null;
         Boolean answeredCorrectly = null;
+
+        if (OPTION_BASED_TYPES.contains(questionType)) {
+            // Always surface the full option list so the panel review screen can
+            // render the question exactly as the applicant saw it (same option
+            // list/order), not just a flattened text summary.
+            optionResponses = question.getOptions().stream()
+                    .sorted((a, b) -> {
+                        Integer ai = a.getOrderIndex() != null ? a.getOrderIndex() : 0;
+                        Integer bi = b.getOrderIndex() != null ? b.getOrderIndex() : 0;
+                        return ai.compareTo(bi);
+                    })
+                    .map(o -> com.CGL.cgl.DTO.QuestionOptionResponse.builder()
+                            .id(o.getId())
+                            .optionText(o.getOptionText())
+                            .correct(panelMember != null ? o.getCorrect() : null)
+                            .orderIndex(o.getOrderIndex())
+                            .build())
+                    .toList();
+        }
 
         if (OPTION_BASED_TYPES.contains(questionType) && answer.getAnswerText() != null) {
             Set<String> selectedIds = Arrays.stream(answer.getAnswerText().split(","))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
                     .collect(Collectors.toSet());
+
+            selectedOptionIds = new java.util.ArrayList<>(selectedIds);
 
             selectedOptionTexts = question.getOptions().stream()
                     .filter(o -> selectedIds.contains(String.valueOf(o.getId())))
@@ -159,6 +185,8 @@ public class ApplicantAnswerService {
                 .maxMarks(answer.getQuestionSetItem().getMarks())
                 .answerText(answer.getAnswerText())
                 .selectedOptionTexts(selectedOptionTexts)
+                .selectedOptionIds(selectedOptionIds)
+                .options(optionResponses)
                 .answeredCorrectly(answeredCorrectly)
                 .answeredAt(answer.getAnsweredAt())
                 .lastEditedAt(answer.getLastEditedAt())

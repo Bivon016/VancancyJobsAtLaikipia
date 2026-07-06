@@ -1,6 +1,9 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.InterviewScoreRequest;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
 import org.springframework.stereotype.Service;
@@ -39,11 +42,11 @@ public class InterviewScoreServiceImpl
         Users panelMember =
                 userRepo.findByEmail(email)
                         .orElseThrow(() ->
-                                new RuntimeException("User not found")
+                                new ResourceNotFoundException("User not found")
                         );
 
         if (panelMember.getRole() != Role.PANEL_MEMBER) {
-            throw new RuntimeException(
+            throw new ForbiddenException(
                     "Only panel members can score interviews"
             );
 
@@ -52,7 +55,7 @@ public class InterviewScoreServiceImpl
         Interview interview =
                 interviewRepo.findById(request.getInterviewId())
                         .orElseThrow(() ->
-                                new RuntimeException("Interview not found")
+                                new ResourceNotFoundException("Interview not found")
                         );
 
         boolean assigned =
@@ -62,15 +65,16 @@ public class InterviewScoreServiceImpl
                 );
 
         if (!assigned) {
-            throw new RuntimeException(
+            throw new ForbiddenException(
                     "You are not assigned to this interview"
             );
         }
-        if (interview.getStatus()
-                != InterviewStatus.COMPLETED) {
-
-            throw new RuntimeException(
-                    "Interview must be completed before scoring"
+        // Scoring happens once the interview itself has taken place. HR marks
+        // the interview COMPLETED only after scoring is done, so we must not
+        // require COMPLETED here — only block scoring for a cancelled interview.
+        if (interview.getStatus() == InterviewStatus.CANCELLED) {
+            throw new ConflictException(
+                    "Cannot score a cancelled interview"
             );
         }
 
@@ -81,7 +85,7 @@ public class InterviewScoreServiceImpl
                 )
                 .isPresent()) {
 
-            throw new RuntimeException(
+            throw new ConflictException(
                     "You have already submitted a score"
             );
         }
@@ -96,7 +100,7 @@ public class InterviewScoreServiceImpl
                 request.getExperienceScore() > 100) {
 
 
-            throw new RuntimeException(
+            throw new ConflictException(
                     "Scores must be between 0 and 100"
             );
         }
@@ -135,7 +139,7 @@ public class InterviewScoreServiceImpl
         Interview interview =
                 interviewRepo.findById(interviewId)
                         .orElseThrow(() ->
-                                new RuntimeException("Interview not found")
+                                new ResourceNotFoundException("Interview not found")
                         );
 
         return interviewScoreRepo.findByInterview(
@@ -151,7 +155,7 @@ public class InterviewScoreServiceImpl
         Interview interview =
                 interviewRepo.findById(interviewId)
                         .orElseThrow(() ->
-                                new RuntimeException("Interview not found")
+                                new ResourceNotFoundException("Interview not found")
                         );
 
         List<InterviewScore> scores =

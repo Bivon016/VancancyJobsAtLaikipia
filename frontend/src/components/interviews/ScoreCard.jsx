@@ -2,10 +2,16 @@ import { CheckCircle2, MessageSquareQuote } from 'lucide-react';
 import { Textarea } from '../ui/Input';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
+import QuestionOptionsList from './QuestionOptionsList';
+
+const OPTION_TYPES = ['MULTIPLE_CHOICE', 'TRUE_FALSE', 'CHECKBOX'];
 
 export default function ScoreCard({
   question,
   answer,
+  questionType,
+  options,
+  selectedOptionIds,
   answeredCorrectly,
   score,
   onScoreChange,
@@ -18,6 +24,8 @@ export default function ScoreCard({
   index,
   isReadOnly,
 }) {
+  const isOptionBased = OPTION_TYPES.includes(questionType);
+
   return (
     <div className="rounded-[24px] border border-slate-200/80 bg-white p-5 shadow-[0_12px_30px_rgba(15,23,42,0.05)]">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
@@ -43,7 +51,22 @@ export default function ScoreCard({
               <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">Incorrect</span>
             )}
           </div>
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-700">{answer || 'No answer provided.'}</p>
+          <div className="mt-3">
+            {isOptionBased ? (
+              // Same component, same layout the applicant saw when answering —
+              // full option list with the applicant's pick and the correct
+              // answer highlighted, instead of a flattened text summary.
+              <QuestionOptionsList
+                options={options || []}
+                questionType={questionType}
+                selectedIds={selectedOptionIds || []}
+                isReadOnly
+                showCorrectness
+              />
+            ) : (
+              <p className="whitespace-pre-wrap text-sm leading-7 text-slate-700">{answer || 'No answer provided.'}</p>
+            )}
+          </div>
         </div>
         <div className="space-y-4">
           <Input

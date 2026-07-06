@@ -1,6 +1,9 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.FinalSelectionRequest;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.DTO.FinalSelectionResponseDTO;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
@@ -44,21 +47,21 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
         // 1. Get logged in user
         Users user = userRepo
             .findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // 2. Check role
         if (user.getRole() != Role.CPSB_ADMIN) {
-            throw new RuntimeException("Only CPSB Admin can select candidates");
+            throw new ForbiddenException("Only CPSB Admin can select candidates");
         }
 
         // 3. Get application
         Applications application = applicationsRepo
             .findById(request.getApplicationId())
-            .orElseThrow(() -> new RuntimeException("Application not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         // 4. Check application status
         if (application.getApplicationStatus() != ApplicationState.INTERVIEW) {
-            throw new RuntimeException(
+            throw new ConflictException(
                 "Only interviewed applicants can be selected"
             );
         }
@@ -68,7 +71,7 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
             finalSelectionRepo.findByApplication(application);
 
         if (existing.isPresent()) {
-            throw new RuntimeException("Applicant already selected");
+            throw new ConflictException("Applicant already selected");
         }
 
         // 6. Update application status
@@ -140,17 +143,17 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
     ) {
         Users user = userRepo
             .findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getRole() != Role.CPSB_ADMIN) {
-            throw new RuntimeException(
+            throw new ForbiddenException(
                 "Only CPSB Admin can update appointment"
             );
         }
 
         FinalSelection selection = finalSelectionRepo
             .findById(selectionId)
-            .orElseThrow(() -> new RuntimeException("Selection not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Selection not found"));
 
         selection.setAppointmentStatus(status);
 
@@ -173,7 +176,7 @@ public class FinalSelectionServiceImpl implements FinalSelectionService {
         Applications application = selection.getApplication();
         Applicant applicant = application.getApplicant();
         if (applicant == null) {
-            throw new RuntimeException("Applicant not found for application");
+            throw new ResourceNotFoundException("Applicant not found for application");
         }
         Users user = applicant.getUser();
         JobVacancy vacancy = application.getVacancy();

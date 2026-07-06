@@ -17,4 +17,9 @@ public interface ApplicationsRepo extends JpaRepository<Applications, Long> {
     List<Applications> findByApplicant(Applicant applicant);
     List<Applications> findByVacancyAndApplicationStatus(JobVacancy vacancy, ApplicationState applicationStatus);
     Long countByVacancyAndApplicationStatus(JobVacancy vacancy, ApplicationState applicationStatus);
+
+    // "Mark as done" support: default HR/Admin views only show open (not-yet-closed)
+    // applications; closed ones are still reachable via the includeClosed=true views.
+    List<Applications> findByClosed(boolean closed);
+    List<Applications> findByVacancyAndClosed(JobVacancy vacancy, boolean closed);
 }

@@ -28,11 +28,17 @@ public class ApplicationDocumentController {
         @RequestParam("documentType") DocumentType documentType,
         @RequestParam("applicationId") Long applicationId
     ) {
+        String email =
+            org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
         ApplicationDocument document =
             applicationDocumentService.uploadDocument(
                 file,
                 documentType,
-                applicationId
+                applicationId,
+                email
             );
 
         return ResponseEntity.ok(document);

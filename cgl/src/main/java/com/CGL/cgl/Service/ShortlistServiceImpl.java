@@ -1,6 +1,9 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.ShortlistRequest;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.DTO.ShortlistResponseDTO;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
@@ -40,25 +43,25 @@ public class ShortlistServiceImpl implements ShortlistService {
     ) {
         Users user = usersRepo
             .findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (
             user.getRole() != Role.HR_OFFICER &&
             user.getRole() != Role.CPSB_ADMIN
         ) {
-            throw new RuntimeException(
+            throw new ForbiddenException(
                 "Only HR Officer or CPSB Admin can shortlist applicants"
             );
         }
 
         Applications application = applicationsRepo
             .findById(request.getApplicationId())
-            .orElseThrow(() -> new RuntimeException("Application not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
         if (
             application.getApplicationStatus() != ApplicationState.SUBMITTED &&
             application.getApplicationStatus() != ApplicationState.UNDER_REVIEW
         ) {
-            throw new RuntimeException(
+            throw new ConflictException(
                 "Only SUBMITTED or UNDER_REVIEW applications can be shortlisted"
             );
         }
@@ -67,7 +70,7 @@ public class ShortlistServiceImpl implements ShortlistService {
         );
 
         if (existingShortlist.isPresent()) {
-            throw new RuntimeException(
+            throw new ConflictException(
                 "Application has already been shortlisted"
             );
         }
@@ -86,7 +89,7 @@ public class ShortlistServiceImpl implements ShortlistService {
 
         Applicant applicant = application.getApplicant();
         if (applicant == null) {
-            throw new RuntimeException("Applicant not found for application");
+            throw new ResourceNotFoundException("Applicant not found for application");
         }
 
         // Notify applicant

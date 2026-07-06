@@ -34,10 +34,15 @@ export const profileApi = {
 export const applicationsApi = {
   apply: (data) => api.post("/applications/apply", data),
   getMy: () => api.get("/applications/my"),
-  getByVacancy: (vacancyId) => api.get(`/applications/vacancy/${vacancyId}`),
-  getAll: () => api.get("/applications/all"),
+  getByVacancy: (vacancyId, includeClosed = false) =>
+    api.get(`/applications/vacancy/${vacancyId}`, { params: { includeClosed } }),
+  getAll: (includeClosed = false) =>
+    api.get("/applications/all", { params: { includeClosed } }),
+  getClosed: () => api.get("/applications/closed"),
   updateStatus: (id, status, remarks) =>
     api.put(`/applications/${id}/status`, { status, remarks }),
+  markDone: (id) => api.put(`/applications/${id}/mark-done`),
+  reopen: (id) => api.put(`/applications/${id}/reopen`),
 };
 
 export const documentsApi = {

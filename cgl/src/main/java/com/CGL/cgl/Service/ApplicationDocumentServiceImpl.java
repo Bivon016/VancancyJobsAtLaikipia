@@ -1,5 +1,7 @@
 package com.CGL.cgl.Service;
 
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.ApplicationDocument;
 import com.CGL.cgl.Model.Applications;
 import com.CGL.cgl.Model.Applicant;
@@ -49,15 +51,27 @@ public class ApplicationDocumentServiceImpl implements ApplicationDocumentServic
     public ApplicationDocument uploadDocument(
             MultipartFile file,
             DocumentType documentType,
-            Long applicationId
+            Long applicationId,
+            String email
     ) {
 
         Applications application =
                 applicationsRepo.findById(applicationId)
                         .orElseThrow(() ->
-                                new RuntimeException("Application not found")
+                                new ResourceNotFoundException("Application not found")
                         );
 
+        // Ownership check: an applicant may only upload documents against
+        // their own application, never someone else's (previously any
+        // authenticated applicant could upload to any applicationId).
+        Users user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Applicant applicant = applicantRepo.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
+        Applicant owner = application.getApplicant();
+        if (owner == null || !owner.getId().equals(applicant.getId())) {
+            throw new ForbiddenException("You cannot upload documents to another applicant's application");
+        }
 
         try {
 
@@ -71,10 +85,14 @@ public class ApplicationDocumentServiceImpl implements ApplicationDocumentServic
             }
 
 
+            String originalName = file.getOriginalFilename() != null
+                    ? Paths.get(file.getOriginalFilename()).getFileName().toString()
+                    : "document";
+            String safeName = originalName.replaceAll("[^a-zA-Z0-9._-]", "_");
             String fileName =
                     System.currentTimeMillis()
                             + "_"
-                            + file.getOriginalFilename();
+                            + safeName;
 
             Path filePath =
                     applicationFolder.resolve(fileName);
@@ -120,7 +138,7 @@ public class ApplicationDocumentServiceImpl implements ApplicationDocumentServic
         Applications application =
                 applicationsRepo.findById(applicationId)
                         .orElseThrow(() ->
-                                new RuntimeException("Application not found")
+                                new ResourceNotFoundException("Application not found")
                         );
 
 
@@ -130,15 +148,15 @@ public class ApplicationDocumentServiceImpl implements ApplicationDocumentServic
     @Override
     public List<ApplicationDocument> getMyApplicationDocuments(Long applicationId, String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Applicant applicant = applicantRepo.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found"));
         Applications application = applicationsRepo.findById(applicationId)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
         Applicant applicationApplicant = application.getApplicant();
         if (applicationApplicant == null || !applicationApplicant.getId().equals(applicant.getId())) {
-            throw new RuntimeException("Access denied");
+            throw new ForbiddenException("Access denied");
         }
 
         return applicationDocumentRepo.findByApplication(application);

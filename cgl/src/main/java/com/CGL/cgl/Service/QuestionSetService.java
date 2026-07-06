@@ -1,6 +1,9 @@
 package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.*;
+import com.CGL.cgl.Exception.ConflictException;
+import com.CGL.cgl.Exception.ForbiddenException;
+import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.*;
 import com.CGL.cgl.Repo.*;
 import org.springframework.stereotype.Service;
@@ -34,11 +37,11 @@ public class QuestionSetService {
         Users user = requirePanelOrAdmin(email);
 
         if (request.getTitle() == null || request.getTitle().isBlank()) {
-            throw new RuntimeException("Title is required");
+            throw new ConflictException("Title is required");
         }
 
         JobVacancy vacancy = jobVacancyRepo.findById(request.getVacancyId())
-                .orElseThrow(() -> new RuntimeException("Vacancy not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Vacancy not found"));
 
         QuestionSet questionSet = QuestionSet.builder()
                 .title(request.getTitle().trim())
@@ -57,17 +60,17 @@ public class QuestionSetService {
         Users user = requirePanelOrAdmin(email);
 
         QuestionSet questionSet = questionSetRepo.findById(setId)
-                .orElseThrow(() -> new RuntimeException("Question set not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question set not found"));
 
         if (Boolean.TRUE.equals(questionSet.getPublished())) {
-            throw new RuntimeException("Cannot modify a published question set. Unpublish it first.");
+            throw new ConflictException("Cannot modify a published question set. Unpublish it first.");
         }
 
         InterviewQuestion question = interviewQuestionRepo.findById(request.getQuestionId())
-                .orElseThrow(() -> new RuntimeException("Question not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
 
         if (questionSetItemRepo.findByQuestionSetAndQuestion(questionSet, question).isPresent()) {
-            throw new RuntimeException("This question is already in the set");
+            throw new ConflictException("This question is already in the set");
         }
 
         int nextOrder = request.getOrderIndex() != null
@@ -85,7 +88,7 @@ public class QuestionSetService {
         questionSetItemRepo.save(item);
 
         QuestionSet refreshed = questionSetRepo.findById(setId)
-                .orElseThrow(() -> new RuntimeException("Question set not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question set not found"));
         return toResponse(refreshed, user.getRole());
     }
 
@@ -94,22 +97,22 @@ public class QuestionSetService {
         Users user = requirePanelOrAdmin(email);
 
         QuestionSet questionSet = questionSetRepo.findById(setId)
-                .orElseThrow(() -> new RuntimeException("Question set not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question set not found"));
 
         if (Boolean.TRUE.equals(questionSet.getPublished())) {
-            throw new RuntimeException("Cannot modify a published question set. Unpublish it first.");
+            throw new ConflictException("Cannot modify a published question set. Unpublish it first.");
         }
 
         InterviewQuestion question = interviewQuestionRepo.findById(questionId)
-                .orElseThrow(() -> new RuntimeException("Question not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
 
         QuestionSetItem item = questionSetItemRepo.findByQuestionSetAndQuestion(questionSet, question)
-                .orElseThrow(() -> new RuntimeException("This question is not in the set"));
+                .orElseThrow(() -> new ResourceNotFoundException("This question is not in the set"));
 
         questionSetItemRepo.delete(item);
 
         QuestionSet refreshed = questionSetRepo.findById(setId)
-                .orElseThrow(() -> new RuntimeException("Question set not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question set not found"));
         return toResponse(refreshed, user.getRole());
     }
 
@@ -118,10 +121,10 @@ public class QuestionSetService {
         Users user = requirePanelOrAdmin(email);
 
         QuestionSet questionSet = questionSetRepo.findById(setId)
-                .orElseThrow(() -> new RuntimeException("Question set not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question set not found"));
 
         if (questionSetItemRepo.countByQuestionSet(questionSet) == 0) {
-            throw new RuntimeException("Cannot publish an empty question set");
+            throw new ConflictException("Cannot publish an empty question set");
         }
 
         questionSet.setPublished(true);
@@ -134,7 +137,7 @@ public class QuestionSetService {
         Users user = requirePanelOrAdmin(email);
 
         QuestionSet questionSet = questionSetRepo.findById(setId)
-                .orElseThrow(() -> new RuntimeException("Question set not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question set not found"));
 
         questionSet.setPublished(false);
         QuestionSet saved = questionSetRepo.save(questionSet);
@@ -144,13 +147,13 @@ public class QuestionSetService {
     @Transactional(readOnly = true)
     public QuestionSetResponse getQuestionSetById(Long setId, String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         QuestionSet questionSet = questionSetRepo.findById(setId)
-                .orElseThrow(() -> new RuntimeException("Question set not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question set not found"));
 
         if (user.getRole() == Role.HR_OFFICER && !Boolean.TRUE.equals(questionSet.getPublished())) {
-            throw new RuntimeException("This question set is not yet published");
+            throw new ConflictException("This question set is not yet published");
         }
 
         return toResponse(questionSet, user.getRole());
@@ -161,10 +164,10 @@ public class QuestionSetService {
         Users user = requirePanelOrAdmin(email);
 
         QuestionSet questionSet = questionSetRepo.findById(setId)
-                .orElseThrow(() -> new RuntimeException("Question set not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Question set not found"));
 
         if (Boolean.TRUE.equals(questionSet.getPublished())) {
-            throw new RuntimeException("Cannot modify a published question set. Unpublish it first.");
+            throw new ConflictException("Cannot modify a published question set. Unpublish it first.");
         }
 
         if (request.getTitle() != null && !request.getTitle().isBlank()) {
@@ -179,7 +182,7 @@ public class QuestionSetService {
     @Transactional(readOnly = true)
     public List<QuestionSetResponse> getAllQuestionSets(String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         List<QuestionSet> sets = user.getRole() == Role.HR_OFFICER
                 ? questionSetRepo.findByPublished(true)
@@ -191,10 +194,10 @@ public class QuestionSetService {
     @Transactional(readOnly = true)
     public List<QuestionSetResponse> getQuestionSetsByVacancy(Long vacancyId, String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         JobVacancy vacancy = jobVacancyRepo.findById(vacancyId)
-                .orElseThrow(() -> new RuntimeException("Vacancy not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Vacancy not found"));
 
         // Show all sets for the selected vacancy so scheduling can choose draft sets
         List<QuestionSet> sets = questionSetRepo.findByVacancy(vacancy);
@@ -206,10 +209,10 @@ public class QuestionSetService {
 
     private Users requirePanelOrAdmin(String email) {
         Users user = userRepo.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getRole() != Role.PANEL_MEMBER && user.getRole() != Role.SUPER_ADMIN) {
-            throw new RuntimeException("You are not allowed to perform this action!");
+            throw new ForbiddenException("You are not allowed to perform this action!");
         }
         return user;
     }
