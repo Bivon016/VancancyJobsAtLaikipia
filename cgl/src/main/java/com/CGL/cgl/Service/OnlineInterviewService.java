@@ -163,7 +163,7 @@ public class OnlineInterviewService {
         interview.setSubmitted(true);
         return toResponse(onlineInterviewRepo.save(interview));
     }
-
+    @Transactional(readOnly = true)
     public ApplicantInterviewResponse getInterviewForApplicant(String interviewToken, String email) {
         OnlineInterview interview = onlineInterviewRepo.findByInterviewToken(interviewToken)
                 .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
@@ -209,7 +209,7 @@ public class OnlineInterviewService {
                 .questions(questions)
                 .build();
     }
-
+    @Transactional(readOnly = true)
     public List<OnlineInterviewResponse> getMyInterviews(String email) {
         Applicant applicant = applicantRepo.findByUser_Email(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Applicant not found"));
@@ -224,6 +224,7 @@ public class OnlineInterviewService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<OnlineInterviewResponse> getInterviews(Long vacancyId, OnlineInterviewStatus status, String email) {
         requireHrOrAdmin(email);
 
@@ -244,7 +245,7 @@ public class OnlineInterviewService {
 
         return interviews.stream().map(this::toResponse).toList();
     }
-
+    @Transactional(readOnly = true)
     public OnlineInterviewResponse getInterviewById(Long id, String email) {
         Users user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));

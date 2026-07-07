@@ -233,4 +233,18 @@ public class EmailTemplates {
             + button("Browse open vacancies", "https://jobs.laikipia.go.ke/vacancies")
             + footer();
     }
+
+    public static String passwordReset(String firstName, String resetLink) {
+        return header()
+            + "<p style=\"margin:0 0 4px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:#6C757D;\">Account security</p>"
+            + "<h1 style=\"margin:0 0 20px;font-size:22px;font-weight:600;color:#212529;\">Reset your password</h1>"
+            + "<p style=\"margin:0 0 16px;font-size:15px;color:#495057;line-height:1.7;\">Dear <strong style=\"color:#212529;\">" + firstName + "</strong>,</p>"
+            + "<p style=\"margin:0 0 20px;font-size:15px;color:#495057;line-height:1.7;\">We received a request to reset the password for your Laikipia County Jobs Portal account. Click the button below to choose a new password. This link will expire in 30 minutes.</p>"
+            + "<div style=\"text-align:center;margin:28px 0;\">"
+            + button("Reset password", resetLink)
+            + "</div>"
+            + "<p style=\"margin:20px 0 0;font-size:13px;color:#6C757D;line-height:1.5;word-break:break-word;\">If the button does not work, copy and paste the following link into your browser:<br/><a href=\"" + resetLink + "\" style=\"color:#1B4332;\">" + resetLink + "</a></p>"
+            + "<p style=\"margin:16px 0 0;font-size:13px;color:#6C757D;line-height:1.7;\">If you did not request a password reset, you can safely ignore this email &mdash; your password will not be changed.</p>"
+            + footer();
+    }
 }

@@ -16,6 +16,8 @@ import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
 import ChangePasswordPage from "./pages/auth/ChangePasswordPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import AccessDeniedPage from "./pages/AccessDeniedPage";
 import ApplicantDashboard from "./pages/applicant/DashboardPage";
 import ProfilePage from "./pages/applicant/ProfilePage";
@@ -68,6 +70,22 @@ export default function App() {
               }
             />
             <Route path="verify-email" element={<VerifyEmailPage />} />
+            <Route
+              path="forgot-password"
+              element={
+                <GuestRoute>
+                  <ForgotPasswordPage />
+                </GuestRoute>
+              }
+            />
+            <Route
+              path="reset-password"
+              element={
+                <GuestRoute>
+                  <ResetPasswordPage />
+                </GuestRoute>
+              }
+            />
             <Route path="access-denied" element={<AccessDeniedPage />} />
           </Route>
 

@@ -2,14 +2,17 @@ package com.CGL.cgl.Controller;
 
 import com.CGL.cgl.DTO.AuthResponse;
 import com.CGL.cgl.DTO.ChangePasswordRequest;
+import com.CGL.cgl.DTO.ForgotPasswordRequest;
 import com.CGL.cgl.DTO.LoginRequest;
 import com.CGL.cgl.DTO.RegisterRequest;
+import com.CGL.cgl.DTO.ResetPasswordRequest;
 import com.CGL.cgl.Exception.ConflictException;
 import com.CGL.cgl.Exception.ResourceNotFoundException;
 import com.CGL.cgl.Model.Users;
 import com.CGL.cgl.Repo.UserRepo;
 import com.CGL.cgl.Security.JwtUtil;
 import com.CGL.cgl.Service.CustomUserDetailsService;
+import com.CGL.cgl.Service.PasswordResetService;
 import com.CGL.cgl.Service.RegisterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +38,7 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserRepo userRepo;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordResetService passwordResetService;
 
     public AuthController(
         RegisterService registerService,
@@ -42,7 +46,8 @@ public class AuthController {
         CustomUserDetailsService customUserDetailsService,
         JwtUtil jwtUtil,
         UserRepo userRepo,
-        BCryptPasswordEncoder passwordEncoder
+        BCryptPasswordEncoder passwordEncoder,
+        PasswordResetService passwordResetService
     ) {
         this.registerService = registerService;
         this.authenticationManager = authenticationManager;
@@ -50,6 +55,7 @@ public class AuthController {
         this.jwtUtil = jwtUtil;
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.passwordResetService = passwordResetService;
     }
 
     @PostMapping("/auth/register")
@@ -116,6 +122,29 @@ public class AuthController {
         userRepo.save(user);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/auth/forgot-password")
+    public ResponseEntity<String> forgotPassword(
+        @RequestBody ForgotPasswordRequest request
+    ) {
+        passwordResetService.requestReset(request.getEmail());
+        return ResponseEntity.ok(
+            "If an account exists for that email, a password reset link has been sent."
+        );
+    }
+
+    @PostMapping("/auth/reset-password")
+    public ResponseEntity<String> resetPassword(
+        @RequestBody ResetPasswordRequest request
+    ) {
+        passwordResetService.resetPassword(
+            request.getToken(),
+            request.getNewPassword()
+        );
+        return ResponseEntity.ok(
+            "Password reset successfully. You can now sign in."
+        );
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)

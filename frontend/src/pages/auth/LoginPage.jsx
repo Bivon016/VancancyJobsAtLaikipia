@@ -10,7 +10,8 @@ export default function LoginPage() {
   const { login, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from || "/dashboard";
+ const from =
+    typeof location.state?.from === "string" ? location.state.from : "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -74,6 +75,14 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <div className="text-right">
+            <Link
+              to="/forgot-password"
+              className="text-xs font-semibold text-secondary hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
           {location.state?.message && (
             <div className="rounded-md bg-green-50 p-3 text-sm text-green-700">
               {location.state.message}

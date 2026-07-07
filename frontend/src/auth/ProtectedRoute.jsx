@@ -7,7 +7,8 @@ export function ProtectedRoute({ children, roles }) {
   const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const from = `${location.pathname}${location.search}${location.hash}`;
+return <Navigate to="/login" state={{ from }} replace />;
   }
 
   if (user?.mustChangePassword && location.pathname !== '/change-password') {
