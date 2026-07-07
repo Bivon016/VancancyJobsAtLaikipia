@@ -42,6 +42,14 @@ public class Users {
     @Builder.Default
     private boolean emailVerified = false;
 
+    // Set true for staff accounts a SUPER_ADMIN creates on someone else's
+    // behalf (they log in with a password they didn't choose). Cleared once
+    // the user successfully sets their own password. Applicants who
+    // self-register always start false since they already chose their own.
+    @Column(name = "must_change_password", nullable = false)
+    @Builder.Default
+    private boolean mustChangePassword = false;
+
     @Column(name = "created_at", nullable = true, updatable = false)
     private LocalDateTime createdAt;
 

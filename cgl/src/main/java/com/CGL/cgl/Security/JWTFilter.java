@@ -30,7 +30,12 @@ public class JWTFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        if (path.startsWith("/auth/")) {
+        boolean isPublicAuthEndpoint =
+                path.equals("/auth/login")
+                        || path.equals("/auth/register")
+                        || path.equals("/auth/verify-email")
+                        || path.equals("/auth/resend-verification-code");
+        if (isPublicAuthEndpoint) {
             filterChain.doFilter(request, response);
             return;
         }

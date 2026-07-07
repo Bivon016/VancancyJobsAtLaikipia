@@ -30,7 +30,7 @@ public class OnlineInterviewController {
 
     @PostMapping("/vacancy/{vacancyId}")
     @PreAuthorize("hasRole('HR_OFFICER') or hasRole('SUPER_ADMIN')")
-    public ResponseEntity<List<OnlineInterviewResponse>> createOnlineInterviewsForVacancy(
+    public ResponseEntity<OnlineInterviewBulkScheduleResult> createOnlineInterviewsForVacancy(
             @PathVariable Long vacancyId,
             @RequestBody OnlineInterviewWindowRequest windowTemplate,
             Authentication authentication) {

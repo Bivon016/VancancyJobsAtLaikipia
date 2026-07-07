@@ -72,7 +72,7 @@ export function AuthProvider({ children }) {
       try {
         const { data } = await authApi.login(email, password);
         const role = normalizeRole(data.role);
-        const nextUser = { email: data.email, role };
+        const nextUser = { email: data.email, role, mustChangePassword: !!data.mustChangePassword };
         persistSession(nextUser, data.token);
         return nextUser;
       } finally {
@@ -81,6 +81,20 @@ export function AuthProvider({ children }) {
     },
     [persistSession],
   );
+
+  const clearMustChangePassword = useCallback(() => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const nextUser = { ...prev, mustChangePassword: false };
+      if (typeof window !== "undefined" && token) {
+        window.localStorage.setItem(
+          AUTH_STORAGE_KEY,
+          JSON.stringify({ user: nextUser, token }),
+        );
+      }
+      return nextUser;
+    });
+  }, [token]);
 
   const register = useCallback(async (formData) => {
     setLoading(true);
@@ -101,8 +115,9 @@ export function AuthProvider({ children }) {
       login,
       logout,
       register,
+      clearMustChangePassword,
     }),
-    [user, token, loading, login, logout, register],
+    [user, token, loading, login, logout, register, clearMustChangePassword],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

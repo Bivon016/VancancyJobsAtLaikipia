@@ -2,6 +2,7 @@ package com.CGL.cgl.Service;
 
 import com.CGL.cgl.DTO.CreateUserRequest;
 import com.CGL.cgl.DTO.RegisterRequest;
+import com.CGL.cgl.Exception.ConflictException;
 import com.CGL.cgl.Model.Role;
 import com.CGL.cgl.Model.Users;
 import com.CGL.cgl.Repo.UserRepo;
@@ -29,7 +30,7 @@ public class RegisterService {
     @Transactional
     public Users createUser(RegisterRequest request) {
         if (userRepo.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
+            throw new ConflictException("Email already registered");
         }
 
         Users user = Users.builder()
@@ -48,7 +49,7 @@ public class RegisterService {
 
     public Users createSystemUser(CreateUserRequest request) {
         if (userRepo.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already registered");
+            throw new ConflictException("Email already registered");
         }
 
         Users user = Users.builder()
@@ -59,6 +60,7 @@ public class RegisterService {
             .role(request.getRole())
             .phoneNumber(request.getPhoneNumber())
             .emailVerified(false)
+            .mustChangePassword(true)
             .build();
         Users savedUser = userRepo.save(user);
         emailVerificationService.sendVerificationEmail(savedUser);

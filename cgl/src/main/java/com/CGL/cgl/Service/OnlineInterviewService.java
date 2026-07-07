@@ -74,7 +74,7 @@ public class OnlineInterviewService {
     }
 
     @Transactional
-    public List<OnlineInterviewResponse> createOnlineInterviewsForVacancy(Long vacancyId, OnlineInterviewWindowRequest windowTemplate, String email) {
+    public OnlineInterviewBulkScheduleResult createOnlineInterviewsForVacancy(Long vacancyId, OnlineInterviewWindowRequest windowTemplate, String email) {
         Users user = requireHrOrAdmin(email);
 
         JobVacancy vacancy = jobVacancyRepo.findById(vacancyId)
@@ -86,8 +86,10 @@ public class OnlineInterviewService {
                 .findByVacancyAndApplicationStatus(vacancy, ApplicationState.SHORTLISTED);
 
         List<OnlineInterviewResponse> created = new ArrayList<>();
+        int alreadyScheduledCount = 0;
         for (Applications application : shortlisted) {
             if (onlineInterviewRepo.findByApplication(application).isPresent()) {
+                alreadyScheduledCount++;
                 continue;
             }
             OnlineInterviewRequest perCandidateRequest = new OnlineInterviewRequest(
@@ -100,7 +102,18 @@ public class OnlineInterviewService {
             OnlineInterview saved = createForApplication(perCandidateRequest, application, questionSet, user);
             created.add(toResponse(saved));
         }
-        return created;
+
+        // NOTE: this only ever schedules applicants whose status is exactly
+        // SHORTLISTED. An applicant who is still SUBMITTED/UNDER_REVIEW (not
+        // yet shortlisted), or who has already moved past SHORTLISTED, is
+        // silently excluded from `shortlisted` entirely — that's the #1
+        // reason a "successful" schedule call can create zero interviews.
+        return OnlineInterviewBulkScheduleResult.builder()
+                .created(created)
+                .totalShortlisted(shortlisted.size())
+                .alreadyScheduledCount(alreadyScheduledCount)
+                .createdCount(created.size())
+                .build();
     }
 
     @Transactional

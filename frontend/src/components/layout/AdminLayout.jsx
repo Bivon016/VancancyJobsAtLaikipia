@@ -101,7 +101,7 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-indigo-50/50">
-      <aside className="relative hidden w-72 flex-shrink-0 border-r border-white/10 bg-secondary text-white lg:block">
+      <aside className="sticky top-0 hidden h-screen w-72 flex-shrink-0 flex-col border-r border-white/10 bg-secondary text-white lg:flex">
         <div className="border-b border-white/10 p-6">
           <p className="font-heading text-sm font-bold uppercase tracking-[0.2em] text-accent">
             Staff Portal
@@ -111,7 +111,7 @@ export default function AdminLayout() {
           </p>
           <p className="mt-1 truncate text-xs text-white/60">{user?.email}</p>
         </div>
-        <nav className="space-y-2 p-3">
+        <nav className="flex-1 space-y-2 overflow-y-auto p-3">
           {links.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
@@ -130,7 +130,7 @@ export default function AdminLayout() {
             </NavLink>
           ))}
         </nav>
-        <div className="absolute bottom-0 w-72 p-4">
+        <div className="border-t border-white/10 p-4">
           <Button
             variant="ghost"
             size="sm"

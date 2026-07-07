@@ -314,13 +314,29 @@ export default function OnlineInterviewsPage() {
       setSubmitting(true);
       setError('');
       setMessage('');
-      await interviewService.createForVacancy(Number(form.vacancyId), {
+      const { data } = await interviewService.createForVacancy(Number(form.vacancyId), {
         questionSetId: Number(form.questionSetId),
         opensAt: form.opensAt,
         closesAt: form.closesAt,
         durationMinutes: Number(form.durationMinutes || 30),
       });
-      setMessage('Online interview scheduled for all shortlisted applicants successfully.');
+
+      if (data.totalShortlisted === 0) {
+        setError(
+          'No shortlisted applicants found for this vacancy. Shortlist candidates first, then schedule their online interview.'
+        );
+      } else if (data.createdCount === 0) {
+        setMessage(
+          `No new interviews created. All ${data.totalShortlisted} shortlisted applicant(s) already have an online interview scheduled.`
+        );
+      } else if (data.createdCount < data.totalShortlisted) {
+        setMessage(
+          `Scheduled for ${data.createdCount} of ${data.totalShortlisted} shortlisted applicant(s). ${data.alreadyScheduledCount} already had one scheduled.`
+        );
+      } else {
+        setMessage(`Online interview scheduled for all ${data.createdCount} shortlisted applicant(s).`);
+      }
+
       setForm({
         vacancyId: '',
         questionSetId: '',

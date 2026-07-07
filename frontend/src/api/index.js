@@ -6,6 +6,8 @@ export const authApi = {
   verifyEmail: (email, code) => api.post("/auth/verify-email", { email, code }),
   resendVerificationCode: (email) =>
     api.post("/auth/resend-verification-code", { email }),
+  changePassword: (currentPassword, newPassword) =>
+    api.put("/auth/change-password", { currentPassword, newPassword }),
 };
 
 export const jobsApi = {

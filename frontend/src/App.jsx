@@ -15,6 +15,7 @@ import VacancyDetailPage from "./pages/public/VacancyDetailPage";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
+import ChangePasswordPage from "./pages/auth/ChangePasswordPage";
 import AccessDeniedPage from "./pages/AccessDeniedPage";
 import ApplicantDashboard from "./pages/applicant/DashboardPage";
 import ProfilePage from "./pages/applicant/ProfilePage";
@@ -69,6 +70,24 @@ export default function App() {
             <Route path="verify-email" element={<VerifyEmailPage />} />
             <Route path="access-denied" element={<AccessDeniedPage />} />
           </Route>
+
+          <Route
+            path="/change-password"
+            element={
+              <ProtectedRoute
+                roles={[
+                  ROLES.SUPER_ADMIN,
+                  ROLES.CPSB_ADMIN,
+                  ROLES.DEPT_HEAD,
+                  ROLES.HR_OFFICER,
+                  ROLES.PANEL_MEMBER,
+                  ROLES.APPLICANT,
+                ]}
+              >
+                <ChangePasswordPage />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/dashboard"

@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthResponse {
-    private String token;
-    private String role;
-    private String email;
-    private boolean mustChangePassword;
+public class ChangePasswordRequest {
+    private String currentPassword;
+    private String newPassword;
 }
