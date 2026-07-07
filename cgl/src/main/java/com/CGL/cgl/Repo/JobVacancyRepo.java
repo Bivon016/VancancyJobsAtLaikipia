@@ -12,4 +12,6 @@ import java.util.List;
 public interface JobVacancyRepo extends JpaRepository<JobVacancy, Long> {
     List<JobVacancy> findByStatus(ApplicationStatus status);
 
+    boolean existsByRecruitmentRequest_Id(Long recruitmentRequestId);
+
 }

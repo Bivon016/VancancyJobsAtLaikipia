@@ -29,10 +29,33 @@ public class RecruitmentRequest {
 
     private String jobTitle;
 
+    @Column(columnDefinition = "TEXT")
     private String jobDescription;
 
-    private String requirements;
+    @Column(columnDefinition = "TEXT")
+    private String keyDuties;
+
+    @Column(columnDefinition = "TEXT")
+    private String academicQualifications;
+
+    @Column(columnDefinition = "TEXT")
+    private String professionalQualifications;
+
+    @Column(columnDefinition = "TEXT")
+    private String experience;
+
+    @Column(columnDefinition = "TEXT")
+    private String technicalSkills;
+
+    @Column(columnDefinition = "TEXT")
+    private String personalAttributes;
+
+    @Column(columnDefinition = "TEXT")
+    private String competencies;
+
     private Integer numberOfPositions;
+
+    @Column(columnDefinition = "TEXT")
     private String reason;
 
     @Enumerated(EnumType.STRING)

@@ -47,8 +47,14 @@ public class RecruuitmentRequestService {
                 .jobTitle(request.getJobTitle())
                 .numberOfPositions(request.getNumberOfPositions())
                 .reason(request.getReason())
-                .requirements(request.getRequirements())
                 .jobDescription(request.getJobDescription())
+                .keyDuties(request.getKeyDuties())
+                .academicQualifications(request.getAcademicQualifications())
+                .professionalQualifications(request.getProfessionalQualifications())
+                .experience(request.getExperience())
+                .technicalSkills(request.getTechnicalSkills())
+                .personalAttributes(request.getPersonalAttributes())
+                .competencies(request.getCompetencies())
                 .status(Status.PENDING)
                 .build();
         return recruitmentRequestRepo.save(recruitmentRequest);

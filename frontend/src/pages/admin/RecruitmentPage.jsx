@@ -20,12 +20,19 @@ export default function RecruitmentPage() {
     departmentId: "",
     jobTitle: "",
     jobDescription: "",
-    requirements: "",
+    keyDuties: "",
+    academicQualifications: "",
+    professionalQualifications: "",
+    experience: "",
+    technicalSkills: "",
+    personalAttributes: "",
+    competencies: "",
     numberOfPositions: 1,
     reason: "",
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [expandedId, setExpandedId] = useState(null);
 
   const load = () => {
     const fetcher = isCpsb
@@ -110,11 +117,60 @@ export default function RecruitmentPage() {
               }
             />
             <Textarea
-              label="Requirements"
+              label="Key Duties and Responsibilities"
               required
-              value={form.requirements}
+              placeholder="One duty per line"
+              value={form.keyDuties}
               onChange={(e) =>
-                setForm({ ...form, requirements: e.target.value })
+                setForm({ ...form, keyDuties: e.target.value })
+              }
+            />
+            <Textarea
+              label="Academic Qualifications"
+              required
+              value={form.academicQualifications}
+              onChange={(e) =>
+                setForm({ ...form, academicQualifications: e.target.value })
+              }
+            />
+            <Textarea
+              label="Professional Qualifications"
+              value={form.professionalQualifications}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  professionalQualifications: e.target.value,
+                })
+              }
+            />
+            <Textarea
+              label="Experience"
+              required
+              value={form.experience}
+              onChange={(e) =>
+                setForm({ ...form, experience: e.target.value })
+              }
+            />
+            <Textarea
+              label="Technical Skills"
+              value={form.technicalSkills}
+              onChange={(e) =>
+                setForm({ ...form, technicalSkills: e.target.value })
+              }
+            />
+            <Textarea
+              label="Personal Attributes"
+              value={form.personalAttributes}
+              onChange={(e) =>
+                setForm({ ...form, personalAttributes: e.target.value })
+              }
+            />
+            <Textarea
+              label="Competencies"
+              placeholder="One competency per line"
+              value={form.competencies}
+              onChange={(e) =>
+                setForm({ ...form, competencies: e.target.value })
               }
             />
             <Input
@@ -161,21 +217,33 @@ export default function RecruitmentPage() {
                     {formatDateTime(r.requestDate)} — {r.status}
                   </p>
                 </div>
-                {isCpsb && !isSuperAdmin && r.status === "PENDING" && (
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => handleApprove(r.id)}>
-                      Approve
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="danger"
-                      onClick={() => handleReject(r.id)}
-                    >
-                      Reject
-                    </Button>
-                  </div>
-                )}
+                <div className="flex shrink-0 gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      setExpandedId(expandedId === r.id ? null : r.id)
+                    }
+                  >
+                    {expandedId === r.id ? "Hide Details" : "View Details"}
+                  </Button>
+                  {isCpsb && !isSuperAdmin && r.status === "PENDING" && (
+                    <>
+                      <Button size="sm" onClick={() => handleApprove(r.id)}>
+                        Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={() => handleReject(r.id)}
+                      >
+                        Reject
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
+              {expandedId === r.id && <RequestDetails request={r} />}
             </li>
           ))}
           {requests.length === 0 && (
@@ -183,6 +251,38 @@ export default function RecruitmentPage() {
           )}
         </ul>
       </Card>
+    </div>
+  );
+}
+
+const DETAIL_FIELDS = [
+  { key: "jobDescription", label: "Job Description" },
+  { key: "keyDuties", label: "Key Duties and Responsibilities" },
+  { key: "academicQualifications", label: "Academic Qualifications" },
+  { key: "professionalQualifications", label: "Professional Qualifications" },
+  { key: "experience", label: "Experience" },
+  { key: "technicalSkills", label: "Technical Skills" },
+  { key: "personalAttributes", label: "Personal Attributes" },
+  { key: "competencies", label: "Competencies" },
+  { key: "reason", label: "Reason for Recruitment" },
+];
+
+function RequestDetails({ request }) {
+  return (
+    <div className="mt-4 space-y-3 rounded-xl border border-slate-100 bg-slate-50/60 p-4">
+      {DETAIL_FIELDS.map(
+        ({ key, label }) =>
+          request[key] && (
+            <div key={key}>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                {label}
+              </p>
+              <p className="mt-1 whitespace-pre-wrap text-sm text-secondary">
+                {request[key]}
+              </p>
+            </div>
+          ),
+      )}
     </div>
   );
 }

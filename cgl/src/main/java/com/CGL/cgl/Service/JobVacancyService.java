@@ -44,6 +44,12 @@ public class JobVacancyService {
             );
         }
 
+        if (jobVacancyRepo.existsByRecruitmentRequest_Id(recruitmentRequest.getId())) {
+            throw new ConflictException(
+                "A vacancy has already been published for this recruitment request"
+            );
+        }
+
         Departments department = recruitmentRequest.getDepartment();
         JobVacancy vacancy = JobVacancy.builder()
             .recruitmentRequest(recruitmentRequest)

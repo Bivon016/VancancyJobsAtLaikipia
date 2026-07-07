@@ -29,14 +29,15 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     @Override
     @Transactional
     public EmailVerificationToken createVerificationToken(Users user) {
-        tokenRepo.findByUser(user).ifPresent(tokenRepo::delete);
 
-        EmailVerificationToken token = EmailVerificationToken.builder()
-            .code(generateVerificationCode())
-            .user(user)
-            .expiryDate(LocalDateTime.now().plusMinutes(15))
-            .used(false)
-            .build();
+        EmailVerificationToken token = tokenRepo.findByUser(user)
+                .orElse(new EmailVerificationToken());
+
+        token.setUser(user);
+        token.setCode(generateVerificationCode());
+        token.setExpiryDate(LocalDateTime.now().plusMinutes(15));
+        token.setUsed(false);
+        token.setVerifiedAt(null);
 
         return tokenRepo.save(token);
     }

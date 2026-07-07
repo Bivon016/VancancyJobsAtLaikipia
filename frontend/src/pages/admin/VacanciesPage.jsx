@@ -93,11 +93,19 @@ function CreateVacancyTab({ onCreated }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    recruitmentApi
-      .getAll()
-      .then(({ data }) =>
-        setApprovedRequests(data.filter((r) => r.status === "APPROVED")),
-      )
+    Promise.all([recruitmentApi.getAll(), jobsApi.getAll()])
+      .then(([{ data: allRequests }, { data: allVacancies }]) => {
+        const publishedRequestIds = new Set(
+          (Array.isArray(allVacancies) ? allVacancies : [])
+            .map((v) => v.recruitmentRequest?.id)
+            .filter(Boolean),
+        );
+        setApprovedRequests(
+          allRequests.filter(
+            (r) => r.status === "APPROVED" && !publishedRequestIds.has(r.id),
+          ),
+        );
+      })
       .catch(() => {});
   }, []);
 
@@ -150,15 +158,36 @@ function CreateVacancyTab({ onCreated }) {
               ...form,
               recruitmentRequestId: e.target.value,
               title: req?.jobTitle || form.title,
-              jobDescription: req?.jobDescription || form.jobDescription,
-              requirements: req?.requirements || form.requirements,
+              jobDescription: req
+                ? [req.jobDescription, req.keyDuties && `Key Duties and Responsibilities:\n${req.keyDuties}`]
+                    .filter(Boolean)
+                    .join("\n\n")
+                : form.jobDescription,
+              requirements: req
+                ? [
+                    req.academicQualifications &&
+                      `Academic Qualifications:\n${req.academicQualifications}`,
+                    req.professionalQualifications &&
+                      `Professional Qualifications:\n${req.professionalQualifications}`,
+                    req.experience && `Experience:\n${req.experience}`,
+                    req.technicalSkills &&
+                      `Technical Skills:\n${req.technicalSkills}`,
+                    req.personalAttributes &&
+                      `Personal Attributes:\n${req.personalAttributes}`,
+                    req.competencies && `Competencies:\n${req.competencies}`,
+                  ]
+                    .filter(Boolean)
+                    .join("\n\n")
+                : form.requirements,
               positionsAvailable: req?.numberOfPositions || 1,
             });
           }}
         >
           <option value="">Select an approved request…</option>
           {approvedRequests.length === 0 && (
-            <option disabled>No approved requests available</option>
+            <option disabled>
+              No unpublished approved requests available
+            </option>
           )}
           {approvedRequests.map((r) => (
             <option key={r.id} value={r.id}>

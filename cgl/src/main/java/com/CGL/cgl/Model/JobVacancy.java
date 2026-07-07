@@ -19,8 +19,10 @@ public class JobVacancy {
 
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String jobDescription;
 
+    @Column(columnDefinition = "TEXT")
     private String requirements;
 
     private String salaryScale;

@@ -15,7 +15,13 @@ public class RecruitmentRequestDTO {
     private Long departmentId;
     private String jobTitle;
     private String jobDescription;
-    private String requirements;
+    private String keyDuties;
+    private String academicQualifications;
+    private String professionalQualifications;
+    private String experience;
+    private String technicalSkills;
+    private String personalAttributes;
+    private String competencies;
     private Integer numberOfPositions;
     private String reason;
     private Status status;
