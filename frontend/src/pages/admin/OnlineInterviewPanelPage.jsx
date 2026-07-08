@@ -22,6 +22,7 @@ export default function OnlineInterviewPanelPage() {
   const [error, setError] = useState('');
   const [savingMap, setSavingMap] = useState({});
   const [savedMap, setSavedMap] = useState({});
+  const [savingAll, setSavingAll] = useState(false);
   const [result, setResult] = useState(null);
   const [interviewId, setInterviewId] = useState(null);
 
@@ -75,6 +76,69 @@ export default function OnlineInterviewPanelPage() {
     }
   };
 
+  const handleSaveAll = async () => {
+    setSavingAll(true);
+    setError('');
+    // Only send answers that actually have something entered, so a
+    // half-reviewed interview doesn't get zero-marked answers submitted.
+    const toSave = answers.filter((answer) => {
+      const score = scores[String(answer.id)] || {};
+      return score.marksAwarded !== '' && score.marksAwarded != null || score.comment || score.recommended;
+    });
+
+    if (toSave.length === 0) {
+      setError('Enter at least one mark or comment before saving.');
+      setSavingAll(false);
+      return;
+    }
+
+    setSavingMap((current) => {
+      const next = { ...current };
+      toSave.forEach((answer) => { next[String(answer.id)] = true; });
+      return next;
+    });
+
+    const results = await Promise.allSettled(
+      toSave.map((answer) => {
+        const score = scores[String(answer.id)] || {};
+        const payload = {
+          applicantAnswerId: answer.id,
+          marksAwarded: score.marksAwarded === '' || score.marksAwarded == null ? null : Number(score.marksAwarded),
+          comment: score.comment || '',
+          recommended: Boolean(score.recommended),
+        };
+        return scoreService.submitScore(payload).then((res) => ({ answerId: answer.id, data: res.data }));
+      })
+    );
+
+    const nextScores = {};
+    const nextSaved = {};
+    const nextSaving = {};
+    let failureCount = 0;
+
+    results.forEach((outcome, index) => {
+      const answerId = toSave[index].id;
+      const key = String(answerId);
+      nextSaving[key] = false;
+      if (outcome.status === 'fulfilled') {
+        nextScores[key] = outcome.value.data;
+        nextSaved[key] = true;
+      } else {
+        failureCount += 1;
+      }
+    });
+
+    setScores((current) => ({ ...current, ...nextScores }));
+    setSavedMap((current) => ({ ...current, ...nextSaved }));
+    setSavingMap((current) => ({ ...current, ...nextSaving }));
+
+    if (failureCount > 0) {
+      setError(`${failureCount} of ${toSave.length} score(s) could not be saved. Please retry those.`);
+    }
+
+    setSavingAll(false);
+  };
+
   const progress = useMemo(() => {
     const total = answers.length;
     const scored = Object.values(scores).filter((value) => value?.marksAwarded != null || value?.comment || value?.recommended != null).length;
@@ -115,6 +179,10 @@ export default function OnlineInterviewPanelPage() {
         <Button variant="outline" onClick={() => navigate('/admin/interviews')}>
           <Eye className="h-4 w-4" />
           Back to interviews
+        </Button>
+        <Button variant="primary" onClick={handleSaveAll} loading={savingAll} disabled={savingAll}>
+          <CheckCircle2 className="h-4 w-4" />
+          {savingAll ? 'Saving all…' : 'Save all scores'}
         </Button>
         {result ? (
           <Link to={`/admin/interviews/result?interviewId=${interviewId}`}>

@@ -24,6 +24,7 @@ export default function InterviewPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const timerRef = useRef(null);
+  const [starting, setStarting] = useState(false);
 
   const loadInterview = async () => {
     try {
@@ -63,7 +64,9 @@ export default function InterviewPage() {
   }, [token]);
 
   useEffect(() => {
-    if (!token || !interview || interview.status === 'SUBMITTED') return;
+    if (!token || !interview || interview.status !== 'IN_PROGRESS') {
+  return;
+}
     timerRef.current = window.setInterval(() => {
       const pendingEntries = Object.entries(answers).filter(([, value]) => Boolean(value));
       pendingEntries.forEach(([questionSetItemId, answerText]) => {
@@ -96,6 +99,25 @@ export default function InterviewPage() {
     const answerText = answers[String(questionSetItemId)] || '';
     await saveAnswer(questionSetItemId, answerText);
   };
+  const handleStart = async () => {
+  try {
+    setStarting(true);
+    setError("");
+
+    await interviewService.start(token);
+
+    // Reload interview so status becomes IN_PROGRESS
+    const { data } = await interviewService.getByToken(token);
+
+    setInterview(data);
+  } catch (err) {
+    setError(
+      err.response?.data?.message || "Unable to start interview."
+    );
+  } finally {
+    setStarting(false);
+  }
+};
 
   const handleSubmit = async () => {
     try {
@@ -110,8 +132,7 @@ export default function InterviewPage() {
       setSubmitting(false);
     }
   };
-
-  const isReadOnly = interview?.status === 'SUBMITTED' || interview?.status === 'EVALUATED';
+const isReadOnly = interview?.status !== 'IN_PROGRESS';
 
   const statusBadge = useMemo(() => {
     const styles = {
@@ -178,6 +199,23 @@ export default function InterviewPage() {
         </div>
       )}
 
+{interview.status === 'OPEN' && (
+  <Card className="mb-6 border border-amber-200 bg-amber-50">
+    <div className="flex items-start gap-3">
+      <AlertTriangle className="mt-1 h-5 w-5 text-amber-600" />
+      <div>
+        <h3 className="font-semibold text-amber-900">
+          Interview Ready
+        </h3>
+        <p className="mt-1 text-sm text-amber-800">
+          Click <strong>Start Interview</strong> when you are ready.
+          The interview timer will begin immediately and your answers will start
+          being saved automatically.
+        </p>
+      </div>
+    </div>
+  </Card>
+)}
       <div className="space-y-4">
         {(interview.questions || []).map((question, index) => (
           <QuestionCard
@@ -202,10 +240,24 @@ export default function InterviewPage() {
             <FileText className="h-4 w-4" />
             Your responses will be auto-saved every few seconds.
           </div>
-          <Button variant="primary" onClick={() => setConfirmOpen(true)} disabled={isReadOnly || submitting}>
-            <Send className="h-4 w-4" />
-            Submit Interview
-          </Button>
+  {interview.status === 'OPEN' ? (
+  <Button
+    variant="primary"
+    onClick={handleStart}
+    disabled={starting}
+  >
+    Start Interview
+  </Button>
+) : (
+  <Button
+    variant="primary"
+    onClick={() => setConfirmOpen(true)}
+    disabled={isReadOnly || submitting}
+  >
+    <Send className="h-4 w-4" />
+    Submit Interview
+  </Button>
+)}
         </div>
       </Card>
 

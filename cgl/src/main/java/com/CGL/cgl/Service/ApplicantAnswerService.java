@@ -75,6 +75,7 @@ public class ApplicantAnswerService {
         return toResponse(saved);
     }
 
+    @Transactional(readOnly = true)
     public List<ApplicantAnswerResponse> getAnswersForInterview(String interviewToken, String email) {
         OnlineInterview interview = onlineInterviewRepo.findByInterviewToken(interviewToken)
                 .orElseThrow(() -> new ResourceNotFoundException("Interview not found"));
@@ -93,7 +94,7 @@ public class ApplicantAnswerService {
                 .map(this::toResponse)
                 .toList();
     }
-
+    @Transactional(readOnly = true)
     public List<ApplicantAnswerResponse> getAnswersForPanel(Long interviewId, String email) {
         Users panelMember = userRepo.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));

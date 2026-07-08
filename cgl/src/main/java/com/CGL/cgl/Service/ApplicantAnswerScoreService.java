@@ -82,6 +82,7 @@ public class ApplicantAnswerScoreService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<ApplicantAnswerScoreResponse> getScoresForInterviewDirect(OnlineInterview interview) {
         return scoreRepo.findByOnlineInterview(interview).stream().map(this::toResponse).toList();
     }
