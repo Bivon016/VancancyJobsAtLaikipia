@@ -1,0 +1,49 @@
+services:
+
+  mysql:
+    image: mysql:8.4
+    container_name: cgl-mysql
+    restart: always
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: laikipia_jobs
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  backend:
+    build:
+      context: ./cgl
+
+    container_name: cgl-backend
+
+    depends_on:
+      - mysql
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+
+  frontend:
+    build:
+      context: ./frontend
+
+    container_name: cgl-frontend
+
+    depends_on:
+      - backend
+
+    ports:
+      - "80:80"
+
+volumes:
+  mysql-data:
