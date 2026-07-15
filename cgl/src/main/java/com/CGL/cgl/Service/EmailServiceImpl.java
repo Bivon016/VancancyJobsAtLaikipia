@@ -27,6 +27,8 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendHtmlEmail(String to, String subject, String htmlBody) {
+        System.out.println("MAIL_FROM = " + fromEmail);
+
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
