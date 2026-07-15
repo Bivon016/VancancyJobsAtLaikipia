@@ -47,10 +47,13 @@ public class EmailServiceImpl implements EmailService {
         HttpEntity<Map<String, Object>> entity =
                 new HttpEntity<>(request, headers);
 
-        restTemplate.postForEntity(
+        ResponseEntity<String> response = restTemplate.postForEntity(
                 "https://api.brevo.com/v3/smtp/email",
                 entity,
                 String.class
         );
+
+        System.out.println("Status: " + response.getStatusCode());
+        System.out.println("Body: " + response.getBody());
     }
 }
