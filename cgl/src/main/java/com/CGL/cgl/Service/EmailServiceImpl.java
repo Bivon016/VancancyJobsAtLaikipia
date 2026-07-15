@@ -14,7 +14,7 @@ public class EmailServiceImpl implements EmailService {
     @Value("${BREVO_API_KEY}")
     private String apiKey;
 
-    @Value("${spring.mail.username}")
+    @Value("${MAIL_FROM}")
     private String fromEmail;
 
     private final RestTemplate restTemplate = new RestTemplate();
