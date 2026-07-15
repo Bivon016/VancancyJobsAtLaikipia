@@ -1,7 +1,10 @@
 import axios from 'axios';
 const API_BASE =
-  import.meta.env.VITE_API_BASE_URL ??
-  (import.meta.env.DEV ? "http://localhost:8080" : "");
+  // import.meta.env.VITE_API_BASE_URL ??
+  // (import.meta.env.DEV ? "http://localhost:8080" : "");
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+
+console.log("API BASE =", API_BASE);
 
 let authToken = null;
 let onUnauthorized = null;
