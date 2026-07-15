@@ -1,47 +1,56 @@
 package com.CGL.cgl.Service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    private final JavaMailSender mailSender;
+    @Value("${BREVO_API_KEY}")
+    private String apiKey;
 
-    @Value("${spring.mail.username:no-reply@laikipiajobs.local}")
-    private String fromAddress;
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
-    public EmailServiceImpl(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public void sendEmail(String to, String subject, String body) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromAddress);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(body);
-        mailSender.send(message);
+
+        sendHtmlEmail(to, subject, body);
     }
 
     @Override
     public void sendHtmlEmail(String to, String subject, String htmlBody) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom(fromAddress);
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(htmlBody, true);
-            mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send HTML email", e);
-        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("api-key", apiKey);
+
+        Map<String, Object> request = Map.of(
+                "sender", Map.of(
+                        "name", "Laikipia County Jobs",
+                        "email", fromEmail
+                ),
+                "to", List.of(
+                        Map.of("email", to)
+                ),
+                "subject", subject,
+                "htmlContent", htmlBody
+        );
+
+        HttpEntity<Map<String, Object>> entity =
+                new HttpEntity<>(request, headers);
+
+        restTemplate.postForEntity(
+                "https://api.brevo.com/v3/smtp/email",
+                entity,
+                String.class
+        );
     }
 }
