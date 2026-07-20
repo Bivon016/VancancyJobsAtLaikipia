@@ -1,28 +1,51 @@
 package com.CGL.cgl.Service;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    @Value("${BREVO_API_KEY}")
-    private String apiKey;
+    private final JavaMailSender mailSender;
 
-    @Value("${MAIL_FROM}")
+    @Value("${spring.mail.username}")
     private String fromEmail;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    public EmailServiceImpl(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     @Override
     public void sendEmail(String to, String subject, String body) {
-        sendHtmlEmail(to, subject, body);
+
+        System.out.println("MAIL_FROM = " + fromEmail);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(body);
+
+        try {
+            mailSender.send(message);
+
+            System.out.println("Email sent successfully.");
+            System.out.println("Recipient: " + to);
+
+        } catch (MailException e) {
+
+            System.out.println("Failed to send email.");
+            e.printStackTrace();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -30,40 +53,30 @@ public class EmailServiceImpl implements EmailService {
 
         System.out.println("MAIL_FROM = " + fromEmail);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("api-key", apiKey);
-
-        Map<String, Object> request = Map.of(
-                "sender", Map.of(
-                        "name", "Laikipia County Jobs",
-                        "email", fromEmail
-                ),
-                "to", List.of(
-                        Map.of("email", to)
-                ),
-                "subject", subject,
-                "htmlContent", htmlBody
-        );
-
-        HttpEntity<Map<String, Object>> entity =
-                new HttpEntity<>(request, headers);
-
         try {
 
-            ResponseEntity<String> response = restTemplate.postForEntity(
-                    "https://api.brevo.com/v3/smtp/email",
-                    entity,
-                    String.class
-            );
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            System.out.println("Status: " + response.getStatusCode());
-            System.out.println("Body: " + response.getBody());
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(htmlBody, true);
 
-        } catch (HttpStatusCodeException e) {
+            mailSender.send(message);
 
-            System.out.println("Status: " + e.getStatusCode());
-            System.out.println("Response: " + e.getResponseBodyAsString());
+            System.out.println("HTML email sent successfully.");
+            System.out.println("Recipient: " + to);
+
+        } catch (MessagingException e) {
+
+            System.out.println("Failed to create email.");
+            e.printStackTrace();
+
+        } catch (MailException e) {
+
+            System.out.println("Failed to send email.");
+            e.printStackTrace();
 
         } catch (Exception e) {
             e.printStackTrace();
