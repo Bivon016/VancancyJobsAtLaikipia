@@ -18,7 +18,8 @@ public class CorsConfig {
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:*",
                 "http://127.0.0.1:*",
-                "https://*.up.railway.app"
+                "https://*.up.railway.app",
+                "https://your-frontend.onrender.com"
         ));
 
         config.setAllowedMethods(List.of(
